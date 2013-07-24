@@ -76,11 +76,10 @@
     $(function () {
         var $sidebar = $('.menubar');
         var $lang = $('.language');
-        var elTop;
+        var elTop = 62;
 
         $window
           .on('resize.sidestick', function () {
-              elTop = $sidebar.offset().top;
               $window.trigger('scroll.sidestick');
           })
           .on('scroll.sidestick', function () {

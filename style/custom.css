@@ -1,6 +1,6 @@
 ﻿.logo { background: url(images/logo_small.png); display: block; width: 177px; height: 40px; }
 .content-root { margin-top: 4px; }
-.language { position: absolute; z-index: 100; background: linear-gradient(#585858, #242424); width: 100%; top: -3px; box-shadow: 1px 2px 3px #000; opacity: 0.95;}
+.language { position: absolute; z-index: 100; background: linear-gradient(#585858, #242424); width: 100%; top: -3px; box-shadow: 1px 2px 3px #000; opacity: 0.95; }
 	.language.fixed { position: fixed; overflow-y: auto; top: 0px; }
 	.language .nav { margin-bottom: 0px; }
 		.language .nav li:first-child a { margin-left: 25px; }
@@ -11,7 +11,7 @@ ul.level-3 { display: none; }
 .lang-nolang { display: block !important; font-family: 'Lato' sans-serif !important; font-size: 0.95em !important; color: #ddd; }
 	.lang-nolang .h1, .lang-nolang .h2, .lang-nolang .h3, .lang-nolang .h4 { display: block; color: #fff; }
 	.lang-nolang .h1 { font-size: 1.5em; padding-bottom: 15px; }
-	.lang-nolang .h2 { font-size: 1.4em; padding-bottom: 12px;}
-	.lang-nolang .h3 { font-size: 1.3em; padding-bottom: 8px;}
-	.lang-nolang .h4 { font-size: 1.1em; padding-bottom: 5px;}
+	.lang-nolang .h2 { font-size: 1.4em; padding-bottom: 12px; }
+	.lang-nolang .h3 { font-size: 1.3em; padding-bottom: 8px; }
+	.lang-nolang .h4 { font-size: 1.1em; padding-bottom: 5px; }
 	.lang-nolang i { color: #ddd; }
