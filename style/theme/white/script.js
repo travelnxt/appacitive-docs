@@ -130,6 +130,9 @@
 
         } else $("#aLogin").parent().show();
         $("#aLogin").attr("href", $("#aLogin").attr("href") + "&ru=" + window.location.href);
+
+        //add padding to bottom, so that last item can be highlighted
+        $(".content-root").css("padding-bottom", $(window).height() - 200);
     });
 
     /*
