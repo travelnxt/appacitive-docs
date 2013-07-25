@@ -5,17 +5,14 @@
     /*
      * Scrollspy.
      */
-
-    $document.on('flatdoc:ready', function () {
-        $(".language a:first").trigger("click");
-        if (window.location.hash != "") {
-            setTimeout(function () {
-                $("[href='" + window.location.hash + "']").trigger("click");
-            }, 1000);
+    var currentId = null;
+    var reCal = true;
+    var alignScroll = function () {
+        if (currentId) {
+            $("[href='#" + currentId + "']").trigger("click");
         }
-
         var preId = null;
-        $("h2, h3").scrollagent({ offset: 200 }, function (cid, pid, currentElement, previousElement) {
+        $("h2, h3").scrollagent({ offset: 200, reCal: reCal }, function (cid, pid, currentElement, previousElement) {
             if (pid) {
                 $("[href='#" + pid + "']").removeClass('active');
             }
@@ -31,7 +28,54 @@
                 preId = $("[href='#" + cid + "']").closest("ul").parent().children("a").html().toLowerCase();
             }
             $("li.level-2 ul.level-3").not($("[href='#" + preId + "']").siblings()).slideUp();
+            currentId = cid;
         });
+        reCal = false;
+    };
+
+    $document.on('flatdoc:ready', function () {
+        var cName = "appacitive-docs-selected-lang";
+        var storeCookie = function (lang) {
+            if (!lang) return;
+            document.cookie = cName + "=" + lang + ";";
+        };
+        var readCookie = function () {
+            var nameEQ = cName + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        };
+
+        if (window.location.hash != "") {
+            setTimeout(function () {
+                $("[href='" + window.location.hash + "']").trigger("click");
+            }, 1000);
+        }
+
+        $(".language a").unbind("click").click(function (e) {
+            var $that = $(this);
+
+            //handle active tab
+            if ($that.parent().hasClass("active")) return;
+            $(".language li").removeClass("active");
+            $that.parent().addClass("active");
+
+            $(".lang").hide();
+            var selected = $that.data("lang").toLowerCase();
+            $(".lang-" + selected).show();
+
+            setTimeout(function () {
+                alignScroll();
+            }, 50);
+            storeCookie(selected);
+        });
+        var lang = readCookie();
+        if (!lang) $(".language a:first").trigger("click");
+        $("*[data-lang='" + lang + "']").trigger("click");
     });
 
     /*
@@ -90,21 +134,6 @@
           .trigger('resize.sidestick');
     });
 
-    $(function () {
-        $(".language a").unbind("click").click(function (e) {
-            var $that = $(this);
-
-            //handle active tab
-            if ($that.parent().hasClass("active")) return;
-            $(".language li").removeClass("active");
-            $that.parent().addClass("active");
-
-            $(".lang").hide();
-            var selected = $that.data("lang").toLowerCase();
-            $(".lang-" + selected).show();
-        });
-    });
-
 })(jQuery);
 /*! jQuery.scrollagent (c) 2012, Rico Sta. Cruz. MIT License.
  *  https://github.com/rstacruz/jquery-stuff/tree/master/scrollagent */
@@ -126,6 +155,7 @@
 
 (function ($) {
 
+    var offsets = [];
     $.fn.scrollagent = function (options, callback) {
         // Account for $.scrollspy(function)
         if (typeof callback === 'undefined') {
@@ -137,7 +167,7 @@
         var $parent = options.parent || $(window);
 
         // Find the top offsets of each section
-        var offsets = [];
+        offsets = [];
         $sections.each(function (i) {
             var offset = $(this).attr('data-anchor-offset') ?
               parseInt($(this).attr('data-anchor-offset'), 10) :
@@ -151,42 +181,44 @@
             });
         });
 
-        // State
-        var current = null;
-        var height = null;
-        var range = null;
+        if (options.reCal) {
 
-        // Save the height. Do this only whenever the window is resized so we don't
-        // recalculate often.
-        $(window).on('resize', function () {
-            height = $parent.height();
-            range = $(document).height();
-        });
+            // State
+            var current = null;
+            var height = null;
+            var range = null;
 
-        // Find the current active section every scroll tick.
-        $parent.on('scroll', function () {
-            var y = $parent.scrollTop();
-            y += height * (0.3 + 0.7 * Math.pow(y / range, 2));
+            // Save the height. Do this only whenever the window is resized so we don't
+            // recalculate often.
+            $(window).on('resize', function () {
+                height = $parent.height();
+                range = $(document).height();
+            });
 
-            var latest = null;
+            // Find the current active section every scroll tick.
+            $parent.on('scroll', function () {
+                var y = $parent.scrollTop();
+                y += height * (0.3 + 0.7 * Math.pow(y / range, 2));
 
-            for (var i in offsets) {
-                if (offsets.hasOwnProperty(i)) {
-                    var offset = offsets[i];
-                    if (offset.top < y) latest = offset;
+                var latest = null;
+
+                for (var i in offsets) {
+                    if (offsets.hasOwnProperty(i)) {
+                        var offset = offsets[i];
+                        if (offset.top < y) latest = offset;
+                    }
                 }
-            }
 
-            if (latest && (!current || (latest.index !== current.index))) {
-                callback.call($sections,
-                  latest ? latest.id : null,
-                  current ? current.id : null,
-                  latest ? latest.el : null,
-                  current ? current.el : null);
-                current = latest;
-            }
-        });
-
+                if (latest && (!current || (latest.index !== current.index))) {
+                    callback.call($sections,
+                      latest ? latest.id : null,
+                      current ? current.id : null,
+                      latest ? latest.el : null,
+                      current ? current.el : null);
+                    current = latest;
+                }
+            });
+        }
         $(window).trigger('resize');
         $parent.trigger('scroll');
 
