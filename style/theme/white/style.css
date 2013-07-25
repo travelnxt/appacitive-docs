@@ -294,6 +294,7 @@ body.no-literate .content pre > code { -webkit-overflow-scrolling: touch; }
 
 @media (max-width: 480px) /* Mobile */ {
 	.right { display: none; }
+	.ex-right { display: none; }
 	.language .nav li:first-child a { margin-left: 10px; }
 	.language ul li a { margin: 5px 2px 4px; padding: 2px 5px; }
 }
