@@ -1,4 +1,5 @@
-﻿.logo { background: url(images/logo_small.png); display: block; width: 177px; height: 40px; }
+﻿.content-root { padding-bottom: 400px; }
+.logo { background: url(images/logo_small.png); display: block; width: 177px; height: 40px; }
 .content-root { margin-top: 4px; }
 .language { position: absolute; z-index: 100; background-color: #2E303D; background: linear-gradient(#585858, #242424); width: 100%; top: -3px; box-shadow: 1px 2px 3px #000; opacity: 0.95; }
 	.language.fixed { position: fixed; overflow-y: auto; top: 0px; }

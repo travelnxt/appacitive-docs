@@ -585,9 +585,12 @@ await Users.DeleteUserAsync("1234567", true);
 ```
 
 ### Authentication
+
 Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
 
+
 #### Authenticating user by Username and Password
+
 Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero. Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
 
 ``` javascript
@@ -613,7 +616,7 @@ var creds = new UsernamePasswordCredentials("username", "password")
    MaxAttempts = int.MaxValue
 };
 
-var userSession = await Appacitive.Sdk.App.LoginAsync(credentials);
+var userSession = await App.LoginAsync(credentials);
 var user = userSession.LoggedInUser;  //Logged in user
 ```
 
@@ -622,7 +625,154 @@ Files
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. 
 
+### Upload
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce 
+
+``` javascript
+//TODO
+```
+``` csharp
+//Upload via Byte Stream
+var fileName = "serverFileName.jpg";
+var bytes = memoryStream.ToArray();
+var upload = new FileUpload("image/jpeg", fileName, 30);
+string uploadedFileName = await upload.UploadAsync(bytes);
+
+//Upload via File Path
+var upload = new FileUpload("image/jpeg", fileName, 30);
+string uploadedFileName = await upload.UploadFileAsync(filePath);
+
+//Custom Upload
+//Get the upload url and upload the file
+var upload = new FileUpload("image/jpeg");
+string uploadUrl = await upload.GetUploadUrlAsync(30);
+//Custom logic to upload file
+```
+
+### Download
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce 
+
+``` javascript
+//TODO
+```
+``` csharp
+//Three ways to download file
+var download = new FileDownload(fileName);
+
+//1: Get the byte stream
+var bytes = await download.DownloadAsync();
+
+//2: Download the data and write to a local file
+await download.DownloadFileAsync(localFileName);
+
+//3: Get the download URL
+var downloadUrl = await download.GetDownloadUrl(30);
+//Custom logic to download file
+```
+
 Querying Data
 ------------
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. 
+
+### Simple Search
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce 
+
+``` javascript
+//Todo
+```
+``` csharp
+//Build the query
+var query = Query.Property("firstname").Equals("John");
+
+//`response` is `PagedList` of `Article`
+var reponse = await Articles.FindAllAsync("player", query.ToString());
+
+//Iterating the `response`
+var list = new List<Article>();
+while (response.Count > 0)
+{
+     response.ForEach(r => list.Add(r));
+     if (response.IsLastPage) break;
+     await response.NextPageAsync();
+}
+
+//MORE SAMPLES
+
+//First name like "oh"
+var likeQuery = Query.Property("firstname").Like("oh");
+
+//First name starts with "jo"
+var startWithQuery = Query.Property("firstname").StartsWith("jo");
+
+//Between two dates
+var start = DateTime.UtcNow.AddYears(-30);
+var end = DateTime.UtcNow.AddYears(-20);
+var betweenDatesQuery = Query.Property("birthdate").Between(start, end);
+
+//Greater than a date
+var date = DateTime.UtcNow.AddYears(-30);
+var greaterThanQuery = Query.Property("birthdate").IsGreaterThan(date);
+```
+
+
+### Compound Search
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce 
+
+``` javascript
+//Todo
+```
+``` csharp
+//Use of `And` and `Or` operators
+var center = new Geocode(36.1749687195M, -115.1372222900M);
+
+                   //AND query
+var complexQuery = BooleanOperator.And(new[]{
+                      //OR query
+                      BooleanOperator.Or(new[] { 
+                         Query.Property("firstname").StartsWith("jo"),
+                         Query.Property("lastname").Like("*oe*")
+                      }),
+                      Query.Property("location")
+                          .WithinCircle(center, 
+                                        10.0M, 
+                                        DistanceUnit.Miles)
+          });
+```
+
+### Radial Search
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce 
+
+``` javascript
+//Todo
+```
+``` csharp
+//Search for hotels near Las Vegas in a radius of 10 miles
+var center = new Geocode(36.1749687195M, -115.1372222900M);
+var radialQuery = Query.Property("location")
+                          .WithinCircle(center, 
+                                        10.0M, 
+                                        DistanceUnit.Miles);
+```
+
+### Polygon Search
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce 
+
+``` javascript
+//Todo
+```
+``` csharp
+//Search for hotel which is between 4 co-ordinates
+var pt1 = new Geocode(36.1749687195M, -115.1372222900M);
+var pt2 = new Geocode(34.1749687195M, -116.1372222900M);
+var pt3 = new Geocode(35.1749687195M, -114.1372222900M);
+var pt4 = new Geocode(36.1749687195M, -114.1372222900M);
+var geocodes = new[] { pt1, pt2, pt3, pt4 };
+var polygonQuery = Query.Property("location").WithinPolygon(geocodes);
+```
