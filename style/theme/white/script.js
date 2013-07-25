@@ -252,7 +252,7 @@
             // Find the current active section every scroll tick.
             $parent.on('scroll', function () {
                 var y = $parent.scrollTop();
-                y += height * (0.3 + 0.7 * Math.pow(y / range, 2));
+                y += height * (0.3 + 0.05 * Math.pow(y / range, 2));
 
                 var latest = null;
 
