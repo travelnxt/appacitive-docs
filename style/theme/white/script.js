@@ -34,13 +34,14 @@
     };
 
     $document.on('flatdoc:ready', function () {
+        var that = this;
         var cName = "appacitive-docs-selected-lang";
         var storeCookie = function (lang) {
             if (!lang) return;
             document.cookie = cName + "=" + lang + ";";
         };
-        var readCookie = function () {
-            var nameEQ = cName + "=";
+        var readCookie = function (name) {
+            var nameEQ = name + "=";
             var ca = document.cookie.split(';');
             for (var i = 0; i < ca.length; i++) {
                 var c = ca[i];
@@ -49,13 +50,20 @@
             }
             return null;
         };
+        var deleteCookie = function (name) {
+            var domain = "domain=.appacitive.com;";
+            if (window.location.hostname == "localhost") domain = '';
+            document.cookie = name + "=; expires=Thu, 01-Jan-1970 00:00:01 GMT;path=/;" + domain;
+        };
 
+        //jump to hash
         if (window.location.hash != "") {
             setTimeout(function () {
                 $("[href='" + window.location.hash + "']").trigger("click");
             }, 1000);
         }
 
+        //language selection
         $(".language a").unbind("click").click(function (e) {
             var $that = $(this);
 
@@ -73,9 +81,55 @@
             }, 50);
             storeCookie(selected);
         });
-        var lang = readCookie();
+        var lang = readCookie(cName);
         if (!lang) $(".language a:first").trigger("click");
         $("*[data-lang='" + lang + "']").trigger("click");
+
+        //authenticated user handling
+        this.SESSION_COOKIE_NAME = '__app_session';
+        this.USERNAME_COOKIE = "_app_session_user";
+        this.account = "";
+        var user = readCookie(this.USERNAME_COOKIE);
+        if (user) {
+            user = unescape(user);
+            var split = user.split("|");
+            this.account = split[2];
+            $(".top_nav_user_name_first").html(split[0]);
+            $(".top_nav_user_name_last").html(split[1]);
+
+            $('#imgUserPhoto').attr("src", "https://secure.gravatar.com/avatar/" + MD5(split[4]) + "?s=40&d=" + escape("https://portal.appacitive.com/styles/images/human.png"));
+            $(".top_links_user").show();
+
+            that.docEventBinded = false;
+            $(".top_links_user").click(function (e) {
+                if ($('#lnkUserMenu').hasClass('highlit-menu') == false) {
+                    if (that.docEventBinded == false) {
+                        that.docEventBinded = true;
+
+                        $(document).click(function (e) {
+                            if ($('#lnkUserMenu').hasClass('highlit-menu') == false) return;
+                            $('#lnkUserMenu').toggleClass('highlit-menu');
+                            $('#lstUserMenu').toggle();
+                        });
+                    }
+                }
+                $('#lnkUserMenu').toggleClass('highlit-menu');
+                $('#lstUserMenu', that).toggle();
+                e.preventDefault();
+                return false;
+            });
+            $("#lnkLogout").click(function () {
+                deleteCookie(that.SESSION_COOKIE_NAME);
+                deleteCookie(that.USERNAME_COOKIE);
+                $(".top_links_user").hide();
+                $("#aLogin").parent().show();
+            });
+            $("#lnkMyAccount").click(function () {
+                window.location = "https://portal.appacitive.com/" + that.account + "/accounts.html?accounts=myaccount";
+            });
+
+        } else $("#aLogin").parent().show();
+        $("#aLogin").attr("href", $("#aLogin").attr("href") + "&ru=" + window.location.href);
     });
 
     /*

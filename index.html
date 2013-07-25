@@ -7,19 +7,21 @@
 
     <title>Appacitive - Documentation</title>
     <link rel="shortcut icon" href="favicon.ico" />
-    <!-- Flatdoc -->
-    <script src="scripts/infra/jquery1.9.1.js"></script>
-    <script src="scripts/infra/legacy.js"></script>
-    <script src="scripts/infra/highlight.js"></script>
-    <script src="scripts/infra/flatdoc.js"></script>
-
 
     <!-- Flatdoc theme -->
     <link href="style/bootstrap.min.css" rel="stylesheet" />
     <link href="style/theme/white/style.css" rel="stylesheet" />
     <link href="style/custom.css" rel="stylesheet" />
-    <script src="style/theme/white/script.js"></script>
     <link href="style/highlight.css" rel="stylesheet" />
+
+    <!-- Flatdoc -->
+    <script src="scripts/infra/jquery1.9.1.js"></script>
+    <script src="scripts/infra/legacy.js"></script>
+    <script src="scripts/infra/highlight.js"></script>
+    <script src="scripts/infra/flatdoc.js"></script>
+    <script src="scripts/infra/md5.js"></script>
+
+    <script src="style/theme/white/script.js"></script>
 
     <!-- Meta -->
     <meta content="Appacitive - Documentation" property="og:title">
@@ -46,7 +48,21 @@
                 <li><a href='https://portal.appacitive.com/signup.html?rel=docs'>Blogs</a></li>
                 <li class="active"><a href="index.html">Documentation</a></li>
                 <li><a href='https://support.appacitive.com'>Support</a></li>
-                <li><a href='https://portal.appacitive.com/login.html?rel=docs'>Login</a></li>
+                <li style="display: none;"><a id="aLogin" href='https://portal.appacitive.com/login.html?rel=docs'>Login</a></li>
+            </ul>
+        </div>
+        <div class="ex-right">
+            <ul class="top_links_user" style="display: none;">
+                <li><a href="javascript:void(0)" id="lnkUserMenu">
+                    <img id="imgUserPhoto" alt="photo" />
+                    <span class="top_nav_user_name_first">{{firstName}}</span> <span class="top_nav_user_name_last">{{lastName}} </span></a>
+                    <div class="top_user_drop_menu">
+                        <ul id="lstUserMenu" class="nav-list">
+                            <li><a href="javascript:void(0)" id="lnkMyAccount">My Account</a></li>
+                            <li><a href="javascript:void(0)" id="lnkLogout">Logout</a></li>
+                        </ul>
+                    </div>
+                </li>
             </ul>
         </div>
     </div>

@@ -14,3 +14,33 @@ ul.level-3 { display: none; }
 	.lang-nolang .h3 { font-size: 1.3em; padding-bottom: 8px; }
 	.lang-nolang .h4 { font-size: 1.1em; padding-bottom: 5px; }
 	.lang-nolang i { color: #ddd; }
+
+/*Logged In user*/
+.ex-right { position: absolute; right: 12px; top: 9px; }
+
+ul.top_links_user { padding: 0; width: auto; margin-top: 5px; margin-left: 0; }
+	ul.top_links_user li { position: relative; list-style: none; float: none; }
+		ul.top_links_user li a { font-size: 14px; text-transform: lowercase; display: inline-block; color: #FEFEFE; margin: 0 0 0 2px; letter-spacing: normal; padding: 0px; font-weight: normal; text-decoration: none; }
+			ul.top_links_user li a:hover { border-bottom: none; text-decoration: none; }
+			ul.top_links_user li a img { float: right; }
+.top_links_user span { color: gray; }
+#imgUserPhoto { width: 40px; height: 40px; border: none; }
+#lstUserMenu { display: none; }
+.top_user_drop_menu { left: auto; right: -1px; min-width: 100px; position: absolute; z-index: 10000; color: #fff; background-color: #737373; }
+	.top_user_drop_menu ul { margin: 0; padding: 0; }
+		.top_user_drop_menu ul li { }
+			.top_user_drop_menu ul li a { font-size: 14px; color: #fff; padding: 7px 20px; display: block; background: none; margin: 0; text-transform: lowercase; font-weight: 300; white-space: nowrap; cursor: pointer; font-weight: normal; }
+				.top_user_drop_menu ul li a:hover { background-color: #B5B5B5; color: #fff; background-image: none; cursor: pointer; text-decoration: none; }
+			.top_user_drop_menu ul li:first-child a { margin-top: 4px; }
+			.top_user_drop_menu ul li:last-child a { margin-bottom: 4px; }
+.top_nav { position: absolute; top: 0; left: 152px; }
+.top_nav_user_name_first { font-size: 19px; width: 50%; float: right; text-align: right; margin: 3px 5px 1px 0px; min-width: 50px; }
+.top_nav_user_name_last { font-size: 14px; width: 50%; float: right; text-align: right; margin-right: 5px; line-height: 18px; }
+.top_user_drop_menu .nav-header:first-child { padding: 10px 15px 3px; }
+.top_user_drop_menu .nav-header { text-transform: lowercase; text-shadow: none; font-size: 13px; margin-left: -5px; padding: 0px 15px 3px; }
+.adminACL { display: none !important; }
+.top_user_drop_menu.appList { left: 13px; }
+.app-list ul { max-height: 200px; list-style: none; }
+	.app-list ul li a { padding: 7px 20px 7px 16px; }
+.nav-separator { padding: 0px; margin: 0px; border-top: solid 1px #B5B5B5; display: block; }
+.top_user_drop_menu.appList .nav-separator:first-child, .top_user_drop_menu.appList .nav-separator:last-child { border: solid 1px #737373; }
