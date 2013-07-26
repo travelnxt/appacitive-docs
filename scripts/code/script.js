@@ -98,7 +98,9 @@
             $(".top_nav_user_name_first").html(split[0]);
             $(".top_nav_user_name_last").html(split[1]);
 
-            $('#imgUserPhoto').attr("src", "https://secure.gravatar.com/avatar/" + MD5(split[4]) + "?s=40&d=" + escape("https://portal.appacitive.com/styles/images/human.png"));
+            if (split.length == 6) $('#imgUserPhoto').attr("src", split[5]);
+            else $('#imgUserPhoto').attr("src", "https://secure.gravatar.com/avatar/" + MD5(split[4]) + "?s=40&d=" + escape("https://portal.appacitive.com/styles/images/human.png"));
+
             $(".top_links_user").show();
 
             that.docEventBinded = false;
