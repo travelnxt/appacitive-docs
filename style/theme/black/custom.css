@@ -1,6 +1,6 @@
 ﻿.footer { color: white; background-color: #0093C8; height: 63px; position: relative; }
 .copyright { position: absolute; right: 12px; font-size: 0.85em; bottom: 1px; }
-.logo { background: url(images/logo_small.png); display: block; width: 177px; height: 40px; }
+.logo { background: url(http://appacitive.github.io/guides%20template/styles/logo_small.png); display: block; width: 205px; height: 47px; }
 .content-root { margin-top: 4px; }
 .language { position: absolute; z-index: 100; background-color: #2E303D; background: linear-gradient(#585858, #242424); width: 100%; top: -3px; box-shadow: 1px 2px 3px #000; opacity: 0.95; }
 	.language.fixed { position: fixed; overflow-y: auto; top: 0px; }

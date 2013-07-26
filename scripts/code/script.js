@@ -12,7 +12,7 @@
             $("[href='#" + currentId + "']").trigger("click");
         }
         var preId = null;
-        $("h2, h3").scrollagent({ offset: 200, reCal: reCal }, function (cid, pid, currentElement, previousElement) {
+        $("h1,h2, h3").scrollagent({ offset: 200, reCal: reCal }, function (cid, pid, currentElement, previousElement) {
             if (pid) {
                 $("[href='#" + pid + "']").removeClass('active');
             }
@@ -30,6 +30,7 @@
             $("li.level-2 ul.level-3").not($("[href='#" + preId + "']").siblings()).slideUp();
             currentId = cid;
         });
+        if (reCal) $("ul.level-1 li.level-1:first-child a").addClass("active");
         reCal = false;
     };
 
