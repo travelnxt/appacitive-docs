@@ -7,19 +7,25 @@
 
     <title>Appacitive - Documentation</title>
     <link rel="shortcut icon" href="favicon.ico" />
+
+    <!-- Flatdoc theme -->
+    <link href="style/bootstrap.min.css" rel="stylesheet" />
+    <link href="style/theme/white/style.css" rel="stylesheet" />
+    <link href="style/theme/white/custom.css" rel="stylesheet" />
+    <link href="style/theme/white/highlight.css" rel="stylesheet" />
+
+    <!--<link href="style/theme/black/style.css" rel="stylesheet" />
+    <link href="style/theme/black/custom.css" rel="stylesheet" />
+    <link href="style/theme/black/highlight.css" rel="stylesheet" />-->
+
     <!-- Flatdoc -->
     <script src="scripts/infra/jquery1.9.1.js"></script>
     <script src="scripts/infra/legacy.js"></script>
     <script src="scripts/infra/highlight.js"></script>
     <script src="scripts/infra/flatdoc.js"></script>
+    <script src="scripts/infra/md5.js"></script>
 
-
-    <!-- Flatdoc theme -->
-    <link href="style/bootstrap.min.css" rel="stylesheet" />
-    <link href="style/theme/white/style.css" rel="stylesheet" />
-    <link href="style/custom.css" rel="stylesheet" />
-    <script src="style/theme/white/script.js"></script>
-    <link href="style/highlight.css" rel="stylesheet" />
+    <script src="scripts/code/script.js"></script>
 
     <!-- Meta -->
     <meta content="Appacitive - Documentation" property="og:title">
@@ -35,8 +41,7 @@
 <body role='flatdoc'>
     <div class='header'>
         <div class='left'>
-            <a href="http://www.appacitive.com">
-                <img src="http://appacitive.github.io/guides%20template/styles/logo_small.png" height="47" /></a>
+            <a href="http://www.appacitive.com" class="logo"></a>
         </div>
         <div class='right'>
             <ul>
@@ -45,13 +50,25 @@
                 <li><a href='https://portal.appacitive.com/login.html?rel=docs'>Pricing</a></li>
                 <li><a href='https://portal.appacitive.com/signup.html?rel=docs'>Blogs</a></li>
                 <li class="active"><a href="index.html">Documentation</a></li>
-                <li><a href='https://support.appacitive.com'>Support</a></li>
-                <li><a href='https://portal.appacitive.com/login.html?rel=docs'>Login</a></li>
+                <li><a href='https://support.appacitive.com'>Feedback & Support</a></li>
+                <li style="display: none;"><a id="aLogin" href='https://portal.appacitive.com/login.html?rel=docs'>Login</a></li>
+            </ul>
+        </div>
+        <div class="ex-right">
+            <ul class="top_links_user" style="display: none;">
+                <li><a href="javascript:void(0)" id="lnkUserMenu">
+                    <img id="imgUserPhoto" alt="photo" />
+                    <span class="top_nav_user_name_first">{{firstName}}</span> <span class="top_nav_user_name_last">{{lastName}} </span></a>
+                    <div class="top_user_drop_menu">
+                        <ul id="lstUserMenu" class="nav-list">
+                            <li><a href="javascript:void(0)" id="lnkMyAccount">My Account</a></li>
+                            <li><a href="javascript:void(0)" id="lnkLogout">Logout</a></li>
+                        </ul>
+                    </div>
+                </li>
             </ul>
         </div>
     </div>
-
-
 
     <div class='content-root'>
         <div class='menubar'>
@@ -68,6 +85,11 @@
         </div>
         <div role='flatdoc-content' class='content'></div>
     </div>
-</body>
 
+    <div class="footer">
+        <div class="copyright">
+            &#169 2013 Appacitive Software Pvt Ltd
+        </div>
+    </div>
+</body>
 </html>

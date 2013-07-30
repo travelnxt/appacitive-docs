@@ -5,17 +5,14 @@
     /*
      * Scrollspy.
      */
-
-    $document.on('flatdoc:ready', function () {
-        $(".language a:first").trigger("click");
-        if (window.location.hash != "") {
-            setTimeout(function () {
-                $("[href='" + window.location.hash + "']").trigger("click");
-            }, 1000);
+    var currentId = null;
+    var reCal = true;
+    var alignScroll = function () {
+        if (currentId) {
+            $("[href='#" + currentId + "']").trigger("click");
         }
-
         var preId = null;
-        $("h2, h3").scrollagent({ offset: 200 }, function (cid, pid, currentElement, previousElement) {
+        $("h1,h2, h3").scrollagent({ offset: 200, reCal: reCal }, function (cid, pid, currentElement, previousElement) {
             if (pid) {
                 $("[href='#" + pid + "']").removeClass('active');
             }
@@ -31,7 +28,114 @@
                 preId = $("[href='#" + cid + "']").closest("ul").parent().children("a").html().toLowerCase();
             }
             $("li.level-2 ul.level-3").not($("[href='#" + preId + "']").siblings()).slideUp();
+            currentId = cid;
         });
+        if (reCal) $("ul.level-1 li.level-1:first-child a").addClass("active");
+        reCal = false;
+    };
+
+    $document.on('flatdoc:ready', function () {
+        var that = this;
+        var cName = "appacitive-docs-selected-lang";
+        var storeCookie = function (lang) {
+            if (!lang) return;
+            document.cookie = cName + "=" + lang + ";";
+        };
+        var readCookie = function (name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        };
+        var deleteCookie = function (name) {
+            var domain = "domain=.appacitive.com;";
+            if (window.location.hostname == "localhost") domain = '';
+            document.cookie = name + "=; expires=Thu, 01-Jan-1970 00:00:01 GMT;path=/;" + domain;
+        };
+
+        //jump to hash
+        if (window.location.hash != "") {
+            setTimeout(function () {
+                $("[href='" + window.location.hash + "']").trigger("click");
+            }, 1000);
+        }
+
+        //language selection
+        $(".language a").unbind("click").click(function (e) {
+            var $that = $(this);
+
+            //handle active tab
+            if ($that.parent().hasClass("active")) return;
+            $(".language li").removeClass("active");
+            $that.parent().addClass("active");
+
+            $(".lang").hide();
+            var selected = $that.data("lang").toLowerCase();
+            $(".lang-" + selected).show();
+
+            setTimeout(function () {
+                alignScroll();
+            }, 50);
+            storeCookie(selected);
+        });
+        var lang = readCookie(cName);
+        if (!lang) $(".language a:first").trigger("click");
+        $("*[data-lang='" + lang + "']").trigger("click");
+
+        //authenticated user handling
+        this.SESSION_COOKIE_NAME = '__app_session';
+        this.USERNAME_COOKIE = "_app_session_user";
+        this.account = "";
+        var user = readCookie(this.USERNAME_COOKIE);
+        if (user) {
+            user = unescape(user);
+            var split = user.split("|");
+            this.account = split[2];
+            $(".top_nav_user_name_first").html(split[0]);
+            $(".top_nav_user_name_last").html(split[1]);
+
+            if (split.length == 6) $('#imgUserPhoto').attr("src", split[5]);
+            else $('#imgUserPhoto').attr("src", "https://secure.gravatar.com/avatar/" + MD5(split[4]) + "?s=40&d=" + escape("https://portal.appacitive.com/styles/images/human.png"));
+
+            $(".top_links_user").show();
+
+            that.docEventBinded = false;
+            $(".top_links_user").click(function (e) {
+                if ($('#lnkUserMenu').hasClass('highlit-menu') == false) {
+                    if (that.docEventBinded == false) {
+                        that.docEventBinded = true;
+
+                        $(document).click(function (e) {
+                            if ($('#lnkUserMenu').hasClass('highlit-menu') == false) return;
+                            $('#lnkUserMenu').toggleClass('highlit-menu');
+                            $('#lstUserMenu').toggle();
+                        });
+                    }
+                }
+                $('#lnkUserMenu').toggleClass('highlit-menu');
+                $('#lstUserMenu', that).toggle();
+                e.preventDefault();
+                return false;
+            });
+            $("#lnkLogout").click(function () {
+                deleteCookie(that.SESSION_COOKIE_NAME);
+                deleteCookie(that.USERNAME_COOKIE);
+                $(".top_links_user").hide();
+                $("#aLogin").parent().show();
+            });
+            $("#lnkMyAccount").click(function () {
+                window.location = "https://portal.appacitive.com/" + that.account + "/accounts.html?accounts=myaccount";
+            });
+
+        } else $("#aLogin").parent().show();
+        $("#aLogin").attr("href", $("#aLogin").attr("href") + "&ru=" + window.location.href);
+
+        //add padding to bottom, so that last item can be highlighted
+        $(".content-root").css("padding-bottom", $(window).height() - 200);
     });
 
     /*
@@ -90,21 +194,6 @@
           .trigger('resize.sidestick');
     });
 
-    $(function () {
-        $(".language a").unbind("click").click(function (e) {
-            var $that = $(this);
-
-            //handle active tab
-            if ($that.parent().hasClass("active")) return;
-            $(".language li").removeClass("active");
-            $that.parent().addClass("active");
-
-            $(".lang").hide();
-            var selected = $that.data("lang").toLowerCase();
-            $(".lang-" + selected).show();
-        });
-    });
-
 })(jQuery);
 /*! jQuery.scrollagent (c) 2012, Rico Sta. Cruz. MIT License.
  *  https://github.com/rstacruz/jquery-stuff/tree/master/scrollagent */
@@ -126,6 +215,7 @@
 
 (function ($) {
 
+    var offsets = [];
     $.fn.scrollagent = function (options, callback) {
         // Account for $.scrollspy(function)
         if (typeof callback === 'undefined') {
@@ -137,7 +227,7 @@
         var $parent = options.parent || $(window);
 
         // Find the top offsets of each section
-        var offsets = [];
+        offsets = [];
         $sections.each(function (i) {
             var offset = $(this).attr('data-anchor-offset') ?
               parseInt($(this).attr('data-anchor-offset'), 10) :
@@ -151,42 +241,44 @@
             });
         });
 
-        // State
-        var current = null;
-        var height = null;
-        var range = null;
+        if (options.reCal) {
 
-        // Save the height. Do this only whenever the window is resized so we don't
-        // recalculate often.
-        $(window).on('resize', function () {
-            height = $parent.height();
-            range = $(document).height();
-        });
+            // State
+            var current = null;
+            var height = null;
+            var range = null;
 
-        // Find the current active section every scroll tick.
-        $parent.on('scroll', function () {
-            var y = $parent.scrollTop();
-            y += height * (0.3 + 0.7 * Math.pow(y / range, 2));
+            // Save the height. Do this only whenever the window is resized so we don't
+            // recalculate often.
+            $(window).on('resize', function () {
+                height = $parent.height();
+                range = $(document).height();
+            });
 
-            var latest = null;
+            // Find the current active section every scroll tick.
+            $parent.on('scroll', function () {
+                var y = $parent.scrollTop();
+                y += height * (0.3 + 0.05 * Math.pow(y / range, 2));
 
-            for (var i in offsets) {
-                if (offsets.hasOwnProperty(i)) {
-                    var offset = offsets[i];
-                    if (offset.top < y) latest = offset;
+                var latest = null;
+
+                for (var i in offsets) {
+                    if (offsets.hasOwnProperty(i)) {
+                        var offset = offsets[i];
+                        if (offset.top < y) latest = offset;
+                    }
                 }
-            }
 
-            if (latest && (!current || (latest.index !== current.index))) {
-                callback.call($sections,
-                  latest ? latest.id : null,
-                  current ? current.id : null,
-                  latest ? latest.el : null,
-                  current ? current.el : null);
-                current = latest;
-            }
-        });
-
+                if (latest && (!current || (latest.index !== current.index))) {
+                    callback.call($sections,
+                      latest ? latest.id : null,
+                      current ? current.id : null,
+                      latest ? latest.el : null,
+                      current ? current.el : null);
+                    current = latest;
+                }
+            });
+        }
         $(window).trigger('resize');
         $parent.trigger('scroll');
 
