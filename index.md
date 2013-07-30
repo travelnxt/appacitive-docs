@@ -1,14 +1,113 @@
 Appacitive API
 =======
+All the features available on the Appacitive platform are available via <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">REST</a> apis over HTTPS. 
+These apis follow simple conventions and can be consumed by any rest client of your choice.
+<a href="http://en.wikipedia.org/wiki/Cross-origin_resource_sharing">Cross-origin resource sharing (CORS)</a> is 
+also enabled on the rest apis to makek them easy to consume from web based applications. 
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Sed luctus lectus et turpis euismod laoreet. Donec id lorem eros. Nam lobortis quam nec auctor dictum. Nunc et vehicula tellus. Sed tempor, lacus nec tincidunt sagittis, metus risus dignissim mauris, in vulputate dolor orci nec sapien. Nulla quis consectetur tellus. Duis id posuere orci.
+The request and response format of the API is always <a href="http://en.wikipedia.org/wiki/JSON">json</a>. Standard error structures in the response will indicate success or failure for any given api request. You can find details of the same in the <a href="http://appacitive-docs.dev/index.html#errors">api conventions</a>.
+
+
+Endpoints
+------------
+
+All the features available on the Appacitive platform are available via <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">REST</a> apis over HTTPS. 
+These apis follow simple conventions and can be consumed by any rest client of your choice.
+<a href="http://en.wikipedia.org/wiki/Cross-origin_resource_sharing">Cross-origin resource sharing (CORS)</a> is 
+also enabled on the rest apis to makek them easy to consume from web based applications. 
+
+The request and response format of the API is always <a href="http://en.wikipedia.org/wiki/JSON">json</a>. Standard error structures in the response will indicate success or failure for any given api request. You can find details of the same in the <a href="http://appacitive-docs.dev/index.html#errors">api conventions</a>.
+
+Request format
+------------
+
+The request body for all requests using PUT and POST must be in json format with ``Content-Type`` set as ``application/json``.
+All authentication and contextual information is sent via http headers. The following http headers are currently supported by the
+api.
+
+** Supported http headers **
+
+* **``appacitive-apikey``** : Api key of the app.
+* **``appacitive-environment``** : Environment to be targetted. Valid values are ``live`` and ``sandbox``.
+* **``appacitive-usersession`` (optional)** : User session token
 
 ```nolang
 <span class="h3">Sample html with h3 size</span><i>Libraries are <a href="https://stripe.com/docs/libraries">available in several languages</a></i>
 Some html content on a New line
 ```
 
+
+Response format
+------------
+
+The response from the api will always return a json object (even in the case of a failure). The success or failure status of the transaction will be returned in the form of a status object. Incase the operation does not return any data then the json response would contain just the status object itself.
+The json structure of the status object is shown.
+
+** Status object attributes **
+
+* **``code``** : ``2xx`` (``200`` or ``201``) incase of success. Incase a resource is created as a side effect of the operation, then the status code returned is ``201``. In case of failure, a non 2xx error code would returned.
+* **``message``**: Error message incase of an api call failure.
+* **``referenceid``**: Unique reference id for the transaction for debugging. This reference id can be provided in issues and escalations.
+* **``additionalmessages``**: Additonal messages incase of a failure.
+
+**Note**: The http status code for the response will always be returned as ``200``.
+
+```nolang
+<span class="h3">Status object</span>
+<pre>
+{
+...,
+  "status": {
+     "code":"200",
+     "message":"Successful",
+     "referenceid":"345c000e-9565-4858-9936-3cf2492df7d3",
+     "additionalmessages":[]
+   }
+}
+</pre>
+```
+
+Errors
+------------
+
 Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero. Vivamus malesuada purus eget neque hendrerit dignissim. Suspendisse dignissim sem vitae erat ultrices aliquet. Donec vulputate urna metus, non volutpat ipsum laoreet at. Mauris diam lacus, suscipit consequat lobortis interdum, vulputate ac leo. Praesent quis iaculis mi. Maecenas nec molestie ligula, a tincidunt orci. Proin et nulla diam.
+
+```nolang
+<span class="h3">Sample html with h3 size</span><i>Libraries are <a href="https://stripe.com/docs/libraries">available in several languages</a></i>
+Some html content on a New line
+```
+
+
+Authentication
+------------
+
+To authenticate your api request you need to specify your application's API key and environment in every request. The environment header is used to route the request to your sandbox or live environment as requested. Your api key can be found in the api key section of the management portal for your app. For the Appacitive apis, all contextual and authentication information is always passed via http headers.
+
+In order to pass the api key and environment information for the application use the following headers. 
+
+* **``appacitive-apikey``** : Http header for the api key.
+* **``appacitive-environment``**: Environment to target. Valid values are ``live`` and ``sandbox``.
+
+``` javascript
+Appacitive.initialize({ 
+    apikey: '{Your api key}' /* required */, 
+    env: 'live' /* environment live or sandbox, default is live */ 
+});
+```
+``` csharp
+//For Windows Phone 7 base app
+App.Initialize(WindowsPhone7.WP7.Instance, 
+                   "{Your api key}", 
+                    Environment.Live);
+
+//For Windows app
+App.Initialize(Net45.WindowsHost.Instance, 
+                   "{Your api key}", 
+                    Environment.Live);
+```
+
+
+
 
 Appacitive SDK
 =======
