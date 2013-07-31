@@ -55,7 +55,8 @@ The json structure of the status object is shown.
 
 ```nolang
 <span class="h3">Status object</span>
-<pre>
+```
+```nolang-rest
 {
 ...,
   "status": {
@@ -65,7 +66,6 @@ The json structure of the status object is shown.
      "additionalmessages":[]
    }
 }
-</pre>
 ```
 
 Errors
@@ -129,38 +129,38 @@ Article object
 * **``__utclastupdateddate``** : The timestamp of the time when the article was last updated, stored in ISO 8601 format with millisecond precision (YYYY-MM-DDTHH:MM:SS.MMMZ).
 * **``__attributes``** : List of key value pair values that can be stored with the article and are not validated by the schema definition.
 
-``` rest 
-    {
-      // system properties
-      "__id": "24208366452736268",
-      "__schematype": "score",
-      "__createdby": "42241231222736268",
-      "__lastmodifiedby": "42241231222736268",
-      "__revision": "2",
-      "__tags": [],
-      "__utcdatecreated": "2013-04-25T05:01:37.0000000Z",
-      "__utclastupdateddate": "2013-04-25T05:02:01.0000000Z",
+``` rest
+{
+  // system properties
+  "__id": "24208366452736268",
+  "__schematype": "score",
+  "__createdby": "42241231222736268",
+  "__lastmodifiedby": "42241231222736268",
+  "__revision": "2",
+  "__tags": [],
+  "__utcdatecreated": "2013-04-25T05:01:37.0000000Z",
+  "__utclastupdateddate": "2013-04-25T05:02:01.0000000Z",
 
-      // user defined properties 
-      "difficulty": "normal",
-      "score": "1400",
-      "level": "10",
-      
-      // attributes
-      "__attributes": {
-        "is_first_time_user" : "true",
-        "has_verified" : "false"
-      }
-    }
+  // user defined properties 
+  "difficulty": "normal",
+  "score": "1400",
+  "level": "10",
+  
+  // attributes
+  "__attributes": {
+    "is_first_time_user" : "true",
+    "has_verified" : "false"
+  }
+}
 ```
 
 ``` csharp 
-    Article score = new Article("score");
-    score.Set<string>("difficulty", "normal");
-    score.Set<int>("level", 10);
-    score.Set<long>("score", 1400);
-    score.SetAttribute("is_first_time_user", "true");
-    score.SetAttribute("has_verified", "false");
+Article score = new Article("score");
+score.Set<string>("difficulty", "normal");
+score.Set<int>("level", 10);
+score.Set<long>("score", 1400);
+score.SetAttribute("is_first_time_user", "true");
+score.SetAttribute("has_verified", "false");
 ```
 
 ``` javascript
