@@ -120,7 +120,8 @@ a { color: #0093c8; text-decoration: none; }
  * Content
  */
 .content-root { min-height: 90%; position: relative; }
-.content { padding-top: 30px; padding-bottom: 40px; padding-left: 40px; padding-right: 40px; zoom: 1; max-width: 700px; }
+.content-wrapper { padding: 0px !important; }
+.content { padding: 30px 40px 40px; zoom: 1; max-width: 700px; }
 	.content:before,
 	.content:after { content: ""; display: table; }
 	.content:after { clear: both; }
@@ -224,8 +225,8 @@ body.no-literate .content pre > code { -webkit-overflow-scrolling: touch; }
 @media (min-width: 1180px) /* Big desktop */ {
 	.language ul li a { margin: 9px 5px 8px; padding: 3px 8px; }
 	body:not(.no-literate) .content { padding-left: 0; padding-right: 0; width: 930px; max-width: none; }
-		body:not(.no-literate) .content > p, body:not(.no-literate) .content > .content-wrapper,
-		body:not(.no-literate) .content > div > p,
+		body:not(.no-literate) .content > .content-wrapper,
+		body:not(.no-literate) .content > p, body:not(.no-literate) .content > div > p,
 		body:not(.no-literate) .content > ul, body:not(.no-literate) .content > div > ul,
 		body:not(.no-literate) .content > ol, body:not(.no-literate) .content > div > ol,
 		body:not(.no-literate) .content > h1, body:not(.no-literate) .content > div > h1,

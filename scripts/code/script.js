@@ -30,8 +30,10 @@
             $("li.level-2 ul.level-3").not($("[href='#" + preId + "']").siblings()).slideUp();
             currentId = cid;
         });
-        if (reCal && $("ul.level-1 .active").length == 0) $("ul.level-1 li.level-1:first-child > a:first-child").addClass("active");
-        reCal = false;
+        setTimeout(function () {
+            if (reCal && $("ul.level-1 .active").length == 0) $("ul.level-1 li.level-1:first-child > a:first-child").addClass("active");
+            reCal = false;
+        }, 1000);
     };
 
     $document.on('flatdoc:ready', function () {
