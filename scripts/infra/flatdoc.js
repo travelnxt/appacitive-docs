@@ -1169,10 +1169,34 @@ Parser.prototype.parse = function(src) {
   this.tokens = src.reverse();
 
   var out = '';
+  var block = '<div style = "clear:both;float:left;width:550px;">';
+  var started = false;
   while (this.next()) {
-    out += this.tok();
+    if (this.token.type == 'heading') {
+        if (!started) {
+          started = true;
+        } else {
+          out += block + '</div>';
+          block = '<div style = "clear:both;float:left;width:550px;">';
+          started = false;
+        }
+        out += this.tok();
+    } else {
+      if (this.token.type == 'code') {
+        if (started) {
+          out += block + '</div>';
+          block = '<div style = "clear:both;float:left;width:550px;">';
+          started = false;
+        }
+        out += this.tok();
+      } else {
+        block += this.tok();
+      }
+    }
   }
-
+  if (started) {
+    out += block + '</div>';
+  }
   return out;
 };
 
