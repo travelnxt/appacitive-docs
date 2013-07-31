@@ -1167,7 +1167,7 @@ Parser.parse = function(src, options) {
 Parser.prototype.parse = function(src) {
   this.inline = new InlineLexer(src.links, this.options);
   this.tokens = src.reverse();
-  var wrapper = '<div class="content-wrapper"';
+  var wrapper = '<div class="content-wrapper">';
 
   var out = '';
   var block = wrapper;
