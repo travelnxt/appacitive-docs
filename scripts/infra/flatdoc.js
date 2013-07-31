@@ -1167,9 +1167,10 @@ Parser.parse = function(src, options) {
 Parser.prototype.parse = function(src) {
   this.inline = new InlineLexer(src.links, this.options);
   this.tokens = src.reverse();
+  var wrapper = '<div class="content-wrapper"';
 
   var out = '';
-  var block = '<div style = "clear:both;float:left;width:550px;">';
+  var block = wrapper;
   var started = false;
   while (this.next()) {
     if (this.token.type == 'heading') {
@@ -1177,7 +1178,7 @@ Parser.prototype.parse = function(src) {
           started = true;
         } else {
           out += block + '</div>';
-          block = '<div style = "clear:both;float:left;width:550px;">';
+          block = wrapper;
           started = false;
         }
         out += this.tok();
@@ -1185,7 +1186,7 @@ Parser.prototype.parse = function(src) {
       if (this.token.type == 'code') {
         if (started) {
           out += block + '</div>';
-          block = '<div style = "clear:both;float:left;width:550px;">';
+          block = wrapper;
           started = false;
         }
         out += this.tok();

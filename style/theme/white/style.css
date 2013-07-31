@@ -224,7 +224,8 @@ body.no-literate .content pre > code { -webkit-overflow-scrolling: touch; }
 @media (min-width: 1180px) /* Big desktop */ {
 	.language ul li a { margin: 9px 5px 8px; padding: 3px 8px; }
 	body:not(.no-literate) .content { padding-left: 0; padding-right: 0; width: 930px; max-width: none; }
-		body:not(.no-literate) .content > p, body:not(.no-literate) .content > div > p,
+		body:not(.no-literate) .content > p, body:not(.no-literate) .content > .content-wrapper,
+		body:not(.no-literate) .content > div > p,
 		body:not(.no-literate) .content > ul, body:not(.no-literate) .content > div > ul,
 		body:not(.no-literate) .content > ol, body:not(.no-literate) .content > div > ol,
 		body:not(.no-literate) .content > h1, body:not(.no-literate) .content > div > h1,
@@ -252,12 +253,13 @@ body.no-literate .content pre > code { -webkit-overflow-scrolling: touch; }
 			body:not(.no-literate) .content > blockquote + h5, body:not(.no-literate) .content div > blockquote + h5,
 			body:not(.no-literate) .content > pre + h6, body:not(.no-literate) .content div > pre + p,
 			body:not(.no-literate) .content > blockquote + h6, body:not(.no-literate) .content div > blockquote + h6 { clear: both; }
-		body:not(.no-literate) .content > p, body:not(.no-literate) .content > div > p,
+		body:not(.no-literate) .content > p, body:not(.no-literate) .content > .content-wrapper,
+		body:not(.no-literate) .content > div > p,
 		body:not(.no-literate) .content > ul, body:not(.no-literate) .content > div > ul,
 		body:not(.no-literate) .content > ol, body:not(.no-literate) .content > div > ol,
 		body:not(.no-literate) .content > h4, body:not(.no-literate) .content > div > h4,
 		body:not(.no-literate) .content > h5, body:not(.no-literate) .content > div > h5,
-		body:not(.no-literate) .content > h6, body:not(.no-literate) .content > div > h6, { float: left; clear: left; }
+		body:not(.no-literate) .content > h6, body:not(.no-literate) .content > div > h6 { float: left; clear: left; }
 		body:not(.no-literate) .content > h4, body:not(.no-literate) .content > div > h4,
 		body:not(.no-literate) .content > h5, body:not(.no-literate) .content > div > h5,
 		body:not(.no-literate) .content > .small-heading, body:not(.no-literate) .content > div > .small-heading,
