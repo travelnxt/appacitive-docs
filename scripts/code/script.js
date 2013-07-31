@@ -30,7 +30,7 @@
             $("li.level-2 ul.level-3").not($("[href='#" + preId + "']").siblings()).slideUp();
             currentId = cid;
         });
-        if (reCal) $("ul.level-1 li.level-1:first-child a").addClass("active");
+        if (reCal && $("ul.level-1 .active").length == 0) $("ul.level-1 li.level-1:first-child > a:first-child").addClass("active");
         reCal = false;
     };
 
@@ -136,6 +136,20 @@
 
         //add padding to bottom, so that last item can be highlighted
         $(".content-root").css("padding-bottom", $(window).height() - 200);
+    });
+
+    $(document).on('flatdoc:ready', function () {
+        function switch_style(title) {
+            var i, links = document.getElementsByTagName("link");
+            for (i = 0; i < links.length ; i++) {
+                if ((links[i].rel.indexOf("stylesheet") != -1) && links[i].title) {
+                    links[i].disabled = true;
+                    if (links[i].title == title) {
+                        links[i].disabled = false;
+                    }
+                }
+            }
+        }
     });
 
     /*
