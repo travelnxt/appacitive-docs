@@ -127,11 +127,12 @@ Also includes:
               if (lang) {
                   switch (lang.toLowerCase()) {
                       case "csharp": hLang = "cs"; break;
-                      case "rest": hLang = "json"; break;
                       case "ios": hLang = "objectivec"; break;
                       case "android": hLang = "java"; break;
+                      case "rest":
                       case "javascript": hLang = "javascript"; break;
                       case "nolang": return code + " "; break; //Inline html handling
+                      case "nolang-rest": hLang = "javascript"; break;
                   }
               }
               return hljs.highlight(hLang, code).value;

@@ -55,7 +55,8 @@ The json structure of the status object is shown.
 
 ```nolang
 <span class="h3">Status object</span>
-<pre>
+```
+```nolang-rest
 {
 ...,
   "status": {
@@ -65,7 +66,6 @@ The json structure of the status object is shown.
      "additionalmessages":[]
    }
 }
-</pre>
 ```
 
 Errors
@@ -181,11 +181,23 @@ Create a new article
 
 Creates a new article of a specific type.
 
-``` rest 
-METHOD
+```nolang
+<span class="h4">METHOD</span>
+```
+``` rest
 PUT https://apis.appacitive.com/article/{type}
+```
+``` csharp
+Appacitive.SDK.Article.SaveAsync()
+```
+``` javascript
+Appacitive.Article.save()
+```
 
-SAMPLE REQUEST
+```nolang
+<span class="h4">SAMPLE REQUEST</span>
+```
+``` rest
 // Create an article of type score
 curl -X PUT \
 -H "Appacitive-Apikey: aY+tExrAJi9K+oorsVq5d3UT/HMi1wAYSEI04qvJwHA=" \
@@ -194,8 +206,28 @@ curl -X PUT \
 -d '{ "title" : "test", "text" : "This is a test post.",
 "__attributes" : { "has_verified" : "false" }}' \
 https://apis.appacitive.com/article/post
-
-SAMPLE RESPONSE
+```
+``` csharp
+var post = new Article("post");
+post.Set<string>("title", "sample post");
+post.Set<string>("text", "This is a sample post.");
+post.SetAttribute("has_verified", "false");
+await post.SaveAsync();
+```
+``` javascript
+var post = new Appacitive.Article({ schema: 'post' });
+player.set('title', 'sample post');
+player.set('text', 'This is a sample post.');
+player.save(function(){
+  alert('new post saved successfully!');
+}, function(status){
+  alert('error while saving!');
+});
+```
+```nolang
+<span class="h4">SAMPLE RESPONSE</span>
+```
+``` rest
 {
   "article": {
     "__id": "33017891581461312",
@@ -224,31 +256,11 @@ SAMPLE RESPONSE
 }
 ```
 ``` csharp
-//METHOD
-Appacitive.SDK.Article.SaveAsync()
-
-//SAMPLE:
-var post = new Article("post");
-post.Set<string>("title", "sample post");
-post.Set<string>("text", "This is a sample post.");
-post.SetAttribute("has_verified", "false");
-await post.SaveAsync();
+// All system properties (including id) will be populated.
 ```
 ``` javascript
-METHOD
-Appacitive.Article.save()
-
-SAMPLE:
-var post = new Appacitive.Article({ schema: 'post' });
-player.set('title', 'sample post');
-player.set('text', 'This is a sample post.');
-player.save(function(){
-  alert('new post saved successfully!');
-}, function(status){
-  alert('error while saving!');
-});
+// The response callback method would be invoked with the article updated with system properties.
 ```
-
 
 Appacitive SDK
 =======
