@@ -110,7 +110,7 @@ https://apis.appacitive.com/article/device/find/all
 
 Article
 =======
-Articles represent your data stored inside the Appacitive platform. Every article has a dedicated type mapped to the schema that you create using the designer available in your management console. If we were to use conventional databases as a metaphor, then a schema can be used to represent a table and an article would correspond to one row inside that table.
+Articles represent your data stored inside the Appacitive platform. Every article has a dedicated type. This type is mapped to the schema that you create via the designer in your management console. If we were to use conventional databases as a metaphor, then a schema would correspond to a table and an article would correspond to one row inside that table.
 
 The article api allows you to store, retreive and manage all the data that you store inside appacitive. You can retreive individual records or lists of records based on a specific filter criteria.
 
@@ -129,38 +129,42 @@ Article object
 * **``__utclastupdateddate``** : The timestamp of the time when the article was last updated, stored in ISO 8601 format with millisecond precision (YYYY-MM-DDTHH:MM:SS.MMMZ).
 * **``__attributes``** : List of key value pair values that can be stored with the article and are not validated by the schema definition.
 
-``` rest 
-    {
-      // system properties
-      "__id": "24208366452736268",
-      "__schematype": "score",
-      "__createdby": "42241231222736268",
-      "__lastmodifiedby": "42241231222736268",
-      "__revision": "2",
-      "__tags": [],
-      "__utcdatecreated": "2013-04-25T05:01:37.0000000Z",
-      "__utclastupdateddate": "2013-04-25T05:02:01.0000000Z",
+** User defined properties ** 
 
-      // user defined properties 
-      "difficulty": "normal",
-      "score": "1400",
-      "level": "10",
-      
-      // attributes
-      "__attributes": {
-        "is_first_time_user" : "true",
-        "has_verified" : "false"
-      }
-    }
+User defined properties are fields defined by you via the schema designer. These are exposed as fields directly on the article object.
+
+``` rest 
+{
+  // system properties
+  "__id": "24208366452736268",
+  "__schematype": "score",
+  "__createdby": "42241231222736268",
+  "__lastmodifiedby": "42241231222736268",
+  "__revision": "2",
+  "__tags": [],
+  "__utcdatecreated": "2013-04-25T05:01:37.0000000Z",
+  "__utclastupdateddate": "2013-04-25T05:02:01.0000000Z",
+
+  // user defined properties 
+  "difficulty": "normal",
+  "score": "1400",
+  "level": "10",
+  
+  // attributes
+  "__attributes": {
+    "is_first_time_user" : "true",
+    "has_verified" : "false"
+  }
+}
 ```
 
 ``` csharp 
-    Article score = new Article("score");
-    score.Set<string>("difficulty", "normal");
-    score.Set<int>("level", 10);
-    score.Set<long>("score", 1400);
-    score.SetAttribute("is_first_time_user", "true");
-    score.SetAttribute("has_verified", "false");
+Article score = new Article("score");
+score.Set<string>("difficulty", "normal");
+score.Set<int>("level", 10);
+score.Set<long>("score", 1400);
+score.SetAttribute("is_first_time_user", "true");
+score.SetAttribute("has_verified", "false");
 ```
 
 ``` javascript
@@ -170,6 +174,79 @@ score.set('level', 10);
 score.set('score', 1400);
 score.attr('is_first_time_user', 'true');
 score.attr('has_verified', 'false');
+```
+
+Create a new article
+------------
+
+Creates a new article of a specific type.
+
+``` rest 
+METHOD
+PUT https://apis.appacitive.com/article/{type}
+
+SAMPLE REQUEST
+// Create an article of type score
+curl -X PUT \
+-H "Appacitive-Apikey: aY+tExrAJi9K+oorsVq5d3UT/HMi1wAYSEI04qvJwHA=" \
+-H "Appacitive-Environment: sandbox" \
+-H "Content-Type: application/json" \
+-d '{ "title" : "test", "text" : "This is a test post.",
+"__attributes" : { "has_verified" : "false" }}' \
+https://apis.appacitive.com/article/post
+
+SAMPLE RESPONSE
+{
+  "article": {
+    "__id": "33017891581461312",
+    "__schematype": "post",
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__schemaid": "23514020251304802",
+    "__revision": "1",
+    "__tags": [],
+    "__utcdatecreated": "2013-07-31T10:45:15.1832474Z",
+    "__utclastupdateddate": "2013-07-31T10:45:15.1832474Z",
+    "title": "test",
+    "text": "This is a test post.",
+    "__attributes": {
+      "has_verified": "false"
+    }
+  },
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "1febaadd-f889-4b47-b1f9-cdeb63b6f937",
+    "additionalmessages": []
+  }
+}
+```
+``` csharp
+//METHOD
+Appacitive.SDK.Article.SaveAsync()
+
+//SAMPLE:
+var post = new Article("post");
+post.Set<string>("title", "sample post");
+post.Set<string>("text", "This is a sample post.");
+post.SetAttribute("has_verified", "false");
+await post.SaveAsync();
+```
+``` javascript
+METHOD
+Appacitive.Article.save()
+
+SAMPLE:
+var post = new Appacitive.Article({ schema: 'post' });
+player.set('title', 'sample post');
+player.set('text', 'This is a sample post.');
+player.save(function(){
+  alert('new post saved successfully!');
+}, function(status){
+  alert('error while saving!');
+});
 ```
 
 
