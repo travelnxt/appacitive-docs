@@ -30,7 +30,7 @@
             $("li.level-2 ul.level-3").not($("[href='#" + preId + "']").siblings()).slideUp();
             currentId = cid;
         });
-        if (reCal) $("ul.level-1 li.level-1:first-child a").addClass("active");
+        if (reCal) $("ul.level-1 li.level-1:first-child > a:first-child").addClass("active");
         reCal = false;
     };
 
