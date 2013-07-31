@@ -11,12 +11,13 @@ The request and response format of the API is always <a href="http://en.wikipedi
 Endpoints
 ------------
 
-All the features available on the Appacitive platform are available via <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">REST</a> apis over HTTPS. 
-These apis follow simple conventions and can be consumed by any rest client of your choice.
-<a href="http://en.wikipedia.org/wiki/Cross-origin_resource_sharing">Cross-origin resource sharing (CORS)</a> is 
-also enabled on the rest apis to makek them easy to consume from web based applications. 
+All appacitive apis are available over HTTPS at ``https://apis.appacitive.com/``.
+A quick summary of the different urls is detailed below.
 
-The request and response format of the API is always <a href="http://en.wikipedia.org/wiki/JSON">json</a>. Standard error structures in the response will indicate success or failure for any given api request. You can find details of the same in the <a href="http://appacitive-docs.dev/index.html#errors">api conventions</a>.
+* **Articles** : <i>https://apis.appacitive.com/article/{type}/</i>
+* **Connection** : <i>https://apis.appacitive.com/connection/{type}/</i>
+* **User** : <i>https://apis.appacitive.com/user/</i>
+* **Device** : <i>https://apis.appacitive.com/device/</i>
 
 Request format
 ------------
@@ -32,7 +33,7 @@ api.
 * **``appacitive-usersession`` (optional)** : User session token
 
 ```nolang
-<span class="h3">Sample html with h3 size</span><i>Libraries are <a href="https://stripe.com/docs/libraries">available in several languages</a></i>
+<span class="h3">Sample html with h3 size</span><i>Libraries are <a href="http://help.appacitive.com">available in several languages</a></i>
 Some html content on a New line
 ```
 
@@ -70,13 +71,7 @@ The json structure of the status object is shown.
 Errors
 ------------
 
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero. Vivamus malesuada purus eget neque hendrerit dignissim. Suspendisse dignissim sem vitae erat ultrices aliquet. Donec vulputate urna metus, non volutpat ipsum laoreet at. Mauris diam lacus, suscipit consequat lobortis interdum, vulputate ac leo. Praesent quis iaculis mi. Maecenas nec molestie ligula, a tincidunt orci. Proin et nulla diam.
-
-```nolang
-<span class="h3">Sample html with h3 size</span><i>Libraries are <a href="https://stripe.com/docs/libraries">available in several languages</a></i>
-Some html content on a New line
-```
-
+The api always returns a ``2xx`` code in the status object incase the api call was successful. A non ``2xx`` status code is used to indicate a failure. Certain conventions are followed for indicative purposes to hint the cause of the failure. A ``4xx`` error code is used to indicate validation and client errors. Validation failures would also include specifics in the additional messages.
 
 Authentication
 ------------
@@ -105,9 +100,77 @@ App.Initialize(Net45.WindowsHost.Instance,
                    "{Your api key}", 
                     Environment.Live);
 ```
+``` rest
+// The header information includes the api key and the environment (sandbox in this example)
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+https://apis.appacitive.com/article/device/find/all
+```
 
+Article
+=======
+Articles represent your data stored inside the Appacitive platform. Every article has a dedicated type mapped to the schema that you create using the designer available in your management console. If we were to use conventional databases as a metaphor, then a schema can be used to represent a table and an article would correspond to one row inside that table.
 
+The article api allows you to store, retreive and manage all the data that you store inside appacitive. You can retreive individual records or lists of records based on a specific filter criteria.
 
+Article object
+------------
+
+** System generated attributes ** 
+
+* **``__id``** : Unique time-series <a href="http://en.wikipedia.org/wiki/Monotonic_function">monotonic</a> id automatically assigned by the system on creation. This is immutable. 
+* **``__schematype``** : The type of the article as per the schema structure designed by you via the schema designer.
+* **``__createdby``** : The id of the user that created the article. Incase a user token is provided during creation, then the created by will use the id of the corresponding user. The client can alternatively also provide this in the request.
+* **``__lastmodifiedby``** : The id of the user that last updated the article. The id of the user that updated the article. Incase a user token is provided during creation, then the created by will use the id of the corresponding user. The client can alternatively also provide this in the request.
+* **``__revision``** : The revision number of the article. This is incremented on every update and is used to provide <a href="http://en.wikipedia.org/wiki/Multiversion_concurrency_control">multi version concurrency control</a> incase of concurrent updates on the same article.
+* **``__tags``** : This is an array of strings that you can use to "tag" specific articles. These tags can be used to search specific articles.
+* **``__utcdatecreated``** : The timestamp of the time when the article was created, stored in ISO 8601 format with millisecond precision (YYYY-MM-DDTHH:MM:SS.MMMZ).
+* **``__utclastupdateddate``** : The timestamp of the time when the article was last updated, stored in ISO 8601 format with millisecond precision (YYYY-MM-DDTHH:MM:SS.MMMZ).
+* **``__attributes``** : List of key value pair values that can be stored with the article and are not validated by the schema definition.
+
+``` rest 
+    {
+      // system properties
+      "__id": "24208366452736268",
+      "__schematype": "score",
+      "__createdby": "42241231222736268",
+      "__lastmodifiedby": "42241231222736268",
+      "__revision": "2",
+      "__tags": [],
+      "__utcdatecreated": "2013-04-25T05:01:37.0000000Z",
+      "__utclastupdateddate": "2013-04-25T05:02:01.0000000Z",
+
+      // user defined properties 
+      "difficulty": "normal",
+      "score": "1400",
+      "level": "10",
+      
+      // attributes
+      "__attributes": {
+        "is_first_time_user" : "true",
+        "has_verified" : "false"
+      }
+    }
+```
+
+``` csharp 
+    Article score = new Article("score");
+    score.Set<string>("difficulty", "normal");
+    score.Set<int>("level", 10);
+    score.Set<long>("score", 1400);
+    score.SetAttribute("is_first_time_user", "true");
+    score.SetAttribute("has_verified", "false");
+```
+
+``` javascript
+var score = new Appacitive.Article({ schema: 'score' });
+score.set('difficulty', 'normal');
+score.set('level', 10);
+score.set('score', 1400);
+score.attr('is_first_time_user', 'true');
+score.attr('has_verified', 'false');
+```
 
 Appacitive SDK
 =======
@@ -142,6 +205,25 @@ Article
 ------------
 
 Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero. Vivamus malesuada purus eget neque hendrerit dignissim. Suspendisse dignissim sem vitae erat ultrices aliquet. Donec vulputate urna metus, non volutpat ipsum laoreet at. Mauris diam lacus, suscipit consequat lobortis interdum, vulputate ac leo. Praesent quis iaculis mi. Maecenas nec molestie ligula, a tincidunt orci. Proin et nulla diam.
+
+
+``` javascript
+Appacitive.initialize({ 
+    apikey: '{Your api key}' /* required */, 
+    env: 'live' /* environment live or sandbox, default is live */ 
+});
+```
+``` csharp
+//For Windows Phone 7 base app
+App.Initialize(WindowsPhone7.WP7.Instance, 
+                   "{Your api key}", 
+                    Environment.Live);
+
+//For Windows app
+App.Initialize(Net45.WindowsHost.Instance, 
+                   "{Your api key}", 
+                    Environment.Live);
+```
 
 ### Create
 
