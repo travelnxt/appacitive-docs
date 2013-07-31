@@ -138,6 +138,20 @@
         $(".content-root").css("padding-bottom", $(window).height() - 200);
     });
 
+    $(document).on('flatdoc:ready', function () {
+        function switch_style(title) {
+            var i, links = document.getElementsByTagName("link");
+            for (i = 0; i < links.length ; i++) {
+                if ((links[i].rel.indexOf("stylesheet") != -1) && links[i].title) {
+                    links[i].disabled = true;
+                    if (links[i].title == title) {
+                        links[i].disabled = false;
+                    }
+                }
+            }
+        }
+    });
+
     /*
      * Anchor jump links.
      */

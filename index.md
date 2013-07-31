@@ -241,13 +241,22 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus q
 Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero. Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero. 
 
 ``` javascript
-/*Creating a new article*/
-var player = new Appacitive.Article({ schema: 'player' });
-player.set('age', 23);
-player.save(function(){
-  alert('saved successfully!');
-}, function(status){
-  alert('error while saving!');
+//`review` is relation name, 
+//`reviewer` and `hotel` are endpoint A and B labels
+var connection = new Appacitive.Connection({
+                  relation: 'review',
+                  endpoints: [{
+                      articleid: '123445678',
+                      label: 'reviewer'
+                  }, {
+                      articleid: '987654321',
+                      label: 'hotel'
+                  }]                
+              });
+connection.save(function () {
+    alert('saved successfully!');
+}, function (status) {
+    alert('error while saving!');
 });
 ```
 ``` csharp
