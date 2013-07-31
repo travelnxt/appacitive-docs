@@ -173,7 +173,12 @@ Also includes:
       $content.find('h1, h2, h3').each(function () {
           var $el = $(this);
           var text = $el.text();
-          if ($el.is('h3')) text = $el.prevAll("h2:first").html() + "-" + text;
+
+          if ($el.is('h2'))
+              text = $el.prevAll("h1:first").html() + "_" + text;
+
+          if ($el.is('h3'))
+              text = $el.prevAll("h1:first").html() + "_" + $el.prevAll("h2:first").html() + "_" + text;
           var id = slugify(text);
           $el.attr('id', id);
       });
@@ -381,7 +386,7 @@ Also includes:
   }
 
   function slugify(text) {
-    return text.toLowerCase().match(/[a-z0-9]+/g).join('-');
+    return text.toLowerCase().match(/[a-z0-9_]+/g).join('-');
   }
 })(jQuery);
 /*!
@@ -1191,7 +1196,8 @@ Parser.prototype.parse = function(src) {
         }
         out += this.tok();
       } else {
-        block += this.tok();
+          block += this.tok();
+          started = true;
       }
     }
   }

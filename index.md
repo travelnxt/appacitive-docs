@@ -172,6 +172,7 @@ score.attr('is_first_time_user', 'true');
 score.attr('has_verified', 'false');
 ```
 
+
 Appacitive SDK
 =======
 
