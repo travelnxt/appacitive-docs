@@ -38,10 +38,12 @@
 
     $document.on('flatdoc:ready', function () {
         var that = this;
-        var cName = "appacitive-docs-selected-lang";
-        var storeCookie = function (lang) {
+        var cLangName = "appacitive-docs-selected-lang";
+        var cThemeName = "appacitive-docs-selected-theme";
+
+        var storeCookie = function (cName, value) {
             if (!lang) return;
-            document.cookie = cName + "=" + lang + ";";
+            document.cookie = cName + "=" + value + ";";
         };
         var readCookie = function (name) {
             var nameEQ = name + "=";
@@ -67,12 +69,12 @@
         }
 
         //language selection
-        $(".language a").unbind("click").click(function (e) {
+        $(".nav-pills a").unbind("click").click(function (e) {
             var $that = $(this);
 
             //handle active tab
             if ($that.parent().hasClass("active")) return;
-            $(".language li").removeClass("active");
+            $(".nav-pills li").removeClass("active");
             $that.parent().addClass("active");
 
             $(".lang").hide();
@@ -82,11 +84,49 @@
             setTimeout(function () {
                 alignScroll();
             }, 50);
-            storeCookie(selected);
+            storeCookie(cLangName, selected);
         });
-        var lang = readCookie(cName);
+        var lang = readCookie(cLangName);
         if (!lang) $(".language a:first").trigger("click");
         $("*[data-lang='" + lang + "']").trigger("click");
+
+        //Switch theme
+        var switchStyle = function (title) {
+            var i, links = document.getElementsByTagName("link");
+            for (i = 0; i < links.length ; i++) {
+                if ((links[i].rel.indexOf("stylesheet") != -1) && links[i].title) {
+                    links[i].disabled = true;
+                    if (links[i].title == title) {
+                        links[i].disabled = false;
+                        storeCookie(cThemeName, title);
+                    }
+                }
+            }
+        }
+        //theme switch anchors
+        $(".theme-switch a").unbind("click").click(function () {
+            switchStyle($(this).data("theme"));
+        });
+        var theme = readCookie(cThemeName);
+        if (!theme) $(".theme-switch a:first").trigger("click");
+        $("*[data-theme='" + theme + "']").trigger("click");
+        //align the theme switch control
+        $(window).on('resize', function () {
+            setTimeout(function () {
+                var winWidth = $(window).width();
+                var delta = 55;
+                //Big desktop
+                var left = winWidth - ($(".menubar").width() + $(".content-wrapper").width() + delta);
+                //Tablet
+                if (winWidth < 1180 && winWidth > 780) {
+                    left = winWidth - ($(".menubar").width() + delta);
+                }
+                //Mobile
+                if (winWidth <= 780)
+                    left = winWidth - (delta) + 12;
+                $(".theme-switch").css("left", left);
+            }, 100);
+        });
 
         //authenticated user handling
         this.SESSION_COOKIE_NAME = '__app_session';
@@ -140,23 +180,9 @@
         $(".content-root").css("padding-bottom", $(window).height() - 200);
     });
 
-    $(document).on('flatdoc:ready', function () {
-        function switch_style(title) {
-            var i, links = document.getElementsByTagName("link");
-            for (i = 0; i < links.length ; i++) {
-                if ((links[i].rel.indexOf("stylesheet") != -1) && links[i].title) {
-                    links[i].disabled = true;
-                    if (links[i].title == title) {
-                        links[i].disabled = false;
-                    }
-                }
-            }
-        }
-    });
-
     /*
-     * Anchor jump links.
-     */
+    * Anchor jump links.
+    */
 
     $document.on('flatdoc:ready', function () {
         $('.menu a').anchorjump();

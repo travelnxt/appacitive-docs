@@ -12,9 +12,8 @@
     <link href="style/bootstrap.min.css" rel="stylesheet" />
     <link href="style/style.css" rel="stylesheet" />
     <link href="style/custom.css" rel="stylesheet" />
-    <link href="style/theme/white/theme.css" rel="stylesheet" />
-
-    <!--<link href="style/theme/black/theme.css" rel="stylesheet" />-->
+    <link href="style/theme/white/theme.css" rel="stylesheet" title="white"/>
+    <link href="style/theme/black/theme.css" rel="stylesheet" title="black"/>
 
     <!-- Flatdoc -->
     <script src="scripts/infra/jquery1.9.1.js"></script>
@@ -73,13 +72,19 @@
             <div class='menu section' role='flatdoc-menu'></div>
         </div>
         <div class="language">
-            <ul class="nav nav-pills">
-                <li><a data-lang="rest">Curl</a></li>
-                <li><a data-lang="javascript">javascript</a></li>
-                <li><a data-lang="csharp">.Net</a></li>
-                <li><a data-lang="ios">iOS</a></li>
-                <li><a data-lang="android">Android</a></li>
-            </ul>
+            <div class="toolbar">
+                <ul class="nav nav-pills">
+                    <li><a data-lang="rest">Curl</a></li>
+                    <li><a data-lang="javascript">javascript</a></li>
+                    <li><a data-lang="csharp">.Net</a></li>
+                    <li><a data-lang="ios">iOS</a></li>
+                    <li><a data-lang="android">Android</a></li>
+                </ul>
+                <div class="theme-switch">
+                    <a class="theme theme-white" data-theme="white" title="Switch to White theme"></a>
+                    <a class="theme theme-black" data-theme="black" title="Switch to Black theme"></a>
+                </div>
+            </div>
         </div>
         <div role='flatdoc-content' class='content'></div>
     </div>

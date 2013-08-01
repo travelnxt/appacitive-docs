@@ -2,6 +2,8 @@
 .copyright { position: absolute; right: 12px; font-size: 0.85em; bottom: 1px; }
 .logo { background: url(https://portal.appacitive.com/styles/images/logo.png); display: block; width: 206px; height: 45px; }
 .content-root { margin-top: 0px; }
+
+.toolbar { position: relative; }
 .language { position: absolute; z-index: 100; background-color: #DCDCDC; width: 100%; top: 0px; }
 	.language.fixed { position: fixed; overflow-y: auto; top: 0px; }
 	.language .nav { margin-bottom: 0px; }
@@ -16,6 +18,13 @@ ul.level-3 { display: none; }
 	.lang-nolang .h2 { font-size: 1.4em; padding-bottom: 12px; }
 	.lang-nolang .h3 { font-size: 1.3em; padding-bottom: 8px; }
 	.lang-nolang .h4 { font-size: 1.1em; padding-bottom: 5px; }
+
+.theme-switch { position: absolute; left: 100%; }
+	.theme-switch a:first-child { margin-right: 10px; }
+.theme { display: inline-block; cursor: pointer; box-shadow: 1px 1px 1px #aaa; }
+.theme-black { background-color: #15191D; }
+.theme-white { background-color: #F5F5F5; }
+
 
 @media (max-width: 1180px) /* Small desktop */ {
 	.language { box-shadow: -1px 2px 6px rgba(38, 39, 43, 0.53); }
@@ -54,5 +63,3 @@ ul.top_links_user { padding: 0; width: auto; margin-top: 5px; margin-left: 0; }
 	.app-list ul li a { padding: 7px 20px 7px 16px; }
 .nav-separator { padding: 0px; margin: 0px; border-top: solid 1px #B5B5B5; display: block; }
 .top_user_drop_menu.appList .nav-separator:first-child, .top_user_drop_menu.appList .nav-separator:last-child { border: solid 1px #737373; }
-
-.theme-toggle { height: 30px; background-color: red; display: block; }
