@@ -33,7 +33,7 @@ api.
 * **``appacitive-usersession`` (optional)** : User session token
 
 ```nolang
-<span class="h3">Sample html with h3 size</span><i>Libraries are <a href="http://help.appacitive.com">available in several languages</a></i>
+<span class="h3">Sample html with h3 size</span><br/><i>Libraries are <a href="http://help.appacitive.com">available in several languages</a></i>
 Some html content on a New line
 ```
 
@@ -182,7 +182,7 @@ Create a new article
 Creates a new article of a specific type.
 
 ```nolang
-<span class="h4">METHOD</span>
+<span class="h5">METHOD</span>
 ```
 ``` rest
 PUT https://apis.appacitive.com/article/{type}
