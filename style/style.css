@@ -323,7 +323,7 @@ a.big.button { display: block; -webkit-box-sizing: border-box; -moz-box-sizing: 
 		.menubar.fixed { position: fixed; overflow-y: auto; }
 		.menubar.fixed { -webkit-overflow-scrolling: touch; }
 			.menubar.fixed::-webkit-scrollbar { width: 15px; height: 15px; }
-			.menubar.fixed::-webkit-scrollbar-thumb { background: #ddd; -webkit-border-radius: 8px; border-radius: 8px; border: solid 3px #f3f6fb; }
+			.menubar.fixed::-webkit-scrollbar-thumb { background: #ddd; -webkit-border-radius: 8px; border-radius: 8px; border: solid 4px #dfdfdf; }
 			.menubar.fixed:hover::-webkit-scrollbar-thumb { background: #999; -webkit-box-shadow: inset 2px 2px 3px rgba(0,0,0,0.2); box-shadow: inset 2px 2px 3px rgba(0,0,0,0.2); }
 }
 
