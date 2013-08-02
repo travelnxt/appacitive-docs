@@ -53,8 +53,8 @@ The json structure of the status object is shown.
 
 **Note**: The http status code for the response will always be returned as ``200``.
 
-```nolang
-<span class="h3">Status object</span>
+``` param-status-object
+//Status object
 ```
 ```nolang-rest
 {
