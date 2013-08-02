@@ -25,15 +25,18 @@
             }
             if ($("[href='#" + cid + "']").hasClass("level-3") && $("[href='#" + cid + "']").closest("ul").is(":visible") == false) {
                 $("[href='#" + cid + "']").closest("ul").slideDown();
-                preId = $("[href='#" + cid + "']").closest("ul").parent().children("a").html().toLowerCase();
+                preId = $("[href='#" + cid + "']").closest("ul").parent().children("a").attr("href").replace("#","");
             }
             $("li.level-2 ul.level-3").not($("[href='#" + preId + "']").siblings()).slideUp();
+            console.log(preId)
             currentId = cid;
         });
-        setTimeout(function () {
-            if (reCal && $("ul.level-1 .active").length == 0) $("ul.level-1 li.level-1:first-child > a:first-child").addClass("active");
-            reCal = false;
-        }, 1000);
+        if (reCal) {
+            setTimeout(function () {
+                if ($("ul.level-1 .active").length == 0) $("ul.level-1 li.level-1:first-child > a:first-child").addClass("active");
+                reCal = false;
+            }, 1000);
+        }
     };
 
     $document.on('flatdoc:ready', function () {
