@@ -117,25 +117,25 @@
                 var isBig = true;
                 var delta = 55;
                 //Big desktop
-                var left = winWidth - ($(".menubar").width() + $(".content-wrapper").width() + delta);
+                var rightWidth = winWidth - ($(".menubar").width() + $(".content-wrapper").width());
                 //Tablet
                 if (winWidth < 1180 && winWidth > 780) {
-                    left = winWidth - ($(".menubar").width() + delta);
+                    rightWidth = winWidth - ($(".menubar").width());
                     isBig = false;
                 }
                 //Mobile
                 if (winWidth <= 780) {
-                    left = winWidth - (delta) + 12;
+                    rightWidth = winWidth + 12;
                     isBig = false;
                 }
                 if (isBig) {
-                    $(".content > pre").css("width", left + 50);
+                    $(".content > pre").css("width", rightWidth);
                 }
                 else {
                     $(".content > pre").css("width", "auto");
+                    $("pre[class*='lang-param']").next(".lang").children().css("border-top", "none");
                 }
-                $(".theme-switch").css("left", left);
-                $(".language").css("width", left + 56);
+                $(".language").css("width", rightWidth);
             }, 100);
         });
 

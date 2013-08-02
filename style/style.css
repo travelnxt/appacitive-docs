@@ -177,7 +177,6 @@ body:not(.big-h3) .content h3 { font-size: 0.9em; }
 }
 
 @media (max-width: 480px) /* Mobile */ {
-	.theme-switch { top: 6px; }
 	.theme { padding: 6px; }
 	.content { padding: 20px; padding-top: 40px; }
 		.content h4,
@@ -197,7 +196,7 @@ body.no-literate .content pre > code { -webkit-overflow-scrolling: touch; }
 }
 
 @media (max-width: 1180px) /* Small desktop */ {
-	.theme-switch { top: 6px; }
+	.theme-switch { top: 6px; right: 16px; }
 	.theme { padding: 6px; }
 	.language ul li a { margin: 6px 3px 5px; padding: 3px 6px; }
 	.language .nav li:first-child a { margin-left: 20px; }
@@ -221,7 +220,7 @@ body.no-literate .content pre > code { -webkit-overflow-scrolling: touch; }
 
 @media (min-width: 1180px) /* Big desktop */ {
 	.language ul li a { margin: 9px 5px 8px; padding: 3px 8px; }
-	.theme-switch { top: 9px; }
+	.theme-switch { top: 9px; right: 12px; }
 	.theme { padding: 7px; }
 	body:not(.no-literate) .content { padding-left: 0; padding-right: 0; max-width: none; }
 		body:not(.no-literate) .content > .content-wrapper,
