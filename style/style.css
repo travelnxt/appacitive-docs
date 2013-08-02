@@ -103,7 +103,7 @@ body, td, textarea, input { font-family: 'Lato', sans-serif; line-height: 1.7; f
 .content ol > li { list-style-type: decimal; }
 .content ul,
 .content ol { margin-left: 4px; }
-	.content ul > li { list-style-type: circle; list-style-position: inside; position: relative; }
+	.content ul > li { list-style-type: circle; list-style-position: outside; position: relative; }
 .content li > :first-child { padding-top: 0; }
 .content strong,
 .content b { font-weight: bold; }
