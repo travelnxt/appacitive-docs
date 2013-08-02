@@ -6,7 +6,7 @@
 	.lang-nolang i { color: #222; }
 
 @media (max-width: 1180px) /* Small desktop */ {
-	.content pre > code { background: #F5F5F5; border: solid 1px #e7eaee; border-top: solid 1px #dbdde2; border-left: solid 1px #e2e5e9; display: block; padding: 10px; -webkit-border-radius: 2px; border-radius: 2px; overflow: auto; }
+	.content pre > code { background: #F5F5F5; border: solid 1px #e7eaee; border-top: solid 1px #dbdde2; border-left: solid 1px #e2e5e9; }	
 		.content pre > code::-webkit-scrollbar { width: 15px; height: 15px; }
 		.content pre > code::-webkit-scrollbar-thumb { background: #ddd; -webkit-border-radius: 8px; border-radius: 8px; border: solid 4px #f3f6fb; }
 		.content pre > code:hover::-webkit-scrollbar-thumb { background: #999; -webkit-box-shadow: inset 2px 2px 3px rgba(0,0,0,0.2); box-shadow: inset 2px 2px 3px rgba(0,0,0,0.2); }

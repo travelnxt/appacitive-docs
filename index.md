@@ -181,8 +181,8 @@ Create a new article
 
 Creates a new article of a specific type.
 
-```nolang
-<span class="h5">METHOD</span>
+``` param-method
+//Method
 ```
 ``` rest
 PUT https://apis.appacitive.com/article/{type}
@@ -194,17 +194,16 @@ Appacitive.SDK.Article.SaveAsync()
 Appacitive.Article.save()
 ```
 
-```nolang
-<span class="h4">SAMPLE REQUEST</span>
+``` param-sample-request
+//Sample Request
 ```
 ``` rest
-// Create an article of type score
+//Create an article of type score
 curl -X PUT \
 -H "Appacitive-Apikey: aY+tExrAJi9K+oorsVq5d3UT/HMi1wAYSEI04qvJwHA=" \
 -H "Appacitive-Environment: sandbox" \
 -H "Content-Type: application/json" \
--d '{ "title" : "test", "text" : "This is a test post.",
-"__attributes" : { "has_verified" : "false" }}' \
+-d '{ "title" : "test", "text" : "This is a test post.", "__attributes" : { "has_verified" : "false" }}' \
 https://apis.appacitive.com/article/post
 ```
 ``` csharp
@@ -224,8 +223,8 @@ player.save(function(){
   alert('error while saving!');
 });
 ```
-```nolang
-<span class="h4">SAMPLE RESPONSE</span>
+``` param-sample-response
+//Sample Response
 ```
 ``` rest
 {

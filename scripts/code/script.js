@@ -114,17 +114,28 @@
         $(window).on('resize', function () {
             setTimeout(function () {
                 var winWidth = $(window).width();
+                var isBig = true;
                 var delta = 55;
                 //Big desktop
                 var left = winWidth - ($(".menubar").width() + $(".content-wrapper").width() + delta);
                 //Tablet
                 if (winWidth < 1180 && winWidth > 780) {
                     left = winWidth - ($(".menubar").width() + delta);
+                    isBig = false;
                 }
                 //Mobile
-                if (winWidth <= 780)
+                if (winWidth <= 780) {
                     left = winWidth - (delta) + 12;
+                    isBig = false;
+                }
+                if (isBig) {
+                    $(".content > pre").css("width", left + 50);
+                }
+                else {
+                    $(".content > pre").css("width", "auto");
+                }
                 $(".theme-switch").css("left", left);
+                $(".language").css("width", left + 56);
             }, 100);
         });
 

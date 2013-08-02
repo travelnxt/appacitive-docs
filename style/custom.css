@@ -12,12 +12,20 @@
 	.language ul > .active > a, .language ul > .active > a:hover { background-color: #00B2F3 !important; text-decoration: none; cursor: default; /* box-shadow: rgba(181, 184, 247, 0.34) 0 1px 0,#15191C 0 1px 0 inset,#15191D 0 -1px 0 inset; */ color: #fff; border-radius: 0px; }
 ul.level-3 { display: none; }
 .lang-nolang-rest { padding-top: 0px; margin-top: -4px; }
-.lang-nolang-rest, .lang-nolang { display: block !important; font-family: 'Lato' sans-serif !important; font-size: 0.95em !important; min-height: 24px; }
+pre[class*='-param-'], .lang-nolang-rest, .lang-nolang { display: block !important; font-family: 'Lato' sans-serif !important; }
+
+pre[class*='-param-'] { padding-top: 15px !important; }
+.lang-param-method { margin-top: -5px !important; }
+pre[class*='-param-'] code { word-spacing: 0.1em; margin-bottom: -14px; text-shadow: 0 1px 0 rgba(10, 10, 10, 0.23); font-weight: 300 !important; color: #808080; text-transform: uppercase; }
+
+
+.lang-nolang-rest, .lang-nolang { font-size: 0.95em !important; min-height: 24px; }
 	.lang-nolang .h1, .lang-nolang .h2, .lang-nolang .h3, .lang-nolang .h4 { display: inline-block; color: #222; }
 	.lang-nolang .h1 { font-size: 1.5em; padding-bottom: 15px; }
 	.lang-nolang .h2 { font-size: 1.4em; padding-bottom: 12px; }
 	.lang-nolang .h3 { font-size: 1.3em; padding-bottom: 8px; }
 	.lang-nolang .h4 { font-size: 1.1em; padding-bottom: 5px; }
+
 
 .theme-switch { position: absolute; left: 100%; }
 	.theme-switch a:first-child { margin-right: 10px; }
