@@ -133,7 +133,7 @@
                 }
                 else {
                     $(".content > pre").css("width", "auto");
-                    $("pre[class*='lang-param']").next(".lang").children().css("border-top", "none");
+                    $("pre[class*='lang-param']").nextUntil("h1").not("pre[class*='lang-param']").children().css("border-top", "none");
                 }
                 $(".language").css("width", rightWidth);
             }, 100);

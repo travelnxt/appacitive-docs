@@ -36,7 +36,7 @@ pre[class*='-param-'] code { word-spacing: 0.1em; margin-bottom: -14px; text-sha
 
 @media (max-width: 1180px) /* Small desktop */ {
 	.language { box-shadow: -1px 2px 6px rgba(38, 39, 43, 0.53); }
-	pre[class*='-param-'] code { border-bottom: none !important; margin-bottom: -28px;}
+	pre[class*='-param-'] code { border-bottom: none !important; margin-bottom: -35px;}
 }
 
 @media (min-width: 1180px) /* Big desktop */ {

@@ -119,7 +119,7 @@ Also includes:
 
         return { title: title, content: html, menu: menu };
     };
-
+    
     Parser.setMarkedOptions = function () {
         marked.setOptions({
             highlight: function (code, lang) {
