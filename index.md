@@ -133,6 +133,9 @@ Article object
 
 User defined properties are fields defined by you via the schema designer. These are exposed as fields directly on the article object.
 
+``` param-sample-object
+//Sample
+```
 ``` rest 
 {
   // system properties
