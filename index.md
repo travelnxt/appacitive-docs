@@ -53,8 +53,8 @@ The json structure of the status object is shown.
 
 **Note**: The http status code for the response will always be returned as ``200``.
 
-```nolang
-<span class="h3">Status object</span>
+``` param-status-object
+//Status object
 ```
 ```nolang-rest
 {
@@ -133,6 +133,9 @@ Article object
 
 User defined properties are fields defined by you via the schema designer. These are exposed as fields directly on the article object.
 
+``` param-sample-object
+//Sample
+```
 ``` rest 
 {
   // system properties

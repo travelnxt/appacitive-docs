@@ -28,7 +28,6 @@
                 preId = $("[href='#" + cid + "']").closest("ul").parent().children("a").attr("href").replace("#","");
             }
             $("li.level-2 ul.level-3").not($("[href='#" + preId + "']").siblings()).slideUp();
-            console.log(preId)
             currentId = cid;
         });
         if (reCal) {
