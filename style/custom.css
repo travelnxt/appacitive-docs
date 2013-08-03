@@ -76,29 +76,27 @@ ul.top_links_user { padding: 0; width: auto; margin-top: 5px; margin-left: 0; }
 
 
 /********Table Css for markdown ************/
-table { -moz-box-shadow: 0 0 14px rgba(0, 0, 0, 0.15); border-collapse: collapse; border-spacing: 0; font-family: Menlo,Monaco,Consolas,"Courier New",monospace; display: table; }
+table { -moz-box-shadow: 0 0 14px rgba(0, 0, 0, 0.15); border-collapse: collapse; border-spacing: 0; display: table; }
 
-	table th,
-	table td { padding: 3px 5px; line-height: 20px; text-align: left; vertical-align: top; border-top: 1px solid #dddddd; font-size: 13px; }
-	table th { font-weight: bold; background-color: #bbb; }
+	table th strong,
+	table td { padding: 4px 6px; line-height: 22px; vertical-align: top; border-top: 1px solid #dddddd; font-size: 0.9em; }
+	table th strong { line-height: 24px; border-top: none; }
+	table th { font-weight: bold; background-color: #CFCECE; }
 	table thead th { vertical-align: bottom; }
-	table caption + thead tr:first-child th,
-	table caption + thead tr:first-child td,
-	table colgroup + thead tr:first-child th,
-	table colgroup + thead tr:first-child td,
-	table thead:first-child tr:first-child th,
-	table thead:first-child tr:first-child td { border-top: 0; }
 	table tbody + tbody { border-top: 2px solid #dddddd; }
-table { width: 100%; border: 1px solid #dddddd; border-collapse: separate; *border-collapse: collapse; border-left: 0; }
+table { width: 100%; border: 1px solid #dddddd; border-collapse: separate; *border-collapse: collapse; border-left: 0; padding: 0px !important; margin: 10px 0; }
 	table th,
 	table td { border-left: 1px solid #dddddd; }
 	table caption + thead tr:first-child th,
+	table caption + thead tr:first-child td,
 	table caption + tbody tr:first-child th,
 	table caption + tbody tr:first-child td,
 	table colgroup + thead tr:first-child th,
 	table colgroup + tbody tr:first-child th,
 	table colgroup + tbody tr:first-child td,
+	table colgroup + thead tr:first-child td,
+	table thead:first-child tr:first-child td,
 	table thead:first-child tr:first-child th,
-	table tbody:first-child tr:first-child th,
-	table tbody:first-child tr:first-child td { border-top: 0; }
+	table tbody tr:first-child th,
+	table tbody tr:first-child td { border-top: 0; }
 /*-------------table css ends----------------*/

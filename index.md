@@ -14,10 +14,13 @@ Endpoints
 All appacitive apis are available over HTTPS at ``https://apis.appacitive.com/``.
 A quick summary of the different urls is detailed below.
 
-* **Articles** : <i>https://apis.appacitive.com/article/{type}/</i>
-* **Connection** : <i>https://apis.appacitive.com/connection/{type}/</i>
-* **User** : <i>https://apis.appacitive.com/user/</i>
-* **Device** : <i>https://apis.appacitive.com/device/</i>
+|||
+|:---------------|:------------|
+| **Aricle**     | <i>https://apis.appacitive.com/article/{type}/</i>
+| **Connection** | <i>https://apis.appacitive.com/connection/{type}/</i>
+| **User**       | <i>https://apis.appacitive.com/user/</i>
+| **Device**     | <i>https://apis.appacitive.com/device/</i>
+
 
 Request format
 ------------
