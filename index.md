@@ -53,10 +53,8 @@ The json structure of the status object is shown.
 
 **Note**: The http status code for the response will always be returned as ``200``.
 
-``` param-status-object
-//Status object
-```
 ```nolang-rest
+$$$Status object
 {
 ...,
   "status": {
@@ -133,10 +131,8 @@ Article object
 
 User defined properties are fields defined by you via the schema designer. These are exposed as fields directly on the article object.
 
-``` param-sample-object
-//Sample
-```
-``` rest 
+``` rest
+$$$sample object 
 {
   // system properties
   "__id": "24208366452736268",
@@ -184,23 +180,21 @@ Create a new article
 
 Creates a new article of a specific type.
 
-``` param-method
-//Method
-```
 ``` rest
+$$$Method
 PUT https://apis.appacitive.com/article/{type}
 ```
 ``` csharp
-Appacitive.SDK.Article.SaveAsync()
+$$$Method
+Appacitive.SDK.Article.SaveAsync();
 ```
 ``` javascript
-Appacitive.Article.save()
+$$$Method
+Appacitive.Article.save();
 ```
 
-``` param-sample-request
-//Sample Request
-```
 ``` rest
+$$$Sample Request
 //Create an article of type score
 curl -X PUT \
 -H "Appacitive-Apikey: aY+tExrAJi9K+oorsVq5d3UT/HMi1wAYSEI04qvJwHA=" \
@@ -210,6 +204,7 @@ curl -X PUT \
 https://apis.appacitive.com/article/post
 ```
 ``` csharp
+$$$Sample Request
 var post = new Article("post");
 post.Set<string>("title", "sample post");
 post.Set<string>("text", "This is a sample post.");
@@ -217,6 +212,7 @@ post.SetAttribute("has_verified", "false");
 await post.SaveAsync();
 ```
 ``` javascript
+$$$Sample Request
 var post = new Appacitive.Article({ schema: 'post' });
 player.set('title', 'sample post');
 player.set('text', 'This is a sample post.');
@@ -226,10 +222,8 @@ player.save(function(){
   alert('error while saving!');
 });
 ```
-``` param-sample-response
-//Sample Response
-```
 ``` rest
+$$$Sample Response
 {
   "article": {
     "__id": "33017891581461312",

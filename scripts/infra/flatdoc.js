@@ -119,27 +119,29 @@ Also includes:
 
         return { title: title, content: html, menu: menu };
     };
-    
+
     Parser.setMarkedOptions = function () {
         marked.setOptions({
             highlight: function (code, lang) {
+                var prepend = "";
+                if (code.indexOf("$$$") == 0) {
+                    var split = code.split('\n');
+                    prepend = "<span class='code-title'>" + split.shift(1).replace("$$$", "") + "</span><br/>";
+                    code = split.join('\n');
+                }
                 var hLang = "xml";
                 if (lang) {
-                    if (lang.indexOf("param") == -1) {
-                        switch (lang.toLowerCase()) {
-                            case "csharp": hLang = "cs"; break;
-                            case "ios": hLang = "objectivec"; break;
-                            case "android": hLang = "java"; break;
-                            case "rest":
-                            case "javascript":
-                                hLang = "javascript"; break;
-                            case "nolang": return code + " "; break; //Inline html handling
-                            case "nolang-rest": hLang = "javascript"; break;
-
-                            case "param-method": return "METHOD"; break;
-                        }
-                        return hljs.highlight(hLang, code).value;
-                    } else return lang.replace("param-","").replace(/-/g," ");
+                    switch (lang.toLowerCase()) {
+                        case "csharp": hLang = "cs"; break;
+                        case "ios": hLang = "objectivec"; break;
+                        case "android": hLang = "java"; break;
+                        case "rest":
+                        case "javascript":
+                            hLang = "javascript"; break;
+                        case "nolang": return code + " "; break; //Inline html handling
+                        case "nolang-rest": hLang = "javascript"; break;
+                    }
+                    return prepend + hljs.highlight(hLang, code).value;
                 }
             }
         });

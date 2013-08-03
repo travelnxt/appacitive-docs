@@ -266,7 +266,7 @@ body.no-literate .content pre > code { -webkit-overflow-scrolling: touch; }
 		body:not(.no-literate) .content > h5, body:not(.no-literate) .content > div > h5,
 		body:not(.no-literate) .content > .small-heading, body:not(.no-literate) .content > div > .small-heading,
 		body:not(.big-h3) body:not(.no-literate) .content > h3, body:not(.no-literate) .content > div > h3 { margin-left: 40px; width: 470px; margin-bottom: 3px; padding-left: 0; padding-right: 0; }
-        body:not(.no-literate) .content > table, body:not(.no-literate) .content > div > table { margin: 10px 40px !important;   padding: 0px !important;  width: 470px  !important; }
+		body:not(.no-literate) .content > table, body:not(.no-literate) .content > div > table { margin: 10px 40px !important;   padding: 0px !important;  width: 470px  !important; }
 }
 
 .header { background: #3a3a3a; border-bottom: solid 3px #00b0f0; box-shadow: 0 1px 5px #969696; padding: 6px 15px 2px 24px; zoom: 1; line-height: 20px; position: relative; height: 50px; }
