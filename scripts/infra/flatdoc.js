@@ -1204,7 +1204,41 @@ Also includes:
                     }
                     out += this.tok();
                 } else {
-                    block += this.tok();
+                    var token = this.tok();
+
+                    if (token && token.indexOf('!!!') != -1) {
+                        token = this.token.text;
+                        var split = token.split('\n');
+                        var lang = split.shift(1).replace(/!!!/g, '');
+                        token = $.trim(split.join('\n').replace(/!!!/g, ''));
+                        if (lang) {
+                            lang = $.trim(lang);
+                            var code = this.options.highlight(token, lang);
+                            if (code && code !== token)
+                                token = '<pre'
+                                  + (lang
+                                  ? ' class="'
+                                  + this.options.langPrefix
+                                  + lang
+                                  + '"'
+                                  : '')
+                                  + '><code>'
+                                  + code
+                                  + '</code></pre>\n';
+                            else
+                                token = '<p'
+                                  + (lang
+                                  ? ' class="'
+                                  + this.options.langPrefix
+                                  + lang
+                                  + '"'
+                                  : '')
+                                  + '>'
+                                  + token
+                                  + '</p>\n';
+                        } else token = '<p>' + token + '</p>';
+                    }
+                    block += token;
                     started = true;
                 }
             }

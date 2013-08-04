@@ -56,6 +56,18 @@ The json structure of the status object is shown.
 
 **Note**: The http status code for the response will always be returned as ``200``.
 
+!!! javascript
+Some thing specific to javascript language
+!!!
+
+!!! rest
+Some thing specific to rest language
+!!!
+
+!!! csharp
+var article = new Article("player");
+!!!
+
 ```nolang-rest
 $$$Status object
 {

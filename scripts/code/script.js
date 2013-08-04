@@ -44,7 +44,7 @@
         var cThemeName = "appacitive-docs-selected-theme";
 
         var storeCookie = function (cName, value) {
-            if (!lang) return;
+            if (!value) return;
             document.cookie = cName + "=" + value + ";";
         };
         var readCookie = function (name) {

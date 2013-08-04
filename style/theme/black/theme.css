@@ -6,6 +6,7 @@
 	.lang-nolang i { color: #fff; }
 
 @media (max-width: 1180px) /* Small desktop */ {
+
 	.content pre > code { background: #15191D; border: solid 1px #e7eaee; border-top: solid 1px #dbdde2; border-left: solid 1px #e2e5e9; display: block; padding: 10px; -webkit-border-radius: 2px; border-radius: 2px; overflow: auto; }
 		.content pre > code::-webkit-scrollbar { width: 15px; height: 15px; }
 		.content pre > code::-webkit-scrollbar-thumb { background: #ddd; -webkit-border-radius: 8px; border-radius: 8px; border: solid 4px #15191D; }
@@ -14,6 +15,8 @@
 
 @media (min-width: 1180px) /* Big desktop */ {
 	body:not(.no-literate) .content-root { background-color: #15191D; -webkit-box-shadow: inset 780px 0 #fff, inset 781px 0 #dfe2e7, inset 790px 0 5px -10px rgba(0,0,0,0.1); box-shadow: inset 780px 0 #fff, inset 781px 0 #dfe2e7, inset 790px 0 5px -10px rgba(0,0,0,0.1); }
+	body:not(.no-literate) .content > div > pre > code,
+	body:not(.no-literate) .content > div > pre > code { padding: 10px; background: #15191D; border: solid 1px #e7eaee; border-top: solid 1px #dbdde2; border-left: solid 1px #e2e5e9; display: block; padding: 10px; -webkit-border-radius: 2px; border-radius: 2px; overflow: auto; }
 }
 
 
