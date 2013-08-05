@@ -12,7 +12,7 @@
             $("[href='#" + currentId + "']").trigger("click");
         }
         var preId = null;
-        $("h1,h2, h3").scrollagent({ offset: 200, reCal: reCal }, function (cid, pid, currentElement, previousElement) {
+        $("h1,h2, h3").scrollagent({ offset: 0, reCal: reCal }, function (cid, pid, currentElement, previousElement) {
             if (pid) {
                 $("[href='#" + pid + "']").removeClass('active');
             }
@@ -27,7 +27,7 @@
                 $("[href='#" + cid + "']").closest("ul").slideDown();
                 preId = $("[href='#" + cid + "']").closest("ul").parent().children("a").attr("href").replace("#","");
             }
-            $("li.level-2 ul.level-3").not($("[href='#" + preId + "']").siblings()).slideUp();
+            $("li.level-2 ul.level-3").not($("[href='#" + preId + "']").siblings()).hide();
             currentId = cid;
         });
         if (reCal) {
