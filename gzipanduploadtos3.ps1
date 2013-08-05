@@ -12,7 +12,7 @@ if(Test-Path .git)
 $files = Get-ChildItem -Recurse . -Attributes !Directory
 $otherfiles = New-Object Object
 $otherfiles = @()
-$compressextensions = (".html",".js",".xml",".css")
+$compressextensions = (".html",".js",".xml",".css".".md")
 
 foreach($file in $files)
 {
@@ -54,31 +54,36 @@ foreach($file in $files)
     ".html" 
 	  {
 	    python $s3cmdpath put --no-progress --acl-public --no-preserve --add-header="Cache-Control:public, max-age=$oneday, must-revalidate" --add-header="Content-Encoding:gzip" --mime-type="text/html; charset=utf-8" $file.FullName $s3path
-		break;
+		break
 	  }
 	".js"
       {
         python $s3cmdpath put --no-progress --acl-public --no-preserve --add-header="Cache-Control:public, max-age=$oneweek" --add-header="Content-Encoding:gzip" --mime-type="application/javascript" $file.FullName $s3path
-		break;	  
+		break
 	  }
 	".css"
 	  {
 	    python $s3cmdpath put --no-progress --acl-public --no-preserve --add-header="Cache-Control:public, max-age=$oneweek" --add-header="Content-Encoding:gzip" --mime-type="text/css" $file.FullName $s3path
-		break;	  
+		break  
 	  }
 	".xml"
 	  {
 	    python $s3cmdpath put --no-progress --acl-public --no-preserve --add-header="Cache-Control:public, max-age=$onemonth" --add-header="Content-Encoding:gzip" --mime-type="application/xml" $file.FullName $s3path
-		break;	  
+		break	  
       }
+	".md"
+	  {
+	    python $s3cmdpath put --no-progress --acl-public --no-preserve --add-header="Cache-Control:public, max-age=$oneday" --add-header="Content-Encoding:gzip" --mime-type="text/plain" $file.FullName $s3path
+		break	  
+    }
 	".ps1"
 	  {
-	    break;
+	    break
 	  }
 	default
 	  {
 	    python $s3cmdpath put --no-progress --acl-public --no-preserve --add-header="Cache-Control:public, max-age=$onemonth" $file.FullName $s3path
-		break;	  
+		break	  
        }
 	}
 }
