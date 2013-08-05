@@ -4,7 +4,7 @@ param([string]$s3cmdpath="D:\utils\s3cmd\s3cmd",[string]$s3bucket="helptest.appa
 $files = Get-ChildItem -Recurse . -Attributes !Directory
 $otherfiles = New-Object Object
 $otherfiles = @()
-$compressextensions = (".html",".js",".xml",".css".".md")
+$compressextensions = (".html",".js",".xml",".css",".md")
 
 foreach($file in $files)
 {
