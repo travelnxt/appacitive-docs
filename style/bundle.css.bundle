@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bundle minify="true" runOnBuild="true" output="bundle.css">
+  <!--The order of the <file> elements determines the order of them when bundled.-->
+    <file>/style/style.css</file>
+    <file>/style/custom.css</file>
+</bundle>
