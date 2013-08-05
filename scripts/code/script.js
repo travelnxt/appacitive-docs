@@ -25,7 +25,7 @@
             }
             if ($("[href='#" + cid + "']").hasClass("level-3") && $("[href='#" + cid + "']").closest("ul").is(":visible") == false) {
                 $("[href='#" + cid + "']").closest("ul").slideDown();
-                preId = $("[href='#" + cid + "']").closest("ul").parent().children("a").attr("href").replace("#","");
+                preId = $("[href='#" + cid + "']").closest("ul").parent().children("a").attr("href").replace("#", "");
             }
             $("li.level-2 ul.level-3").not($("[href='#" + preId + "']").siblings()).hide();
             currentId = cid;
@@ -89,8 +89,10 @@
             storeCookie(cLangName, selected);
         });
         var lang = readCookie(cLangName);
-        if (!lang) $(".language a:first").trigger("click");
-        $("*[data-lang='" + lang + "']").trigger("click");
+        $(".language a:first").trigger("click");
+        setTimeout(function () {
+            if (lang) $("*[data-lang='" + lang + "']").trigger("click");
+        }, 1000);
 
         //Switch theme
         var switchStyle = function (title) {
@@ -312,7 +314,7 @@
             // Find the current active section every scroll tick.
             $parent.on('scroll', function () {
                 var y = $parent.scrollTop();
-                y += height * (0.3 + 0.05 * Math.pow(y / range, 2));
+                y += height * (0.3 + 0.7 * Math.pow(y / range, 2));
 
                 var latest = null;
 

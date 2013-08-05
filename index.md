@@ -412,7 +412,7 @@ Appacitive.Article.get({
     id: '123456678809',  //mandatory
     fields: ["name"]     //optional
 }, function(obj) {
-    // artice obj is returned as argument to onsuccess
+    // article obj is returned as argument to onsuccess
     alert('Fetched player with name: ' + obj.get('name')); 
 }, function(err, obj) {
     alert('Could not fetch, probably because of an incorrect id');
@@ -540,6 +540,24 @@ connection.save(function () {
 }, function (status) {
     alert('error while saving!');
 });
+
+//Optionally you can provide the complete article object
+//instead of providing article id, to do so
+var connection = new Appacitive.Connection({
+                  relation: 'review',
+                  endpoints: [{
+                      article: reviewerArticle,
+                      label: 'reviewer'
+                  }, {
+                      article: hotelArticle,
+                      label: 'hotel'
+                  }]                
+              });
+connection.save(function () {
+    alert('saved successfully!');
+}, function (status) {
+    alert('error while saving!');
+});
 ```
 ``` csharp
 //`review` is relation name, 
@@ -557,13 +575,25 @@ await connection .SaveAsync();
 Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero. Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero. 
 
 ``` javascript
-/*Creating a new article*/
-var player = new Appacitive.Article({ schema: 'player' });
-player.set('age', 23);
-player.save(function(){
-  alert('saved successfully!');
-}, function(status){
-  alert('error while saving!');
+//Create an instance of Article 
+var hotelArticle = new Appacitive.Article({ schema: 'hotel' });
+hotelArticle.set('name', 'Caesar Palace');
+//Other hotel properties
+
+var connection = new Appacitive.Connection({
+                  relation: 'review',
+                  endpoints: [{
+                      articleid: '123445678',
+                      label: 'reviewer'
+                  }, {
+                      article: hotelArticle,
+                      label: 'hotel'
+                  }]                
+              });
+connection.save(function () {
+    alert('saved successfully!');
+}, function (status) {
+    alert('error while saving!');
 });
 ```
 ``` csharp
@@ -585,13 +615,24 @@ await connection .SaveAsync();
 Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero. Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero. 
 
 ``` javascript
-/*Creating a new article*/
-var player = new Appacitive.Article({ schema: 'player' });
-player.set('age', 23);
-player.save(function(){
-  alert('saved successfully!');
-}, function(status){
-  alert('error while saving!');
+//Create two new articles which needs to be connected
+var article1= new Appacitive.Article({ schema: 'schema1' });
+var article2 = new Appacitive.Article({ schema: 'schema2' });
+
+var connection = new Appacitive.Connection({
+                  relation: 'review',
+                  endpoints: [{
+                      article: article1,
+                      label: 'labela'
+                  }, {
+                      article: article2,
+                      label: 'labelb'
+                  }]                
+              });
+connection.save(function () {
+    alert('saved successfully!');
+}, function (status) {
+    alert('error while saving!');
 });
 ```
 ``` csharp
@@ -611,19 +652,20 @@ await connection.SaveAsync();
 Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
 
 ``` javascript
-/*Updating the article*/
-var player = new Appacitive.Article({ schema: 'player' });
-player.set('age', 23);
-player.save(function(){
-  alert('saved successfully!');
-  player.set('age', 24);
-  player.save(function(){
-    alert('updated successfully!');
-  }, function(status){
-    alert('error while updating!');
-  });
-}, function(status){
-  alert('error while saving!');
+//Get the connection object and update the description
+Appacitive.Article.get({ 
+    relation: 'review',    //mandatory
+    id: '1234345'          //mandatory
+}, function(obj) {
+    // connection obj is returned as argument to onsuccess
+    obj.set('description','good hotel')
+    obj.save(function(){
+      alert('review connection saved successfully.');
+    }, function(err, obj){
+      alert('Save failed for review connection');
+    });
+}, function(err, obj) {
+    alert('Could not fetch, probably because of an incorrect id');
 });
 ```
 ``` csharp
@@ -642,27 +684,16 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus q
 Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
 
 ``` javascript
-//Retrieve the player
-Appacitive.Article.get({ 
-    schema: 'player',    //mandatory
-    id: '123456678809',  //mandatory
-    fields: ["name"]     //optional
+//Get the connection object and update the description
+Appacitive.Connection.get({ 
+    relation: 'review',    //mandatory
+    id: '1234345'          //mandatory
 }, function(obj) {
-    // artice obj is returned as argument to onsuccess
-    alert('Fetched player with name: ' + obj.get('name')); 
+    // connection obj is returned as argument to onsuccess
+    alert('review connection fetched successfully.');
 }, function(err, obj) {
     alert('Could not fetch, probably because of an incorrect id');
 });
-
-//Retrieve player by `fetch`
-var player = new Appacitive.Article('player');
-player.id('123456678809');
-player.fetch(function(obj) {
-    alert('Fetched player with name: ' + player.get('name'));
-}, function(err, obj) {
-    alert('Could not fetch, probably because of an incorrect id');
-}, ["name", "age"]//optional
-);
 ```
 ``` csharp
 //Single connection by connection id
@@ -674,17 +705,35 @@ var connection1 = await Connections.GetAsync("reivew", "12345");
 Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
 
 ``` javascript
-//`fields` parameter denotes the fields to be returned 
-//in the article object, to avoid increasing the payload
-Appacitive.Article.multiGet({ 
-    schema: 'players', //mandatory
-    ids: ["14696753262625025", "14696753262625026"], //mandatory
-    fields: ["name"] //optional
-}, function(articles) { 
-    // articles is an array of article objects
-}, function(err) {
-    alert("code:" + err.code + "\nmessage:" + err.message);
+//Single connection by endpoint article ids
+Appacitive.Connection.getBetweenArticlesForRelation({ 
+    relation: "review", 
+    articleAId : "22322", 
+    articleBId : "33422"
+}, function(obj){
+    // connection obj is returned as argument to onsuccess
+    alert('Connection fetched successfully');
+}, function(err, obj) {
+    alert('Could not fetch, probably because of an incorrect id');
 });
+
+//For a relation between same schema type and differenct endpoint labels
+//'label' parameter becomes mandatory for the get call
+
+//'friend' is the relation between user schema
+//and 'me' and 'you' are the endpoint labels
+Appacitive.Connection.getBetweenArticlesForRelation({ 
+    relation: "friend", 
+    articleAId : "22322", 
+    articleBId : "33422",
+    label : "me"
+}, function(obj){
+    // connection obj is returned as argument to onsuccess
+    alert('Connection fetched successfully');
+}, function(err, obj) {
+    alert('Could not fetch, probably because of an incorrect id');
+});
+
 ```
 ``` csharp
 //Single connection by endpoint article ids
@@ -696,14 +745,13 @@ var connection2 = await Connections.GetAsync("reivew",
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio.
 
 ``` javascript
-//`fields` parameter denotes the fields to be returned 
-//in the article object, to avoid increasing the payload
-Appacitive.Article.multiGet({ 
-    schema: 'players', //mandatory
-    ids: ["14696753262625025", "14696753262625026"], //mandatory
-    fields: ["name"] //optional
-}, function(articles) { 
-    // articles is an array of article objects
+//Get an instance of Article
+var hotel = new Appacitive.Article({ __id : '123345456', schema : 'hotel');
+var connectionCollection = hotel.getConnectedArticles({ relation : 'review' });
+connectionCollection.fetch(function(){
+  //itirating on the collection
+  connectionCollection.forEach(function (connection) {
+  }
 }, function(err) {
     alert("code:" + err.code + "\nmessage:" + err.message);
 });
@@ -719,18 +767,19 @@ Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae p
 
 ``` javascript
 /*Single Delete*/
-player.del(function(obj) {
+var review = new Appacitive.Connection({relation: 'review', __id : '123123'});
+review.del(function(obj) {
     alert('Deleted successfully');
 }, function(err, obj) {
     alert('Delete failed')
 });
 
 /*Multi Delete*/
-Appacitive.Article.multiDelete({    
-    schema: 'players', //mandatory
+Appacitive.Connection.multiDelete({    
+    relation: 'reivew', //mandatory
     ids: ["14696753262625025", "14696753262625026"], //mandatory
 }, function() { 
-    //successfully deleted all articles
+    //successfully deleted all connections
 }, function(err) {
     alert("code:" + err.code + "\nmessage:" + err.message);
 });
