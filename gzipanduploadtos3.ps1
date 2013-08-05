@@ -1,14 +1,6 @@
 param([string]$s3cmdpath="D:\utils\s3cmd\s3cmd",[string]$s3bucket="helptest.appacitive.com",[string]$indexdoc="index.html")
 
-# 1. Remove .git folder
-if(Test-Path .git)
-{
-	#Remove git folder
-	Write-Host "Removing git folder"
-	Remove-Item -recurse -force .git
-}
-
-# 2. Gzip compress files with extension .html, .js, .xml, .css
+# Gzip compress files with extension .html, .js, .xml, .css
 $files = Get-ChildItem -Recurse . -Attributes !Directory
 $otherfiles = New-Object Object
 $otherfiles = @()
