@@ -139,23 +139,23 @@ Article object
 ** System generated attributes ** 
 
 <dl>
-  <dt>__id</dt>
+  <dt>\__id</dt>
   <dd><span>Unique time-series <a href="http://en.wikipedia.org/wiki/Monotonic_function">monotonic</a> id automatically assigned by the system on creation. This is immutable.</span></dd>
-  <dt>__schematype</dt>
+  <dt>\__schematype</dt>
   <dd><span>The type of the article as per the schema structure designed by you via the schema designer.</span></dd>
-  <dt>__createdby</dt>
+  <dt>\__createdby</dt>
   <dd><span>The id of the user that created the article. Incase a user token is provided during creation, then the created by will use the id of the corresponding user. The client can alternatively also provide this in the request.</span></dd>
-  <dt>__lastmodifiedby</dt>
+  <dt>\__lastmodifiedby</dt>
   <dd><span>The id of the user that last updated the article. The id of the user that updated the article. Incase a user token is provided during creation, then the created by will use the id of the corresponding user. The client can alternatively also provide this in the request.</span></dd>
-  <dt>__revision</dt>
+  <dt>\__revision</dt>
   <dd><span>The revision number of the article. This is incremented on every update and is used to provide <a href="http://en.wikipedia.org/wiki/Multiversion_concurrency_control">multi version concurrency control</a> incase of concurrent updates on the same article.</span></dd>
-  <dt>__tags</dt>
+  <dt>\__tags</dt>
   <dd><span>This is an array of strings that you can use to "tag" specific articles. These tags can be used to search specific articles.</span></dd>
-  <dt>__utcdatecreated</dt>
+  <dt>\__utcdatecreated</dt>
   <dd><span>The timestamp of the time when the article was created, stored in ISO 8601 format with millisecond precision (YYYY-MM-DDTHH:MM:SS.MMMZ).</span></dd>
-  <dt>__utclastupdateddate</dt>
+  <dt>\__utclastupdateddate</dt>
   <dd><span>The timestamp of the time when the article was last updated, stored in ISO 8601 format with millisecond precision (YYYY-MM-DDTHH:MM:SS.MMMZ).</span></dd>
-  <dt>__attributes</dt>
+  <dt>\__attributes</dt>
   <dd><span>List of key value pair values that can be stored with the article and are not validated by the schema definition.</span></dd>
 </dl>
 
