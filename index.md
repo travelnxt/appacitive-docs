@@ -29,11 +29,17 @@ The request body for all requests using PUT and POST must be in json format with
 All authentication and contextual information is sent via http headers. The following http headers are currently supported by the
 api.
 
-** Supported http headers **
+** Supported HTTP headers **
 
-* **``appacitive-apikey``** : Api key of the app.
-* **``appacitive-environment``** : Environment to be targetted. Valid values are ``live`` and ``sandbox``.
-* **``appacitive-usersession`` (optional)** : User session token
+<dl>
+  <dt>appacitive-apikey</dt>
+  <dd>required<br/><span>Api key of the app.</span></dd>
+  <dt>appacitive-environment</dt>
+  <dd>required<br/><span>Environment to be targetted. Valid values are ``live`` and ``sandbox``.</span></dd>
+  <dt>appacitive-usersession</dt>
+  <dd>optional<br/><span>User session token</span></dd>
+</dl>
+
 
 ```nolang
 <span class="h3">Sample html with h3 size</span><br/><i>Libraries are <a href="http://help.appacitive.com">available in several languages</a></i>
@@ -49,24 +55,18 @@ The json structure of the status object is shown.
 
 ** Status object attributes **
 
-* **``code``** : ``2xx`` (``200`` or ``201``) incase of success. Incase a resource is created as a side effect of the operation, then the status code returned is ``201``. In case of failure, a non 2xx error code would returned.
-* **``message``**: Error message incase of an api call failure.
-* **``referenceid``**: Unique reference id for the transaction for debugging. This reference id can be provided in issues and escalations.
-* **``additionalmessages``**: Additonal messages incase of a failure.
+<dl>
+  <dt>code</dt>
+  <dd><span>``2xx`` (``200`` or ``201``) incase of success. Incase a resource is created as a side effect of the operation, then the status code returned is ``201``. In case of failure, a non 2xx error code would returned.</span></dd>
+  <dt>message</dt>
+  <dd><span>Error message incase of an api call failure.</span></dd>
+  <dt>referenceid</dt>
+  <dd><span>Unique reference id for the transaction for debugging. This reference id can be provided in issues and escalations.</span></dd>
+  <dt>additionalmessages</dt>
+  <dd><span>Additonal messages incase of a failure.</span></dd>
+</dl>
 
 **Note**: The http status code for the response will always be returned as ``200``.
-
-!!! javascript
-Some thing specific to javascript language
-!!!
-
-!!! rest
-Some thing specific to rest language
-!!!
-
-!!! csharp
-var article = new Article("player");
-!!!
 
 ```nolang-rest
 $$$Status object
@@ -93,8 +93,14 @@ To authenticate your api request you need to specify your application's API key 
 
 In order to pass the api key and environment information for the application use the following headers. 
 
-* **``appacitive-apikey``** : Http header for the api key.
-* **``appacitive-environment``**: Environment to target. Valid values are ``live`` and ``sandbox``.
+** HTTP Headers **
+<dl>
+  <dt>appacitive-apikey</dt>
+  <dd><span>Http header for the api key.</span></dd>
+  <dt>appacitive-environment</dt>
+  <dd><span>Environment to target. Valid values are ``live`` and ``sandbox``</span></dd>
+</dl>
+
 
 ``` javascript
 Appacitive.initialize({ 
@@ -132,15 +138,27 @@ Article object
 
 ** System generated attributes ** 
 
-* **``__id``** : Unique time-series <a href="http://en.wikipedia.org/wiki/Monotonic_function">monotonic</a> id automatically assigned by the system on creation. This is immutable. 
-* **``__schematype``** : The type of the article as per the schema structure designed by you via the schema designer.
-* **``__createdby``** : The id of the user that created the article. Incase a user token is provided during creation, then the created by will use the id of the corresponding user. The client can alternatively also provide this in the request.
-* **``__lastmodifiedby``** : The id of the user that last updated the article. The id of the user that updated the article. Incase a user token is provided during creation, then the created by will use the id of the corresponding user. The client can alternatively also provide this in the request.
-* **``__revision``** : The revision number of the article. This is incremented on every update and is used to provide <a href="http://en.wikipedia.org/wiki/Multiversion_concurrency_control">multi version concurrency control</a> incase of concurrent updates on the same article.
-* **``__tags``** : This is an array of strings that you can use to "tag" specific articles. These tags can be used to search specific articles.
-* **``__utcdatecreated``** : The timestamp of the time when the article was created, stored in ISO 8601 format with millisecond precision (YYYY-MM-DDTHH:MM:SS.MMMZ).
-* **``__utclastupdateddate``** : The timestamp of the time when the article was last updated, stored in ISO 8601 format with millisecond precision (YYYY-MM-DDTHH:MM:SS.MMMZ).
-* **``__attributes``** : List of key value pair values that can be stored with the article and are not validated by the schema definition.
+<dl>
+  <dt>__id</dt>
+  <dd><span>Unique time-series <a href="http://en.wikipedia.org/wiki/Monotonic_function">monotonic</a> id automatically assigned by the system on creation. This is immutable.</span></dd>
+  <dt>__schematype</dt>
+  <dd><span>The type of the article as per the schema structure designed by you via the schema designer.</span></dd>
+  <dt>__createdby</dt>
+  <dd><span>The id of the user that created the article. Incase a user token is provided during creation, then the created by will use the id of the corresponding user. The client can alternatively also provide this in the request.</span></dd>
+  <dt>__lastmodifiedby</dt>
+  <dd><span>The id of the user that last updated the article. The id of the user that updated the article. Incase a user token is provided during creation, then the created by will use the id of the corresponding user. The client can alternatively also provide this in the request.</span></dd>
+  <dt>__revision</dt>
+  <dd><span>The revision number of the article. This is incremented on every update and is used to provide <a href="http://en.wikipedia.org/wiki/Multiversion_concurrency_control">multi version concurrency control</a> incase of concurrent updates on the same article.</span></dd>
+  <dt>__tags</dt>
+  <dd><span>This is an array of strings that you can use to "tag" specific articles. These tags can be used to search specific articles.</span></dd>
+  <dt>__utcdatecreated</dt>
+  <dd><span>The timestamp of the time when the article was created, stored in ISO 8601 format with millisecond precision (YYYY-MM-DDTHH:MM:SS.MMMZ).</span></dd>
+  <dt>__utclastupdateddate</dt>
+  <dd><span>The timestamp of the time when the article was last updated, stored in ISO 8601 format with millisecond precision (YYYY-MM-DDTHH:MM:SS.MMMZ).</span></dd>
+  <dt>__attributes</dt>
+  <dd><span>List of key value pair values that can be stored with the article and are not validated by the schema definition.</span></dd>
+</dl>
+
 
 ** User defined properties ** 
 

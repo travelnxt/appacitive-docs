@@ -8,12 +8,13 @@
     var currentId = null;
     window.skipHighlight = false;
     var reCal = true;
+    var isFirst = true;
     var alignScroll = function () {
-        if (currentId) {
+        if (reCal == false && currentId) {
             $("[href='#" + currentId + "']").trigger("click");
         }
         var preId = null;
-        $("h1,h2, h3").scrollagent({ offset: 0, reCal: reCal }, function (cid, pid, currentElement, previousElement) {
+        $("h1,h2,h3").scrollagent({ offset: 0, reCal: reCal }, function (cid, pid, currentElement, previousElement) {
             if ($("[href='#" + cid + "']").hasClass("level-2")) {
                 preId = cid;
             }
@@ -44,12 +45,11 @@
             setTimeout(function () {
                 if ($("ul.level-1 .active").length == 0) $("ul.level-1 li.level-1:first-child > a:first-child").addClass("active");
                 reCal = false;
-            }, 1000);
+            }, 1500);
         }
     };
 
     $document.on('flatdoc:ready', function () {
-        $(".content-wrapper").css("min-height", $(window).height() / 2);
         var that = this;
         var cLangName = "appacitive-docs-selected-lang";
         var cThemeName = "appacitive-docs-selected-theme";
@@ -82,6 +82,7 @@
         }
 
         //language selection
+        var first = true;
         var handleLanChange = function (element) {
             var $that = $(element);
 
@@ -94,6 +95,11 @@
             var selected = $that.data("lang").toLowerCase();
             $(".lang-" + selected).show();
 
+            if (first)
+                setTimeout(function () {
+                    alignScroll();
+                }, 1000);
+            first = false;
             setTimeout(function () {
                 alignScroll();
             }, 50);
@@ -131,6 +137,11 @@
         $(window).on('resize', function () {
             setTimeout(function () {
                 var winWidth = $(window).width();
+                if (winWidth < 1180) $(".content-wrapper").css("min-height", "auto");
+                else {
+                    var height = $(window).height() / 2;
+                    $(".content-wrapper").css("min-height", height < 300 ? 300 : height);
+                }
                 var isBig = true;
                 var delta = 55;
                 //Big desktop
