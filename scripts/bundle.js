@@ -2147,6 +2147,7 @@ Also includes:
      * Scrollspy.
      */
     var currentId = null;
+    window.skipHighlight = false;
     var reCal = true;
     var alignScroll = function () {
         if (currentId) {
@@ -2154,6 +2155,12 @@ Also includes:
         }
         var preId = null;
         $("h1,h2, h3").scrollagent({ offset: 0, reCal: reCal }, function (cid, pid, currentElement, previousElement) {
+            if ($("[href='#" + cid + "']").hasClass("level-2")) {
+                preId = cid;
+            }
+
+            if (window.skipHighlight) return;
+
             if (pid) {
                 $("[href='#" + pid + "']").removeClass('active');
             }
@@ -2161,9 +2168,7 @@ Also includes:
                 $("[href='#" + cid + "']").addClass('active');
                 $("[href='#" + cid + "']").siblings().slideDown(10);
             }
-            if ($("[href='#" + cid + "']").hasClass("level-2")) {
-                preId = cid;
-            }
+
             if ($("[href='#" + cid + "']").hasClass("level-3") && $("[href='#" + cid + "']").closest("ul").is(":visible") == false) {
                 $("[href='#" + cid + "']").closest("ul").slideDown(10);
                 preId = $("[href='#" + cid + "']").closest("ul").parent().children("a").attr("href").replace("#", "");
@@ -2218,8 +2223,8 @@ Also includes:
         }
 
         //language selection
-        $(".nav-pills a").unbind("click").click(function (e) {
-            var $that = $(this);
+        var handleLanChange = function (element) {
+            var $that = $(element);
 
             //handle active tab
             if ($that.parent().hasClass("active")) return;
@@ -2234,12 +2239,14 @@ Also includes:
                 alignScroll();
             }, 50);
             storeCookie(cLangName, selected);
+        };
+        $(".nav-pills a").unbind("click").click(function (e) {
+            window.skipHighlight = true;
+            handleLanChange($(this));
         });
         var lang = readCookie(cLangName);
-        $(".language a:first").trigger("click");
-        setTimeout(function () {
-            if (lang) $("*[data-lang='" + lang + "']").trigger("click");
-        }, 1000);
+        if (lang) handleLanChange($("*[data-lang='" + lang + "']"));
+        else handleLanChange($(".language a:first"));
 
         //Switch theme
         var switchStyle = function (title) {
@@ -2512,7 +2519,7 @@ Also includes:
 
 (function ($) {
     var defaults = {
-        'speed': 1,
+        'speed': 100,
         'offset': 0,
         'for': null,
         'parent': null
@@ -2562,7 +2569,9 @@ Also includes:
             top = Math.max(0, $area.offset().top + offset);
         }
 
-        $('html, body').scrollTop(top);
+        $('html, body').animate({ scrollTop: top }, options.speed, function () {
+            window.skipHighlight = false;
+        });
         $('body').trigger('anchor', href);
 
         // Add the location hash via pushState.
