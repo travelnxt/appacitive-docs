@@ -2159,17 +2159,22 @@ Also includes:
             }
             if (cid) {
                 $("[href='#" + cid + "']").addClass('active');
-                $("[href='#" + cid + "']").siblings().slideDown();
+                $("[href='#" + cid + "']").siblings().slideDown(10);
             }
             if ($("[href='#" + cid + "']").hasClass("level-2")) {
                 preId = cid;
             }
             if ($("[href='#" + cid + "']").hasClass("level-3") && $("[href='#" + cid + "']").closest("ul").is(":visible") == false) {
-                $("[href='#" + cid + "']").closest("ul").slideDown();
+                $("[href='#" + cid + "']").closest("ul").slideDown(10);
                 preId = $("[href='#" + cid + "']").closest("ul").parent().children("a").attr("href").replace("#", "");
             }
             $("li.level-2 ul.level-3").not($("[href='#" + preId + "']").siblings()).hide();
             currentId = cid;
+            // Add the location hash via pushState.
+            if (reCal == false && window.history.pushState) {
+                var href = window.location.href.replace(window.location.hash, "") + "#" + cid;
+                window.history.pushState({ href: href }, "", href);
+            }
         });
         if (reCal) {
             setTimeout(function () {
@@ -2180,6 +2185,7 @@ Also includes:
     };
 
     $document.on('flatdoc:ready', function () {
+        $(".content-wrapper").css("min-height", $(window).height() / 2);
         var that = this;
         var cLangName = "appacitive-docs-selected-lang";
         var cThemeName = "appacitive-docs-selected-theme";
@@ -2454,15 +2460,16 @@ Also includes:
 
             // Find the current active section every scroll tick.
             $parent.on('scroll', function () {
-                var y = $parent.scrollTop();
-                y += height * (0.3 + 0.7 * Math.pow(y / range, 2));
+                var min = $parent.scrollTop();
+                var max = min + height / 2;
 
                 var latest = null;
 
                 for (var i in offsets) {
                     if (offsets.hasOwnProperty(i)) {
                         var offset = offsets[i];
-                        if (offset.top < y) latest = offset;
+                        if (offset.top >= min && offset.top < max)
+                            latest = offset;
                     }
                 }
 
@@ -2505,7 +2512,7 @@ Also includes:
 
 (function ($) {
     var defaults = {
-        'speed': 500,
+        'speed': 1,
         'offset': 0,
         'for': null,
         'parent': null
@@ -2555,7 +2562,7 @@ Also includes:
             top = Math.max(0, $area.offset().top + offset);
         }
 
-        $('html, body').animate({ scrollTop: top }, options.speed);
+        $('html, body').scrollTop(top);
         $('body').trigger('anchor', href);
 
         // Add the location hash via pushState.
