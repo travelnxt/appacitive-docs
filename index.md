@@ -221,7 +221,7 @@ Creates a new article of a specific type.
 ** Parameters ** 
 
 <dl>
-  <dt>the article object</dt>
+  <dt>article object</dt>
   <dd>required<br/><span>The article object</span></dd>
 </dl>
 
@@ -309,6 +309,12 @@ $$$Sample Response
 ```
 
 ### Retrieve an existing article
+The appacitive plaform supports retrieving single or multiple articles. All article retrievals on the platform
+are done purely on the based of the article id and type. You can also fine tune the exact list of fields that 
+you want to be returned. This will allow for fine tuning the size of the message incase you are on a 
+low bandwidth connection.
+
+The different scenarios for article retrieval are detailed in the sections below.
 
 #### Retrieve a single article
 
@@ -400,7 +406,7 @@ the list of ids must correspond to articles of the same type.
 <dl>
   <dt>type</dt>
   <dd>required<br/><span>The type of the article to be retrieved.</span></dd>
-  <dt>command separated id list</dt>
+  <dt>id list</dt>
   <dd>required<br/><span>Comma separated list of article ids to retrieve.</span></dd>
   <dt>fields</dt>
   <dd>optional<br/><span>Comma separated list of properties to be returned.</span></dd>
