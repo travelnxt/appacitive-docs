@@ -6,35 +6,46 @@
      * Scrollspy.
      */
     var currentId = null;
+    window.skipHighlight = false;
     var reCal = true;
+    var isFirst = true;
     var alignScroll = function () {
-        if (currentId) {
+        if (reCal == false && currentId) {
             $("[href='#" + currentId + "']").trigger("click");
         }
         var preId = null;
-        $("h1,h2, h3").scrollagent({ offset: 0, reCal: reCal }, function (cid, pid, currentElement, previousElement) {
+        $("h1,h2,h3").scrollagent({ offset: 0, reCal: reCal }, function (cid, pid, currentElement, previousElement) {
+            if ($("[href='#" + cid + "']").hasClass("level-2")) {
+                preId = cid;
+            }
+
+            if (window.skipHighlight) return;
+
             if (pid) {
                 $("[href='#" + pid + "']").removeClass('active');
             }
             if (cid) {
                 $("[href='#" + cid + "']").addClass('active');
-                $("[href='#" + cid + "']").siblings().slideDown();
+                $("[href='#" + cid + "']").siblings().slideDown(10);
             }
-            if ($("[href='#" + cid + "']").hasClass("level-2")) {
-                preId = cid;
-            }
+
             if ($("[href='#" + cid + "']").hasClass("level-3") && $("[href='#" + cid + "']").closest("ul").is(":visible") == false) {
-                $("[href='#" + cid + "']").closest("ul").slideDown();
-                preId = $("[href='#" + cid + "']").closest("ul").parent().children("a").attr("href").replace("#","");
+                $("[href='#" + cid + "']").closest("ul").slideDown(10);
+                preId = $("[href='#" + cid + "']").closest("ul").parent().children("a").attr("href").replace("#", "");
             }
             $("li.level-2 ul.level-3").not($("[href='#" + preId + "']").siblings()).hide();
             currentId = cid;
+            // Add the location hash via pushState.
+            if (reCal == false && window.history.pushState) {
+                var href = window.location.href.replace(window.location.hash, "") + "#" + cid;
+                window.history.pushState({ href: href }, "", href);
+            }
         });
         if (reCal) {
             setTimeout(function () {
                 if ($("ul.level-1 .active").length == 0) $("ul.level-1 li.level-1:first-child > a:first-child").addClass("active");
                 reCal = false;
-            }, 1000);
+            }, 1500);
         }
     };
 
@@ -71,8 +82,9 @@
         }
 
         //language selection
-        $(".nav-pills a").unbind("click").click(function (e) {
-            var $that = $(this);
+        var first = true;
+        var handleLanChange = function (element) {
+            var $that = $(element);
 
             //handle active tab
             if ($that.parent().hasClass("active")) return;
@@ -83,14 +95,23 @@
             var selected = $that.data("lang").toLowerCase();
             $(".lang-" + selected).show();
 
+            if (first)
+                setTimeout(function () {
+                    alignScroll();
+                }, 1000);
+            first = false;
             setTimeout(function () {
                 alignScroll();
             }, 50);
             storeCookie(cLangName, selected);
+        };
+        $(".nav-pills a").unbind("click").click(function (e) {
+            window.skipHighlight = true;
+            handleLanChange($(this));
         });
         var lang = readCookie(cLangName);
-        if (!lang) $(".language a:first").trigger("click");
-        $("*[data-lang='" + lang + "']").trigger("click");
+        if (lang) handleLanChange($("*[data-lang='" + lang + "']"));
+        else handleLanChange($(".language a:first"));
 
         //Switch theme
         var switchStyle = function (title) {
@@ -116,6 +137,11 @@
         $(window).on('resize', function () {
             setTimeout(function () {
                 var winWidth = $(window).width();
+                if (winWidth < 1180) $(".content-wrapper").css("min-height", "auto");
+                else {
+                    var height = $(window).height() / 2;
+                    $(".content-wrapper").css("min-height", height < 300 ? 300 : height);
+                }
                 var isBig = true;
                 var delta = 55;
                 //Big desktop
@@ -311,15 +337,16 @@
 
             // Find the current active section every scroll tick.
             $parent.on('scroll', function () {
-                var y = $parent.scrollTop();
-                y += height * (0.3 + 0.05 * Math.pow(y / range, 2));
+                var min = $parent.scrollTop();
+                var max = min + height / 2;
 
                 var latest = null;
 
                 for (var i in offsets) {
                     if (offsets.hasOwnProperty(i)) {
                         var offset = offsets[i];
-                        if (offset.top < y) latest = offset;
+                        if (offset.top >= min && offset.top < max)
+                            latest = offset;
                     }
                 }
 
@@ -362,7 +389,7 @@
 
 (function ($) {
     var defaults = {
-        'speed': 500,
+        'speed': 100,
         'offset': 0,
         'for': null,
         'parent': null
@@ -412,7 +439,9 @@
             top = Math.max(0, $area.offset().top + offset);
         }
 
-        $('html, body').animate({ scrollTop: top }, options.speed);
+        $('html, body').animate({ scrollTop: top }, options.speed, function () {
+            window.skipHighlight = false;
+        });
         $('body').trigger('anchor', href);
 
         // Add the location hash via pushState.

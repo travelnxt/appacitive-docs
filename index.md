@@ -20,6 +20,11 @@ A quick summary of the different urls is detailed below.
 | **Connection** | <i>https://apis.appacitive.com/connection/{type}/</i>
 | **User**       | <i>https://apis.appacitive.com/user/</i>
 | **Device**     | <i>https://apis.appacitive.com/device/</i>
+| **Graph Search** | <i>https://apis.appacitive.com/search/</i>
+| **File**     | <i>https://apis.appacitive.com/file/</i>
+| **Email**     | <i>https://apis.appacitive.com/email/</i>
+| **Push**     | <i>https://apis.appacitive.com/push/</i>
+
 
 
 Request format
@@ -29,11 +34,17 @@ The request body for all requests using PUT and POST must be in json format with
 All authentication and contextual information is sent via http headers. The following http headers are currently supported by the
 api.
 
-** Supported http headers **
+** Supported HTTP headers **
 
-* **``appacitive-apikey``** : Api key of the app.
-* **``appacitive-environment``** : Environment to be targetted. Valid values are ``live`` and ``sandbox``.
-* **``appacitive-usersession`` (optional)** : User session token
+<dl>
+  <dt>appacitive-apikey</dt>
+  <dd>required<br/><span>Api key of the app.</span></dd>
+  <dt>appacitive-environment</dt>
+  <dd>required<br/><span>Environment to be targetted. Valid values are ``live`` and ``sandbox``.</span></dd>
+  <dt>appacitive-usersession</dt>
+  <dd>optional<br/><span>User session token</span></dd>
+</dl>
+
 
 ```nolang
 <span class="h3">Sample html with h3 size</span><br/><i>Libraries are <a href="http://help.appacitive.com">available in several languages</a></i>
@@ -49,24 +60,18 @@ The json structure of the status object is shown.
 
 ** Status object attributes **
 
-* **``code``** : ``2xx`` (``200`` or ``201``) incase of success. Incase a resource is created as a side effect of the operation, then the status code returned is ``201``. In case of failure, a non 2xx error code would returned.
-* **``message``**: Error message incase of an api call failure.
-* **``referenceid``**: Unique reference id for the transaction for debugging. This reference id can be provided in issues and escalations.
-* **``additionalmessages``**: Additonal messages incase of a failure.
+<dl>
+  <dt>code</dt>
+  <dd><span>``2xx`` (``200`` or ``201``) incase of success. Incase a resource is created as a side effect of the operation, then the status code returned is ``201``. In case of failure, a non 2xx error code would returned.</span></dd>
+  <dt>message</dt>
+  <dd><span>Error message incase of an api call failure.</span></dd>
+  <dt>referenceid</dt>
+  <dd><span>Unique reference id for the transaction for debugging. This reference id can be provided in issues and escalations.</span></dd>
+  <dt>additionalmessages</dt>
+  <dd><span>Additonal messages incase of a failure.</span></dd>
+</dl>
 
 **Note**: The http status code for the response will always be returned as ``200``.
-
-!!! javascript
-Some thing specific to javascript language
-!!!
-
-!!! rest
-Some thing specific to rest language
-!!!
-
-!!! csharp
-var article = new Article("player");
-!!!
 
 ```nolang-rest
 $$$Status object
@@ -93,8 +98,14 @@ To authenticate your api request you need to specify your application's API key 
 
 In order to pass the api key and environment information for the application use the following headers. 
 
-* **``appacitive-apikey``** : Http header for the api key.
-* **``appacitive-environment``**: Environment to target. Valid values are ``live`` and ``sandbox``.
+** HTTP Headers **
+<dl>
+  <dt>appacitive-apikey</dt>
+  <dd><span>Http header for the api key.</span></dd>
+  <dt>appacitive-environment</dt>
+  <dd><span>Environment to target. Valid values are ``live`` and ``sandbox``</span></dd>
+</dl>
+
 
 ``` javascript
 Appacitive.initialize({ 
@@ -132,15 +143,27 @@ Article object
 
 ** System generated attributes ** 
 
-* **``__id``** : Unique time-series <a href="http://en.wikipedia.org/wiki/Monotonic_function">monotonic</a> id automatically assigned by the system on creation. This is immutable. 
-* **``__schematype``** : The type of the article as per the schema structure designed by you via the schema designer.
-* **``__createdby``** : The id of the user that created the article. Incase a user token is provided during creation, then the created by will use the id of the corresponding user. The client can alternatively also provide this in the request.
-* **``__lastmodifiedby``** : The id of the user that last updated the article. The id of the user that updated the article. Incase a user token is provided during creation, then the created by will use the id of the corresponding user. The client can alternatively also provide this in the request.
-* **``__revision``** : The revision number of the article. This is incremented on every update and is used to provide <a href="http://en.wikipedia.org/wiki/Multiversion_concurrency_control">multi version concurrency control</a> incase of concurrent updates on the same article.
-* **``__tags``** : This is an array of strings that you can use to "tag" specific articles. These tags can be used to search specific articles.
-* **``__utcdatecreated``** : The timestamp of the time when the article was created, stored in ISO 8601 format with millisecond precision (YYYY-MM-DDTHH:MM:SS.MMMZ).
-* **``__utclastupdateddate``** : The timestamp of the time when the article was last updated, stored in ISO 8601 format with millisecond precision (YYYY-MM-DDTHH:MM:SS.MMMZ).
-* **``__attributes``** : List of key value pair values that can be stored with the article and are not validated by the schema definition.
+<dl>
+  <dt>\__id</dt>
+  <dd><span>Unique time-series <a href="http://en.wikipedia.org/wiki/Monotonic_function">monotonic</a> id automatically assigned by the system on creation. This is immutable.</span></dd>
+  <dt>\__schematype</dt>
+  <dd><span>The type of the article as per the schema structure designed by you via the schema designer.</span></dd>
+  <dt>\__createdby</dt>
+  <dd><span>The id of the user that created the article. Incase a user token is provided during creation, then the created by will use the id of the corresponding user. The client can alternatively also provide this in the request.</span></dd>
+  <dt>\__lastmodifiedby</dt>
+  <dd><span>The id of the user that last updated the article. The id of the user that updated the article. Incase a user token is provided during creation, then the created by will use the id of the corresponding user. The client can alternatively also provide this in the request.</span></dd>
+  <dt>\__revision</dt>
+  <dd><span>The revision number of the article. This is incremented on every update and is used to provide <a href="http://en.wikipedia.org/wiki/Multiversion_concurrency_control">multi version concurrency control</a> incase of concurrent updates on the same article.</span></dd>
+  <dt>\__tags</dt>
+  <dd><span>This is an array of strings that you can use to "tag" specific articles. These tags can be used to search specific articles.</span></dd>
+  <dt>\__utcdatecreated</dt>
+  <dd><span>The timestamp of the time when the article was created, stored in ISO 8601 format with millisecond precision (YYYY-MM-DDTHH:MM:SS.MMMZ).</span></dd>
+  <dt>\__utclastupdateddate</dt>
+  <dd><span>The timestamp of the time when the article was last updated, stored in ISO 8601 format with millisecond precision (YYYY-MM-DDTHH:MM:SS.MMMZ).</span></dd>
+  <dt>\__attributes</dt>
+  <dd><span>List of key value pair values that can be stored with the article and are not validated by the schema definition.</span></dd>
+</dl>
+
 
 ** User defined properties ** 
 
@@ -190,10 +213,22 @@ score.attr('is_first_time_user', 'true');
 score.attr('has_verified', 'false');
 ```
 
-Create a new article
-------------
+
+### Create a new article
 
 Creates a new article of a specific type.
+
+** Parameters ** 
+
+<dl>
+  <dt>article object</dt>
+  <dd>required<br/><span>The article object</span></dd>
+</dl>
+
+** Response **
+
+Returns the newly created article object with all the system defined properties (e.g., ``__id``) set.
+In case of an error, the `status` object contains details for the failure.
 
 ``` rest
 $$$Method
@@ -210,9 +245,9 @@ Appacitive.Article.save();
 
 ``` rest
 $$$Sample Request
-//Create an article of type score
+//Create an article of type post
 curl -X PUT \
--H "Appacitive-Apikey: aY+tExrAJi9K+oorsVq5d3UT/HMi1wAYSEI04qvJwHA=" \
+-H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: sandbox" \
 -H "Content-Type: application/json" \
 -d '{ "title" : "test", "text" : "This is a test post.", "__attributes" : { "has_verified" : "false" }}' \
@@ -271,6 +306,366 @@ $$$Sample Response
 ```
 ``` javascript
 // The response callback method would be invoked with the article updated with system properties.
+```
+
+### Retrieve an existing article
+The appacitive plaform supports retrieving single or multiple articles. All article retrievals on the platform
+are done purely on the based of the article id and type. You can also fine tune the exact list of fields that 
+you want to be returned. This will allow for fine tuning the size of the message incase you are on a 
+low bandwidth connection.
+
+The different scenarios for article retrieval are detailed in the sections below.
+
+#### Retrieve a single article
+
+Returns an existing article from the system. To retrieve an existing article, you will need to provide its 
+type and its system defined id.
+
+** Parameters ** 
+
+<dl>
+  <dt>type</dt>
+  <dd>required<br/><span>The type of the article to be retrieved</span></dd>
+  <dt>id</dt>
+  <dd>required<br/><span>The system generated id for the article</span></dd>
+  <dt>fields</dt>
+  <dd>optional<br/><span>Comma separated list of properties to be returned.</span></dd>
+</dl>
+
+** Response **
+
+Returns the existing article object matching the given id.
+In case of an error, the `status` object contains details for the failure.
+
+``` rest
+$$$Method
+GET https://apis.appacitive.com/article/{type}/{id}?fields={comma separated list of fields}
+```
+``` rest
+$$$Sample Request
+//Get article of type post with id 33017891581461312
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+https://apis.appacitive.com/article/post/33017891581461312
+```
+``` rest
+$$$Sample Response
+{
+  "article": {
+    "__id": "33017891581461312",
+    "__schematype": "post",
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__schemaid": "23514020251304802",
+    "__revision": "1",
+    "__tags": [],
+    "__utcdatecreated": "2013-07-31T10:45:15.1832474Z",
+    "__utclastupdateddate": "2013-07-31T10:45:15.1832474Z",
+    "title": "test",
+    "text": "This is a test post.",
+    "__attributes": {
+      "has_verified": "false"
+    }
+  },
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "1febaadd-f889-4b47-b1f9-cdeb63b6f937",
+    "additionalmessages": []
+  }
+}
+```
+``` csharp
+$$$Method
+public static async Task<Article> Appacitive.SDK.Articles.GetAsync(
+  string type, 
+  string id, 
+  IEnumerable<string> fields = null
+)
+```
+``` csharp
+$$$Sample Request
+var post = await Articles.GetAsync("post", "33017891581461312");
+Console.WriteLine("Fetched post with title {0} and text {1}.",
+  post.Get<string>("title"),
+  post.Get<string>("text")
+  );
+```
+
+#### Retrieve multiple article
+
+Returns an list of multiple existing articles from the system. To get a list of articles you 
+must provide the type of the article and a list of ids to retrieve. Given that only one type is allowed,
+the list of ids must correspond to articles of the same type.
+
+** Parameters ** 
+
+<dl>
+  <dt>type</dt>
+  <dd>required<br/><span>The type of the article to be retrieved.</span></dd>
+  <dt>id list</dt>
+  <dd>required<br/><span>Comma separated list of article ids to retrieve.</span></dd>
+  <dt>fields</dt>
+  <dd>optional<br/><span>Comma separated list of properties to be returned.</span></dd>
+</dl>
+
+** Response **
+
+Returns an array of article corresponding to the given id list. 
+In case of an error, the `status` object contains details for the failure.
+
+`NOTE` : Please note that providing the same id multiple times will not return duplicates.
+
+``` rest
+$$$Method
+GET https://apis.appacitive.com/article/{type}/multiget/{comma separated ids}?fields={comma separated list of fields}
+```
+``` rest
+$$$Sample Request
+//Get article of type posts with id 33017891581461312 and 33017891581461313
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+https://apis.appacitive.com/article/post/multiget/33017891581461312,33017891581461313
+```
+``` rest
+$$$Sample Response
+{
+  "articles": [
+    {
+      "__id": "33017891581461312",
+      "__schematype": "post",
+      "__createdby": "System",
+      "__lastmodifiedby": "System",
+      "__schemaid": "23514020251304802",
+      "__revision": "1",
+      "__tags": [],
+      "__utcdatecreated": "2013-07-31T10:45:15.1832474Z",
+      "__utclastupdateddate": "2013-07-31T10:45:15.1832474Z",
+      "title": "test",
+      "text": "This is a test post.",
+      "__attributes": {
+        "has_verified": "false"
+      }
+    },
+    {
+      "__id": "33017891581461313",
+      "__schematype": "post",
+      "__createdby": "System",
+      "__lastmodifiedby": "System",
+      "__schemaid": "23514020251304802",
+      "__revision": "1",
+      "__tags": [],
+      "__utcdatecreated": "2013-07-31T10:45:15.1832474Z",
+      "__utclastupdateddate": "2013-07-31T10:45:15.1832474Z",
+      "title": "sample",
+      "text": "This is a sample post.",
+      "__attributes": {
+        "has_verified": "false"
+      }
+    }
+  ],
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "1febaadd-f889-4b47-b1f9-cdeb63b6f937",
+    "additionalmessages": []
+  }
+}
+```
+``` csharp
+$$$Method
+public static async Task<IEnumerable<Article>> Appacitive.SDK.Articles.MultiGetAsync(
+  string type, 
+  IEnumerable<string> idList, 
+  IEnumerable<string> fields = null
+)
+```
+``` csharp
+$$$Sample Request
+var ids = new [] {"33017891581461312", "33017891581461313" };
+var posts = await Articles.MultiGetAsync("post", ids);
+foreach( var post in posts )
+{
+  Console.WriteLine("Fetched post with title {0} and text {1}.",
+    post.Get<string>("title"),
+    post.Get<string>("text")
+    );
+}
+```
+
+#### Retrieving only specific fields for an article
+
+The fields parameter allows you to pick and choose the exact properties that you want the system to return in the response.
+This applies to both user and system defined properties. The ``__id``,``__schematype`` or ``__relationtype`` fields cannot be filtered 
+out using this and will always be returned. To select specific fields you need to pass a list of the fields that you want the system to return.
+
+``` rest
+$$$Method
+// The fields parameter can be applied to any articles or connections api call.
+GET https://apis.appacitive.com/article/{type}/{id}?fields={comma separated list of fields}
+```
+``` rest
+$$$Sample Request
+//Get article of type post with id 33017891581461312 with text and title field alone.
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+https://apis.appacitive.com/article/post/33017891581461312?fields=text,title
+```
+``` rest
+$$$Sample Response
+{
+  "article": {
+    "__id": "33017891581461312",
+    "__schematype": "post",
+    "title": "test",
+    "text": "This is a test post."
+  },
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "d5675b60-d030-4487-8588-d8935224fb76",
+    "additionalmessages": []
+  }
+}
+```
+``` csharp
+$$$Method
+public static async Task<Article> Appacitive.SDK.Articles.GetAsync(
+  string type, 
+  string id, 
+  IEnumerable<string> fields = null
+)
+```
+``` csharp
+$$$Sample Request
+var fields = new [] { "text", "title"};
+var post = await Articles.GetAsync("post", "33017891581461312", fields);
+Console.WriteLine("Fetched post with title {0} and text {1}.",
+  post.Get<string>("title"),
+  post.Get<string>("text")
+  );
+```
+
+### Update an article
+
+To update an existing article, you need to provide the type and id of the article
+along with the list of updates that are to be made. As the Appacitive platform supports partial updates,
+and update only needs the information that has actually changed.
+
+** Parameters ** 
+
+<dl>
+  <dt>type</dt>
+  <dd>required<br/><span>The type of the article to be retrieved</span></dd>
+  <dt>id</dt>
+  <dd>required<br/><span>The system generated id for the article</span></dd>
+  <dt>article updates</dt>
+  <dd>required<br/><span>The article object with the fields to be updated.</span></dd>
+  <dt>revision</dt>
+  <dd>optional<br/><span>The revision of the article. Incase the revision does not match on the server, the call will fail.</span></dd>
+</dl>
+
+** Response **
+
+Returns the updated article object.
+In case of an error, the `status` object contains details for the failure.
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/article/{type}/{id}?revision={current revision}
+```
+``` rest
+$$$Sample Request
+// Will update the article of type post with id 33017891581461312
+// Updates include
+// - title and text fields
+// - adding a new attribute called topic
+// - adding and removing tags.
+
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Content-Type: application/json" \
+-d '{ "title" : "updated title", "text" : "This is updated text for the post.", "__attributes" : { "topic" : "testing" }, "__addtags" : ["tagA", "tagB"], "__removetags" : ["tagC"]}' \
+https://apis.appacitive.com/article/post/33017891581461312
+```
+``` rest
+$$$Sample Response
+{
+  "article": {
+    "__id": "33017891581461312",
+    "__schematype": "post",
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__schemaid": "23514020251304802",
+    // revision number incremented
+    "__revision": "2",
+    "__tags": [
+      // newly added tags
+      "tagA",
+      "tagB"
+    ],
+    "__utcdatecreated": "2013-07-31T10:45:15.1832474Z",
+    "__utclastupdateddate": "2013-08-06T20:47:19.8779616Z",
+    // updated properties
+    "title": "updated title",
+    "text": "This is updated text for the post.",
+    "__attributes": {
+      // existing attribute
+      "has_verified": "false",
+      // newly added attribute
+      "topic": "testing"
+    }
+  },
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "363556a8-3786-4b6c-8dd0-e627b9205e65",
+    "additionalmessages": []
+  }
+}
+```
+``` csharp
+$$$Method
+public static async Task Appacitive.SDK.Article.SaveAsync(int revision = 0)
+```
+``` csharp
+$$$Sample Request
+// Incase the article is not already retrieved from the system, simply create
+// a new instance of an article with the id. This creates a "handle" to the object
+// on the client without actually retrieving the data from the server.
+// Simply update the fields that you want to update and invoke SaveAsync(). 
+
+// This will simply create a handle or reference to the existing article.
+var post = new Article("post", "33017891581461312");
+
+// Update properties
+post.Set<string>("title", "updated title");
+post.Set<string>("text", "This is updated text for the post.");
+// Add a new attribute
+post.SetAttribute("topic", "testing");
+// Add/remove tags
+post.AddTags( new [] { "tagA", "tagB"});
+post.RemoveTag( "tagC");
+
+await post.SaveAsync();
+```
+``` csharp
+$$$Note
+After the save, the existing post article would be updated with the latest values
+of all the fields.
+
 ```
 
 Appacitive SDK
@@ -412,7 +807,7 @@ Appacitive.Article.get({
     id: '123456678809',  //mandatory
     fields: ["name"]     //optional
 }, function(obj) {
-    // artice obj is returned as argument to onsuccess
+    // article obj is returned as argument to onsuccess
     alert('Fetched player with name: ' + obj.get('name')); 
 }, function(err, obj) {
     alert('Could not fetch, probably because of an incorrect id');
@@ -540,6 +935,24 @@ connection.save(function () {
 }, function (status) {
     alert('error while saving!');
 });
+
+//Optionally you can provide the complete article object
+//instead of providing article id, to do so
+var connection = new Appacitive.Connection({
+                  relation: 'review',
+                  endpoints: [{
+                      article: reviewerArticle,
+                      label: 'reviewer'
+                  }, {
+                      article: hotelArticle,
+                      label: 'hotel'
+                  }]                
+              });
+connection.save(function () {
+    alert('saved successfully!');
+}, function (status) {
+    alert('error while saving!');
+});
 ```
 ``` csharp
 //`review` is relation name, 
@@ -557,13 +970,25 @@ await connection .SaveAsync();
 Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero. Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero. 
 
 ``` javascript
-/*Creating a new article*/
-var player = new Appacitive.Article({ schema: 'player' });
-player.set('age', 23);
-player.save(function(){
-  alert('saved successfully!');
-}, function(status){
-  alert('error while saving!');
+//Create an instance of Article 
+var hotelArticle = new Appacitive.Article({ schema: 'hotel' });
+hotelArticle.set('name', 'Caesar Palace');
+//Other hotel properties
+
+var connection = new Appacitive.Connection({
+                  relation: 'review',
+                  endpoints: [{
+                      articleid: '123445678',
+                      label: 'reviewer'
+                  }, {
+                      article: hotelArticle,
+                      label: 'hotel'
+                  }]                
+              });
+connection.save(function () {
+    alert('saved successfully!');
+}, function (status) {
+    alert('error while saving!');
 });
 ```
 ``` csharp
@@ -585,13 +1010,24 @@ await connection .SaveAsync();
 Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero. Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero. 
 
 ``` javascript
-/*Creating a new article*/
-var player = new Appacitive.Article({ schema: 'player' });
-player.set('age', 23);
-player.save(function(){
-  alert('saved successfully!');
-}, function(status){
-  alert('error while saving!');
+//Create two new articles which needs to be connected
+var article1= new Appacitive.Article({ schema: 'schema1' });
+var article2 = new Appacitive.Article({ schema: 'schema2' });
+
+var connection = new Appacitive.Connection({
+                  relation: 'review',
+                  endpoints: [{
+                      article: article1,
+                      label: 'labela'
+                  }, {
+                      article: article2,
+                      label: 'labelb'
+                  }]                
+              });
+connection.save(function () {
+    alert('saved successfully!');
+}, function (status) {
+    alert('error while saving!');
 });
 ```
 ``` csharp
@@ -611,19 +1047,20 @@ await connection.SaveAsync();
 Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
 
 ``` javascript
-/*Updating the article*/
-var player = new Appacitive.Article({ schema: 'player' });
-player.set('age', 23);
-player.save(function(){
-  alert('saved successfully!');
-  player.set('age', 24);
-  player.save(function(){
-    alert('updated successfully!');
-  }, function(status){
-    alert('error while updating!');
-  });
-}, function(status){
-  alert('error while saving!');
+//Get the connection object and update the description
+Appacitive.Article.get({ 
+    relation: 'review',    //mandatory
+    id: '1234345'          //mandatory
+}, function(obj) {
+    // connection obj is returned as argument to onsuccess
+    obj.set('description','good hotel')
+    obj.save(function(){
+      alert('review connection saved successfully.');
+    }, function(err, obj){
+      alert('Save failed for review connection');
+    });
+}, function(err, obj) {
+    alert('Could not fetch, probably because of an incorrect id');
 });
 ```
 ``` csharp
@@ -642,27 +1079,16 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus q
 Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
 
 ``` javascript
-//Retrieve the player
-Appacitive.Article.get({ 
-    schema: 'player',    //mandatory
-    id: '123456678809',  //mandatory
-    fields: ["name"]     //optional
+//Get the connection object and update the description
+Appacitive.Connection.get({ 
+    relation: 'review',    //mandatory
+    id: '1234345'          //mandatory
 }, function(obj) {
-    // artice obj is returned as argument to onsuccess
-    alert('Fetched player with name: ' + obj.get('name')); 
+    // connection obj is returned as argument to onsuccess
+    alert('review connection fetched successfully.');
 }, function(err, obj) {
     alert('Could not fetch, probably because of an incorrect id');
 });
-
-//Retrieve player by `fetch`
-var player = new Appacitive.Article('player');
-player.id('123456678809');
-player.fetch(function(obj) {
-    alert('Fetched player with name: ' + player.get('name'));
-}, function(err, obj) {
-    alert('Could not fetch, probably because of an incorrect id');
-}, ["name", "age"]//optional
-);
 ```
 ``` csharp
 //Single connection by connection id
@@ -674,17 +1100,35 @@ var connection1 = await Connections.GetAsync("reivew", "12345");
 Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
 
 ``` javascript
-//`fields` parameter denotes the fields to be returned 
-//in the article object, to avoid increasing the payload
-Appacitive.Article.multiGet({ 
-    schema: 'players', //mandatory
-    ids: ["14696753262625025", "14696753262625026"], //mandatory
-    fields: ["name"] //optional
-}, function(articles) { 
-    // articles is an array of article objects
-}, function(err) {
-    alert("code:" + err.code + "\nmessage:" + err.message);
+//Single connection by endpoint article ids
+Appacitive.Connection.getBetweenArticlesForRelation({ 
+    relation: "review", 
+    articleAId : "22322", 
+    articleBId : "33422"
+}, function(obj){
+    // connection obj is returned as argument to onsuccess
+    alert('Connection fetched successfully');
+}, function(err, obj) {
+    alert('Could not fetch, probably because of an incorrect id');
 });
+
+//For a relation between same schema type and differenct endpoint labels
+//'label' parameter becomes mandatory for the get call
+
+//'friend' is the relation between user schema
+//and 'me' and 'you' are the endpoint labels
+Appacitive.Connection.getBetweenArticlesForRelation({ 
+    relation: "friend", 
+    articleAId : "22322", 
+    articleBId : "33422",
+    label : "me"
+}, function(obj){
+    // connection obj is returned as argument to onsuccess
+    alert('Connection fetched successfully');
+}, function(err, obj) {
+    alert('Could not fetch, probably because of an incorrect id');
+});
+
 ```
 ``` csharp
 //Single connection by endpoint article ids
@@ -696,14 +1140,13 @@ var connection2 = await Connections.GetAsync("reivew",
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio.
 
 ``` javascript
-//`fields` parameter denotes the fields to be returned 
-//in the article object, to avoid increasing the payload
-Appacitive.Article.multiGet({ 
-    schema: 'players', //mandatory
-    ids: ["14696753262625025", "14696753262625026"], //mandatory
-    fields: ["name"] //optional
-}, function(articles) { 
-    // articles is an array of article objects
+//Get an instance of Article
+var hotel = new Appacitive.Article({ __id : '123345456', schema : 'hotel');
+var connectionCollection = hotel.getConnectedArticles({ relation : 'review' });
+connectionCollection.fetch(function(){
+  //itirating on the collection
+  connectionCollection.forEach(function (connection) {
+  }
 }, function(err) {
     alert("code:" + err.code + "\nmessage:" + err.message);
 });
@@ -719,18 +1162,19 @@ Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae p
 
 ``` javascript
 /*Single Delete*/
-player.del(function(obj) {
+var review = new Appacitive.Connection({relation: 'review', __id : '123123'});
+review.del(function(obj) {
     alert('Deleted successfully');
 }, function(err, obj) {
     alert('Delete failed')
 });
 
 /*Multi Delete*/
-Appacitive.Article.multiDelete({    
-    schema: 'players', //mandatory
+Appacitive.Connection.multiDelete({    
+    relation: 'reivew', //mandatory
     ids: ["14696753262625025", "14696753262625026"], //mandatory
 }, function() { 
-    //successfully deleted all articles
+    //successfully deleted all connections
 }, function(err) {
     alert("code:" + err.code + "\nmessage:" + err.message);
 });
