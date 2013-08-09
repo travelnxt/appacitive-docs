@@ -17,7 +17,7 @@ foreach($file in $files)
   }
   else
   {
-    Write-Host $file.FullName + "does not need to be compressed"
+    Write-Host $file.FullName "does not need to be compressed"
 	$otherfiles += $file
   }
 }
