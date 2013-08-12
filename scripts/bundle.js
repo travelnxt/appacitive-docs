@@ -2156,29 +2156,28 @@ Also includes:
         }
         var preId = null;
         $("h1,h2,h3").scrollagent({ offset: 0, reCal: reCal }, function (cid, pid, currentElement, previousElement) {
-            if ($("[href='#" + cid + "']").hasClass("level-2")) {
-                preId = cid;
-            }
-
             if (pid) {
                 $("[href='#" + pid + "']").removeClass('active');
-                if ($("[href='#" + pid + "']").hasClass("level-2")) $("[href='#" + pid + "']").siblings().hide();
+                if ($("[href='#" + pid + "']").hasClass("level-2"))
+                    $("[href='#" + pid + "']").siblings().hide();
             }
 
             if (cid) {
                 $("[href='#" + cid + "']").addClass('active');
-                if ($("[href='#" + cid + "']").closest("ul").hasClass("level-3")
-                    && $("[href='#" + cid + "']").closest("ul").is(":visible") == false) {
-                    $("[href='#" + cid + "']").closest("ul").slideDown(10);
-                    preId = $("[href='#" + cid + "']").closest("ul").siblings().attr("href").replace("#", "");
-                }
             }
 
-            if ($("[href='#" + cid + "']").hasClass("level-3") && $("[href='#" + cid + "']").closest("ul").is(":visible") == false) {
-                $("[href='#" + cid + "']").closest("ul").slideDown(10);
-                preId = $("[href='#" + cid + "']").closest("ul").parent().children("a").attr("href").replace("#", "");
-            }
-            $("li.level-2 ul.level-3").not($("[href='#" + preId + "']").siblings()).hide();
+            if ($(".menu .active").hasClass("level-3")) {
+                preId = $(".menu .active").parent().parent().siblings().attr("href").replace("#", "");
+                $("[href='#" + preId + "']").siblings().show();
+                $("li.level-2 ul.level-3").not($("[href='#" + preId + "']").siblings()).hide();
+            } else if ($(".menu .active").hasClass("level-2")
+                && $(".menu .active").siblings("ul").length == 1) {
+                preId = $(".menu .active").attr("href").replace("#", "");
+                $("[href='#" + preId + "']").siblings().show();
+                $("li.level-2 ul.level-3").not($("[href='#" + preId + "']").siblings()).hide();
+            } else { $("li.level-2 ul.level-3").hide(); }
+
+
             currentId = cid;
             // Add the location hash via pushState.
             if (reCal == false && window.history.pushState) {
