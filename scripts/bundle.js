@@ -2160,14 +2160,18 @@ Also includes:
                 preId = cid;
             }
 
-            if (window.skipHighlight) return;
-
             if (pid) {
                 $("[href='#" + pid + "']").removeClass('active');
+                if ($("[href='#" + pid + "']").hasClass("level-2")) $("[href='#" + pid + "']").siblings().hide();
             }
+
             if (cid) {
                 $("[href='#" + cid + "']").addClass('active');
-                $("[href='#" + cid + "']").siblings().slideDown(10);
+                if ($("[href='#" + cid + "']").closest("ul").hasClass("level-3")
+                    && $("[href='#" + cid + "']").closest("ul").is(":visible") == false) {
+                    $("[href='#" + cid + "']").closest("ul").slideDown(10);
+                    preId = $("[href='#" + cid + "']").closest("ul").siblings().attr("href").replace("#", "");
+                }
             }
 
             if ($("[href='#" + cid + "']").hasClass("level-3") && $("[href='#" + cid + "']").closest("ul").is(":visible") == false) {
@@ -2579,10 +2583,8 @@ Also includes:
 
             top = Math.max(0, $area.offset().top + offset);
         }
+        $('html, body').scrollTop(top);
 
-        $('html, body').animate({ scrollTop: top }, options.speed, function () {
-            window.skipHighlight = false;
-        });
         $('body').trigger('anchor', href);
 
         // Add the location hash via pushState.
