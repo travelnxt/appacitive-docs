@@ -2283,8 +2283,8 @@ Also includes:
                 var winWidth = $(window).width();
                 if (winWidth < 1180) $(".content-wrapper").css("min-height", "auto");
                 else {
-                    var height = $(window).height() / 2;
-                    $(".content-wrapper").css("min-height", height < 300 ? 300 : height);
+                    var height = parseInt(($(window).height() / 3), 10);
+                    $(".content-wrapper").css("min-height", height < 180 ? 180 : height);
                 }
                 var isBig = true;
                 var delta = 55;
