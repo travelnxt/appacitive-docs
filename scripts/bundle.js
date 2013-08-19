@@ -659,6 +659,7 @@ Also includes:
                   .html(node.section)
                   .attr('id', id + '-link')
                   .attr('href', '#' + node.id)
+                  .attr('title', node.section)
                   .addClass('level-' + node.level)
                   .appendTo($li);
             }
@@ -2235,9 +2236,11 @@ Also includes:
             $(".nav-pills li").removeClass("active");
             $that.parent().addClass("active");
 
-            $(".lang").hide();
-            var selected = $that.data("lang").toLowerCase();
-            $(".lang-" + selected).show();
+            if ($that.data("lang")) {
+                $(".lang").hide();
+                var selected = $that.data("lang").toLowerCase();
+                $(".lang-" + selected).show();
+            }
 
             if (first)
                 setTimeout(function () {
@@ -2870,3 +2873,15 @@ var MD5 = function (string) {
     return temp.toLowerCase();
 };
 
+///#source 1 1 /scripts/infra/gAnalytics.js
+;
+
+(function (i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date(); a = s.createElement(o),
+    m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+ga('create', 'UA-43287571-1', 'appacitive.com');
+ga('send', 'pageview');

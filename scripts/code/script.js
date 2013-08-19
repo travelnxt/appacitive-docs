@@ -94,9 +94,11 @@
             $(".nav-pills li").removeClass("active");
             $that.parent().addClass("active");
 
-            $(".lang").hide();
-            var selected = $that.data("lang").toLowerCase();
-            $(".lang-" + selected).show();
+            if ($that.data("lang")) {
+                $(".lang").hide();
+                var selected = $that.data("lang").toLowerCase();
+                $(".lang-" + selected).show();
+            }
 
             if (first)
                 setTimeout(function () {

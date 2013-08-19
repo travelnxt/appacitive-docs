@@ -279,6 +279,7 @@ Also includes:
                   .html(node.section)
                   .attr('id', id + '-link')
                   .attr('href', '#' + node.id)
+                  .attr('title', node.section)
                   .addClass('level-' + node.level)
                   .appendTo($li);
             }

@@ -28,6 +28,12 @@ ul.level-3 { display: none; }
 	.lang-nolang .h3 { font-size: 1.3em; padding-bottom: 8px; }
 	.lang-nolang .h4 { font-size: 1.1em; padding-bottom: 5px; }
 
+span.h1, span.h2, span.h3, span.h4 { font-weight: bold; display: block; padding-top: 18px; }
+span.h1 { font-size: 1.5em; }
+span.h2 { font-size: 1.4em; }
+span.h3 { font-size: 1.3em; }
+span.h4 { font-size: 1.1em; }
+
 .theme-switch { position: absolute; }
 	.theme-switch a:first-child { margin-right: 10px; }
 .theme { display: inline-block; cursor: pointer; box-shadow: 1px 1px 1px #aaa; }

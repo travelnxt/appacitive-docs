@@ -7,4 +7,5 @@
   <file>/scripts/infra/flatdoc.js</file>
   <file>/scripts/code/script.js</file>
   <file>/scripts/infra/md5.js</file>
+  <file>/scripts/infra/gAnalytics.js</file>
 </bundle>
