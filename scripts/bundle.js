@@ -2182,7 +2182,7 @@ Also includes:
             currentId = cid;
             // Add the location hash via pushState.
             if (reCal == false && window.history.pushState) {
-                var href = window.location.href.replace(window.location.hash, "") + "#" + cid;
+                var href = window.location.href.replace(window.location.hash, "") + "#" + window.lang + "/" + cid;
                 window.history.pushState({ href: href }, "", href);
             }
         });
@@ -2222,7 +2222,7 @@ Also includes:
         //jump to hash
         if (window.location.hash != "") {
             setTimeout(function () {
-                $("[href='" + window.location.hash + "']").trigger("click");
+                $("[href='" + window.location.hash.replace(window.lang, "") + "']").trigger("click");
             }, 1000);
         }
 
@@ -2240,6 +2240,12 @@ Also includes:
                 $(".lang").hide();
                 var selected = $that.data("lang").toLowerCase();
                 $(".lang-" + selected).show();
+                switch (selected) {
+                    case "rest": window.lang = "curl"; break;
+                    case "csharp": window.lang = "dotnet"; break;
+                    default: window.lang = selected; break;
+                }
+
             }
 
             if (first)
@@ -2586,6 +2592,8 @@ Also includes:
             top = Math.max(0, $area.offset().top + offset);
         }
         $('html, body').scrollTop(top);
+
+        href = "#" + window.lang + "/" + href.replace("#", "");
 
         $('body').trigger('anchor', href);
 
