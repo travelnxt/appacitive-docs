@@ -2222,7 +2222,9 @@ Also includes:
         //jump to hash
         if (window.location.hash != "") {
             setTimeout(function () {
-                $("[href='" + window.location.hash.replace(window.lang, "") + "']").trigger("click");
+                var split = window.location.hash.split('/');
+                if (split.length > 1) $("[href='#" + window.location.hash.split('/')[1] + "']").trigger("click");
+                else $("[href='" + window.location.hash + "']").trigger("click");
             }, 1000);
         }
 
