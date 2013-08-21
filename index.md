@@ -135,7 +135,7 @@ https://apis.appacitive.com/article/device/find/all
 
 Appacitive Entities
 =======
-Some thing about the terms used in Appacitive like article, connection, relation etc.
+In the next few sections we briefly describe some of the basic terms used in Appacitive like articles, connections, users, files etc.
 
 Article
 -------
@@ -145,11 +145,11 @@ The article api allows you to store, retrieve and manage all the data that you s
 
 <span class="h3">The article object</span>
 
-** System generated attributes ** 
+** System generated properties ** 
 
 <dl>
   <dt>\__id</dt>
-  <dd><span>Unique time-series <a href="http://en.wikipedia.org/wiki/Monotonic_function">monotonic</a> id automatically assigned by the system on creation. This is immutable.</span></dd>
+  <dd><span>Unique time-series strictly <a href="http://en.wikipedia.org/wiki/Monotonic_function">monotonically</a> increasing id automatically assigned by the system on creation. This is immutable.</span></dd>
   <dt>\__schematype</dt>
   <dd><span>The type of the article as per the schema structure designed by you via the schema designer.</span></dd>
   <dt>\__createdby</dt>
@@ -179,10 +179,9 @@ $$$sample object
   // system properties
   "__id": "24208366452736268",
   "__schematype": "score",
-  "__createdby": "42241231222736268",
-  "__lastmodifiedby": "42241231222736268",
-  "__revision": "2",
-  "__tags": [],
+  "__createdby": "System",
+  "__lastmodifiedby": "System",
+  "__revision": "1",  
   "__utcdatecreated": "2013-04-25T05:01:37.0000000Z",
   "__utclastupdateddate": "2013-04-25T05:02:01.0000000Z",
 
@@ -194,8 +193,11 @@ $$$sample object
   // attributes
   "__attributes": {
     "is_first_time_user" : "true",
-    "has_verified" : "false"
-  }
+    "team_color" : "blue"
+  },
+
+  // tags
+  "__tags": ["amateur","unverified"]
 }
 ```
 
@@ -205,7 +207,7 @@ score.Set<string>("difficulty", "normal");
 score.Set<int>("level", 10);
 score.Set<long>("score", 1400);
 score.SetAttribute("is_first_time_user", "true");
-score.SetAttribute("has_verified", "false");
+score.SetAttribute("team_color", "blue");
 ```
 
 ``` javascript
@@ -1116,11 +1118,138 @@ await Connections.MultiDeleteAsync("review", ids);
 Users
 ------------
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. 
+Users represent your apps' users whose management API's are provided out of the box. They are internally simply articles of an inbuilt schema ```user``` with added features of authentication, location tracking, password management, session management and third-party social integration.
+While working with user API(s) you need to pass an additional header ```Appacitive-User-Auth``` with its value set to a valid user session token generated for that user.
+
+<span class="h3">The user object</span>
+
+** System generated properties ** 
+
+The user object has all the system defined properties present in an article. It also has some additional predefined properties and you can add more properties to it the same way you would add properties to any other schema. 
+The additional predefined properties are as follows.
+
+
+<dl>
+  <dt>username</dt>
+  <dd><span>A ```unique``` and ```mandatory``` string property for storing a username for every user in the system.</span></dd>
+  <dt>birthdate</dt>
+  <dd><span>A ```non-mandatory``` ```date``` property to store the date of birth of that user.</span></dd>
+  <dt>firstname</dt>
+  <dd><span>A ```mandatory``` string property for the firstname of the user.</span></dd>
+  <dt>lastname</dt>
+  <dd><span>An ```optional``` string property for the lastname of the user.</span></dd>
+  <dt>email</dt>
+  <dd><span>An optional string property with a email ```regex validation``` on it for storing and managing the users email address.</span></dd>
+  <dt>location</dt>
+  <dd><span>An optional ```geo``` property for checkin management and geo-based querying.</span></dd>
+  <dt>password</dt>
+  <dd><span>A ```masked``` ```mandatory``` string property for storing and managing the password for that user.</span></dd>
+  <dt>phone</dt>
+  <dd><span>An optional string property for storing the phone number of the user.</span></dd>
+  <dt>secretquestion</dt>
+  <dd><span>An ```optional``` string property which is used for password recovery.</span></dd>
+  <dt>secretanswer</dt>
+  <dd><span>An ```optional``` ```masked``` string property which is used for password recovery.</span></dd>
+  <dt>isemailverified</dt>
+  <dd><span>An ```optional``` ```bool``` property which is set to true once a user verifies his email address.</span></dd>
+  <dt>isenabled</dt>
+  <dd><span>An ```optional``` ```bool``` property which lets you block the user.</span></dd>
+  <dt>isonline</dt>
+  <dd><span>An ```optional``` ```bool``` property which lets you check whether the user is currently online.</span></dd>
+  <dt>connectionid</dt>
+  <dd><span>An optional string property which lets you handle the user with real time messaging. For more info check out the RTM docs.</span></dd>
+</dl>
+
+
+``` rest
+$$$sample object 
+{
+	"__id": "34889377044890389",
+	"__schematype": "user",
+	"__createdby": "System",
+	"__lastmodifiedby": "System",
+	"__schemaid": "34888670844153416",
+	"__revision": "1",
+	"__tags": ["newuser", "male"],
+	"__utcdatecreated": "2013-08-21T02:31:42.8498473Z",
+	"__utclastupdateddate": "2013-08-21T02:31:42.8498473Z",
+	"username": "john.doe",
+	"location": "18.534064,73.899551",
+	"email": "john.doe@appacitive.com",
+	"firstname": "John",
+	"lastname": "Doe",
+	"birthdate": "1982-11-17",
+	"isemailverified": "false",
+	"isenabled": "true",
+	"phone": "9876543210",
+	"__attributes": {}
+}
+```
+
 
 ### Create
 
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
+Creates a new user in the system.
+
+** Parameters ** 
+
+<dl>
+  <dt>user object</dt>
+  <dd>required<br/><span>The user object</span></dd>
+</dl>
+
+** Response **
+
+Returns the newly created user object with all the system defined properties (e.g., ``__id``) set.
+In case of an error, the `status` object contains details for the failure.
+
+``` rest
+$$$Method
+PUT https://apis.appacitive.com/user/
+```
+``` rest
+$$$Sample Request
+//Create a new user
+curl -X PUT \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Content-Type: application/json" \
+-d '{ "__tags": ["newuser"], "username": "john.doe", "firstname": "John", "email": "john.doe@appacitive.com", "password": "p@ssw0rd" }' \
+https://apis.appacitive.com/user
+```
+``` rest
+$$$Sample Response
+{
+	"user": {
+		"__id": "34889981737698423",
+		"__schematype": "user",
+		"__createdby": "System",
+		"__lastmodifiedby": "System",
+		"__schemaid": "34888670847828365",
+		"__revision": "1",
+		"__tags": [
+			"newuser"
+		],
+		"__utcdatecreated": "2013-08-21T02:41:19.5142397Z",
+		"__utclastupdateddate": "2013-08-21T02:41:19.5142397Z",
+		"username": "john.doe",
+		"email": "john.doe@appacitive.com",
+		"firstname": "John",
+		"isemailverified": "false",
+		"isenabled": "true",
+		"phone": "N/A",
+		"__attributes": {}
+	},
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
+		"additionalmessages": []
+	}
+}
+```
 
 ``` javascript
 //TODO
@@ -1131,8 +1260,8 @@ var user = new User
 {
     Username = "john.doe",
     FirstName = "John",
-    Email = "john.doe@gmail.com",
-    Password = "password"
+    Email = "john.doe@appacitive.com",
+    Password = "p@ssw0rd"
 };
 await user.SaveAsync();
 ```
