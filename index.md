@@ -1187,15 +1187,19 @@ $$$sample object
 ```
 
 
-### Create
+### Creating a new user
 
-Creates a new user in the system.
+Appacitive provides multiple ways a new user can be added to your app. You may choose to use the Appacitive user management system alone to manage all your app users or integrate with facebook, twitter or any other <a href="http://en.wikipedia.org/wiki/OAuth">OAuth</a> provider for identity management.
+
+#### Creating a simple user
+
+Creates a new user in the Appacitive system.
 
 ** Parameters ** 
 
 <dl>
   <dt>user object</dt>
-  <dd>required<br/><span>The user object</span></dd>
+  <dd>required<br/><span>The user object</span></dd>  
 </dl>
 
 ** Response **
@@ -1251,9 +1255,6 @@ $$$Sample Response
 }
 ```
 
-``` javascript
-//TODO
-```
 ``` csharp
 //Create a User
 var user = new User
@@ -1265,8 +1266,205 @@ var user = new User
 };
 await user.SaveAsync();
 ```
+#### Creating a user with facebook access token
 
+Creates a new user in the Appacitive system and links it to a facebook account.
 
+** Parameters ** 
+
+<dl>
+  <dt>user object</dt>
+  <dd>required<br/><span>The user object</span></dd>  
+  <dt>```__link``` object property in the user object</dt>
+  <dd>required<br/><span>Details about the linked account</span></dd>  
+</dl>
+
+``` rest
+$$$Method
+PUT https://apis.appacitive.com/user/
+```
+``` rest
+$$$Sample Request
+//Create a new user
+curl -X PUT \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Content-Type: application/json" \
+-d '{
+	"username": "john.doe",
+	"firstname": "John",
+	"email": "john.doe@appacitive.com",
+	"password": "p@ssw0rd",
+	"__link": {
+		"authtype": "facebook",
+		"accesstoken": "{facebook access token}"
+	}
+}' \
+https://apis.appacitive.com/user
+```
+``` rest
+$$$Sample Response
+{
+	"user": {
+		"__id": "34889981737698423",
+		"__schematype": "user",
+		"__createdby": "System",
+		"__lastmodifiedby": "System",
+		"__schemaid": "34888670847828365",
+		"__revision": "1",
+		"__tags": [
+			"newuser"
+		],
+		"__utcdatecreated": "2013-08-21T02:41:19.5142397Z",
+		"__utclastupdateddate": "2013-08-21T02:41:19.5142397Z",
+		"username": "john.doe",
+		"email": "john.doe@appacitive.com",
+		"firstname": "John",
+		"isemailverified": "false",
+		"isenabled": "true",
+		"phone": "N/A",
+		"__attributes": {}
+	},
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
+		"additionalmessages": []
+	}
+}
+```
+#### Creating a user with twitter access token
+
+Creates a new user in the Appacitive system and links it to a twitter account.
+
+** Parameters ** 
+
+<dl>
+  <dt>user object</dt>
+  <dd>required<br/><span>The user object</span></dd>  
+  <dt>```__link``` object property in the user object</dt>
+  <dd>required<br/><span>Details about the linked account</span></dd>  
+</dl>
+
+``` rest
+$$$Method
+PUT https://apis.appacitive.com/user/
+```
+``` rest
+$$$Sample Request
+//Create a new user
+curl -X PUT \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Content-Type: application/json" \
+-d '{
+	"username": "john.doe",
+	"firstname": "John",
+	"email": "john.doe@appacitive.com",
+	"password": "p@ssw0rd",
+	"__link": {
+             "authtype": "twitter",
+             "oauthtoken": "{twitter oauth token}",
+             "oauthtokensecret": "{twitter oauth token secret}",
+             "consumerkey": "{twitter consumer key}",
+             "consumersecret": "{twitter consumer secret}"
+         }
+}' \
+https://apis.appacitive.com/user
+```
+``` rest
+$$$Sample Response
+{
+	"user": {
+		"__id": "34889981737698423",
+		"__schematype": "user",
+		"__createdby": "System",
+		"__lastmodifiedby": "System",
+		"__schemaid": "34888670847828365",
+		"__revision": "1",
+		"__tags": [
+			"newuser"
+		],
+		"__utcdatecreated": "2013-08-21T02:41:19.5142397Z",
+		"__utclastupdateddate": "2013-08-21T02:41:19.5142397Z",
+		"username": "john.doe",
+		"email": "john.doe@appacitive.com",
+		"firstname": "John",
+		"isemailverified": "false",
+		"isenabled": "true",
+		"phone": "N/A",
+		"__attributes": {}
+	},
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
+		"additionalmessages": []
+	}
+}
+```
+
+#### Create a user with just the facebook access token
+
+You can optionally create a new user in the Appacitive system with just the facebook access token of the user. You can use this option to integrate facebook login in your app.
+
+``` rest
+$$$Method
+PUT https://apis.appacitive.com/user/
+```
+``` rest
+$$$Sample Request
+//Create a new user
+curl -X PUT \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Content-Type: application/json" \
+-d '{
+	"type": "facebook",
+	"accesstoken": "{facebook access token}",
+	"createnew": true
+}' \
+https://apis.appacitive.com/user
+```
+``` rest
+$$$Sample Response
+{
+	"user": {
+		"__id": "34889981737698423",
+		"__schematype": "user",
+		"__createdby": "System",
+		"__lastmodifiedby": "System",
+		"__schemaid": "34888670847828365",
+		"__revision": "1",
+		"__tags": [
+			"newuser"
+		],
+		"__utcdatecreated": "2013-08-21T02:41:19.5142397Z",
+		"__utclastupdateddate": "2013-08-21T02:41:19.5142397Z",
+		"username": "john.doe",
+		"email": "john.doe@appacitive.com",
+		"firstname": "John",,
+		"lastname": "Doe",
+		"birthdate": "1980-05-20",
+		"isemailverified": "false",
+		"isenabled": "true",
+		"phone": "N/A",
+		"__attributes": {}
+	},
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
+		"additionalmessages": []
+	}
+}
+```
 ### Update
 
 Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
