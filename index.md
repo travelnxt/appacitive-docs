@@ -1633,6 +1633,11 @@ $$$Sample Response
 	}
 }
 ```
+
+#### Get a specific linked account
+
+#### Get all linked accounts
+
 ### Authenticating a user
 
 You need to authenticate the user to the Appacitive API and create a session `token` for the user every time he logs into your app, to make user specefic API calls.
@@ -2072,22 +2077,98 @@ $$$Sample Response
 }
 ```
 
-### Link Management
-
-#### Link exising Appacitive user
-
-#### Delink Appacitive user
-
-#### Get a specefic linked account
-
-#### Get all linked accounts
-
 ### Updating a user
 
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
+The update user call is similar to the update article call. 
+The properties you send with non-null values will get modified if they aren't immutable.
+The properties you don't send in the body of the POST call stay unchanged.
+The properties you send with values set to `null` are deleted from the user.
+The same convention is followed with `__attributes`.
+Use the `__addtags` and `__removetags` properties to update tags.
+ 
+** Parameters ** 
 
-``` javascript
-//TODO
+<dl>
+  <dt>user object</dt>
+  <dd>required<br/><span>The user object with inserted, modified or nullified values.</span></dd>  
+</dl>
+
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+** Response **
+
+Returns the updated user object with the `__revision` number incremented.
+In case of an error, the `status` object contains details for the failure.
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/user/
+```
+``` rest
+$$$Sample Request
+//	Update user
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Content-Type: application/json" \
+-d '{
+        "firstname":"john",
+        "email":"johnny@appacitive.com",
+        "username":"johnny",
+        "phone": null,
+        "isenabled":"true",
+        "lastname":null,
+        "__addtags":[
+           "coffee.lover",
+           "foodie"
+        ],
+        "__removetags":[
+           "newuser"
+        ]
+     }' \
+https://apis.appacitive.com/user
+```
+``` rest
+$$$Sample Response
+{
+	"user": {
+		"__id": "34889981737698423",
+		"__schematype": "user",
+		"__createdby": "System",
+		"__lastmodifiedby": "System",
+		"__schemaid": "34888670847828365",
+		"__revision": "2",
+		"__tags": [
+			"coffee.lover",
+            "foodie"
+		],
+		"__utcdatecreated": "2013-08-21T02:41:19.5142397Z",
+		"__utclastupdateddate": "2013-08-21T02:41:19.5142397Z",
+		"username": "john.doe",
+		"email": "johnny@appacitive.com",
+		"firstname": "John",
+		"isemailverified": "false",
+		"isenabled": "true",
+		"__attributes": {}
+	},
+	"status": {
+		"code": "201",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
+		"additionalmessages": []
+	}
+}
 ```
 ``` csharp
 //Get the user which needs to be updated
@@ -2117,26 +2198,198 @@ var users = await Users.FindAllAsync(query.ToString());
 
 ### Deleting a user
 
+Delete requests follow the same practise as get request for user, the only difference being that you send a DELETE HTTP request instead of a GET request.
+There are three ways you could delete the user.
+
+** Parameters **
+
+<dl>
+	<dt>user identifier</dt>
+	<dd>required<br/><span>An identifier to identify the user like username, id or token.	
+</dl>
+
+** Response **
+
+A status object describing the status of the delete user call.
+
 #### Deleting a user by his id
 
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
+** HTTP headers **
 
-``` javascript
-//TODO
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Appacitive-User-Auth</dt>
+	<dd>required<br/><span>A session token generated for a user.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+
+``` rest
+$$$Method
+DELETE https://apis.appacitive.com/user/{userId}
 ```
-``` csharp
-//Delete user by it's `id`
-await Users.DeleteUserAsync("1234567");
+``` rest
+$$$Sample Request
+//	Delete user using his id
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Appacitive-User-Auth: {User token}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/34912447775245454
+```
+``` rest
+$$$Sample Response
+{
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
+		"additionalmessages": []
+	}
+}
+```
+#### Delete user by username
+
+An additional query string parameter called `useridtype` is sent to specify the kind of user identifier you are using.
+
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Appacitive-User-Auth</dt>
+	<dd>required<br/><span>A session token generated for a user.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+
+``` rest
+$$$Method
+DELETE https://apis.appacitive.com/user/{username}?useridtype=username
+```
+``` rest
+$$$Sample Request
+//	Delete user using his username
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Appacitive-User-Auth: {User token}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/john.doe?useridtype=username
+```
+``` rest
+$$$Sample Response
+{
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
+		"additionalmessages": []
+	}
+}
 ```
 
-#### Deleting a user by his username
+#### Delete user by user token
 
-#### Deleting a user by his user token
+Here you can get a user by his session token. 
+A valid session token still needs to be passed in the `Appacitive-User-Auth` header, but the user that is deleted is the user whose token you pass as the query string parameter `token`.
 
-#### Deleting a user with connections
+** HTTP headers **
 
-Vivamus malesuada purus eget neque hendrerit dignissim. Suspendisse dignissim sem vitae erat ultrices aliquet. Donec vulputate urna metus, non volutpat ipsum 
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Appacitive-User-Auth</dt>
+	<dd>required<br/><span>A session token generated for a user.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
 
+``` rest
+$$$Method
+DELETE https://apis.appacitive.com/user/me?useridtype=token&token={user token}
+```
+``` rest
+$$$Sample Request
+//	Delete user using his session token
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Appacitive-User-Auth: {User token}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/me?useridtype=token&token=K2liWXVlSHZ0elNESUloTFlLRE5EQ2lzWXZtM0FFL0JxYW01WTBtVFlmTHZ6aHFMaWtEKzRUdlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa2kvekJpTUZGYyt2ZEFTVi9mbGdNN2xRaEZuWUJidVByR3lFMkZlTzNrRHV3cldVUFRNbFA5M3B6NFN5Rkd3K1dNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==
+```
+``` rest
+$$$Sample Response
+{
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
+		"additionalmessages": []
+	}
+}
+```
+#### Deleting a user along with all connections to it
+
+You can pass an optional query string parameter called `deleteconnections` with its value set to `true` to also delete all connections associated with the user object you want to delete.
+
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Appacitive-User-Auth</dt>
+	<dd>required<br/><span>A session token generated for a user.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+``` rest
+$$$Method
+DELETE https://apis.appacitive.com/user/{userid}?deleteconnections=true
+```
+``` rest
+$$$Sample Request
+//	Delete user using his session token
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Appacitive-User-Auth: {User token}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/416176845248641548?deleteconnections=true
+```
+``` rest
+$$$Sample Response
+{
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
+		"additionalmessages": []
+	}
+}
+```
 ``` javascript
 //Setting the third argument to true will delete its connections if they exist
 player.del(function(obj) {
