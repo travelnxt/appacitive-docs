@@ -1575,13 +1575,7 @@ curl -X PUT \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: sandbox" \
 -H "Content-Type: application/json" \
--d '{
-	"authtype": "twitter",
-	"oauthtoken": "{twitter oauth token}",
-	"oauthtokensecret": "{twitter oauth token secret}",
-	"consumerkey": "{twitter consumer key}",
-	"consumersecret": "{twitter consumer secret}"
-}' \
+-d '{ "authtype": "twitter", "oauthtoken": "{twitter oauth token}",	"oauthtokensecret": "{twitter oauth token secret}",	"consumerkey": "{twitter consumer key}", "consumersecret": "{twitter consumer secret}" }' \
 https://apis.appacitive.com/user/john.doe/link?useridtype=username
 ```
 ``` rest
@@ -1635,6 +1629,225 @@ $$$Sample Response
 		"faulttype": null,
 		"version": null,
 		"referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
+		"additionalmessages": []
+	}
+}
+```
+### Authenticating a user
+
+You need to authenticate the user to the Appacitive API and create a session `token` for the user every time he logs into your app, to make user specefic API calls.
+You will pass this session token as a HTTP header called `Appacitive-User-Auth`. The user object is also returned on a successful authentication call.
+
+#### Authenticating user by username and password
+
+** Parameter **
+
+<dl>
+	<dt>username</dt>
+	<dd>required<br/><span>The unique username for the user.
+	<dt>password</dt>
+	<dd>required<br/><span>The password associated for the user.
+	<dt>expiry</dt>
+	<dd>optional<br/><span>An optional integer which specifies the cascading window duration (in minutes) for the validity of the created token.
+	<dt>attempts</dt>
+	<dd>optional<br/><span>An optional integer which specifies for how many calls is the token valid for.
+</dl>
+
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+** Response **
+
+A newly generated string session `token`, the `user` object itself and a `status` object are returned.
+
+
+``` csharp
+//Authenticating user by `username` and `password`
+var creds = new UsernamePasswordCredentials("username", "password")
+{
+   TimeoutInSeconds = 15 * 60,
+   MaxAttempts = int.MaxValue 
+};
+ 
+// Authenticate
+var result = await creds.AuthenticateAsync();
+User loggedInUser = result.LoggedInUser;
+string token = result.UserToken;
+
+//If you want to setup user context for the application you will need to do
+var creds = new UsernamePasswordCredentials("username", "password")
+{
+   TimeoutInSeconds = 15 * 60,
+   MaxAttempts = int.MaxValue
+};
+
+var userSession = await App.LoginAsync(credentials);
+var user = userSession.LoggedInUser;  //Logged in user
+```
+``` rest
+$$$Method
+POST https://apis.appacitive.com/user/authenticate
+```
+``` rest
+$$$Sample Request
+//Authenticate user with his username and password
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Content-Type: application/json" \
+-d '{ "username": "john.doe", "password": "p@ssw0rd" }' \
+https://apis.appacitive.com/user/authenticate
+```
+``` rest
+$$$Sample Response
+{
+	"token": "SThEdVFBc01ZRlR0N2ZEajRjNGV6UjhDREU1UWNxVURsK0E4bmZUQmYyOVdnbVlIdFhHQjZ6dlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa29LMWowMkg1c0trMXZxemFCS2dTaTNJaVpNRlBNKzdSZ3Y5OGlvT2hoRkMzd3dmTU5qcGtNRDN4R0Fzd3JwaU5jTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==",
+	"user": {
+		"__id": "34912447775245454",
+		"__schematype": "user",
+		"__createdby": "System",
+		"__lastmodifiedby": "System",
+		"__schemaid": "34888670847828365",
+		"__revision": "1",
+		"__tags": [],
+		"__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
+		"__utclastupdateddate": "2013-08-21T08:38:24.0000000Z",
+		"username": "john.doe",
+		"email": "john.doe@appacitive.com",
+		"firstname": "John",
+		"lastname": "Doe",
+		"birthdate": "1982-11-17",
+		"isemailverified": "false",
+		"isenabled": "true",
+		"location": "18.534064000000000,73.899551000000000",
+		"phone": "9876543210",
+		"__attributes": {}
+	},
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "237a743a-9091-48a4-8433-6643415cb970",
+		"additionalmessages": []
+	}
+}
+```
+
+#### Authenticate with facebook access token
+
+You can authenticate a user using a session token for one of his linked identities like facebook or twitter.
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/user/authenticate
+```
+``` rest
+$$$Sample Request
+//Authenticate user with his username and password
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Content-Type: application/json" \
+-d '{ "type": "facebook", "accesstoken": "{facebook access token}" }' \
+https://apis.appacitive.com/user/authenticate
+```
+``` rest
+$$$Sample Response
+{
+	"token": "SThEdVFBc01ZRlR0N2ZEajRjNGV6UjhDREU1UWNxVURsK0E4bmZUQmYyOVdnbVlIdFhHQjZ6dlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa29LMWowMkg1c0trMXZxemFCS2dTaTNJaVpNRlBNKzdSZ3Y5OGlvT2hoRkMzd3dmTU5qcGtNRDN4R0Fzd3JwaU5jTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==",
+	"user": {
+		"__id": "34912447775245454",
+		"__schematype": "user",
+		"__createdby": "System",
+		"__lastmodifiedby": "System",
+		"__schemaid": "34888670847828365",
+		"__revision": "1",
+		"__tags": [],
+		"__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
+		"__utclastupdateddate": "2013-08-21T08:38:24.0000000Z",
+		"username": "john.doe",
+		"email": "john.doe@appacitive.com",
+		"firstname": "John",
+		"lastname": "Doe",
+		"birthdate": "1982-11-17",
+		"isemailverified": "false",
+		"isenabled": "true",
+		"location": "18.534064000000000,73.899551000000000",
+		"phone": "9876543210",
+		"__attributes": {}
+	},
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "237a743a-9091-48a4-8433-6643415cb970",
+		"additionalmessages": []
+	}
+}
+```
+
+
+#### Authenticate with twitter token, secret and consumer key, secret
+
+The `consumerkey` and `consumersecret` are optional here. 
+You can set them up once using the management portal in the social network settings tab.
+
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/user/authenticate
+```
+``` rest
+$$$Sample Request
+//Authenticate user with his username and password
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Content-Type: application/json" \
+-d '{ "type": "twitter", "oauthtoken": "{oAuth token}",	"oauthtokensecret": "{oAuth token secret}",	"consumerKey": "{consumer key}", "consumerSecret": "{consumer secret}" }' \
+https://apis.appacitive.com/user/authenticate
+```
+``` rest
+$$$Sample Response
+{
+	"token": "SThEdVFBc01ZRlR0N2ZEajRjNGV6UjhDREU1UWNxVURsK0E4bmZUQmYyOVdnbVlIdFhHQjZ6dlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa29LMWowMkg1c0trMXZxemFCS2dTaTNJaVpNRlBNKzdSZ3Y5OGlvT2hoRkMzd3dmTU5qcGtNRDN4R0Fzd3JwaU5jTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==",
+	"user": {
+		"__id": "34912447775245454",
+		"__schematype": "user",
+		"__createdby": "System",
+		"__lastmodifiedby": "System",
+		"__schemaid": "34888670847828365",
+		"__revision": "1",
+		"__tags": [],
+		"__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
+		"__utclastupdateddate": "2013-08-21T08:38:24.0000000Z",
+		"username": "john.doe",
+		"email": "john.doe@appacitive.com",
+		"firstname": "John",
+		"lastname": "Doe",
+		"birthdate": "1982-11-17",
+		"isemailverified": "false",
+		"isenabled": "true",
+		"location": "18.534064000000000,73.899551000000000",
+		"phone": "9876543210",
+		"__attributes": {}
+	},
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "237a743a-9091-48a4-8433-6643415cb970",
 		"additionalmessages": []
 	}
 }
@@ -1858,46 +2071,6 @@ $$$Sample Response
 	}
 }
 ```
-### Authenticating a user
-
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
-
-
-#### Authenticating user by Username and Password
-
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero. Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
-
-``` javascript
-//TODO
-```
-``` csharp
-//Authenticating user by `username` and `password`
-var creds = new UsernamePasswordCredentials("username", "password")
-{
-   TimeoutInSeconds = 15 * 60,
-   MaxAttempts = int.MaxValue 
-};
- 
-// Authenticate
-var result = await creds.AuthenticateAsync();
-User loggedInUser = result.LoggedInUser;
-string token = result.UserToken;
-
-//If you want to setup user context for the application you will need to do
-var creds = new UsernamePasswordCredentials("username", "password")
-{
-   TimeoutInSeconds = 15 * 60,
-   MaxAttempts = int.MaxValue
-};
-
-var userSession = await App.LoginAsync(credentials);
-var user = userSession.LoggedInUser;  //Logged in user
-```
-#### Authenticate with facebook access token
-
-#### Authenticate with twitter token and secret
-
-#### Authenticate with twitter token, secret and consumer key, secret
 
 ### Link Management
 
