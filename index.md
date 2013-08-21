@@ -1131,25 +1131,25 @@ The additional predefined properties are as follows.
 
 <dl>
   <dt>username</dt>
-  <dd><span>A ```unique``` and ```mandatory``` string property for storing a username for every user in the system.</span></dd>
+  <dd><span>A ```unique``` and ```mandatory``` ```string``` property for storing a username for every user in the system.</span></dd>
   <dt>birthdate</dt>
   <dd><span>A ```non-mandatory``` ```date``` property to store the date of birth of that user.</span></dd>
   <dt>firstname</dt>
-  <dd><span>A ```mandatory``` string property for the firstname of the user.</span></dd>
+  <dd><span>A ```mandatory``` ```string``` property for the firstname of the user.</span></dd>
   <dt>lastname</dt>
-  <dd><span>An ```optional``` string property for the lastname of the user.</span></dd>
+  <dd><span>An ```optional``` ```string``` property for the lastname of the user.</span></dd>
   <dt>email</dt>
-  <dd><span>An optional string property with a email ```regex validation``` on it for storing and managing the users email address.</span></dd>
+  <dd><span>An ```optional``` ```string``` property with a email ```regex``` validation on it for storing and managing the users email address.</span></dd>
   <dt>location</dt>
-  <dd><span>An optional ```geo``` property for checkin management and geo-based querying.</span></dd>
+  <dd><span>An ```optional``` ```geo``` property for checkin management and geo-based querying.</span></dd>
   <dt>password</dt>
-  <dd><span>A ```masked``` ```mandatory``` string property for storing and managing the password for that user.</span></dd>
+  <dd><span>A ```masked``` and ```mandatory``` ```string``` property for storing and managing the password for that user.</span></dd>
   <dt>phone</dt>
-  <dd><span>An optional string property for storing the phone number of the user.</span></dd>
+  <dd><span>An ```optional``` ```string``` property for storing the phone number of the user.</span></dd>
   <dt>secretquestion</dt>
-  <dd><span>An ```optional``` string property which is used for password recovery.</span></dd>
+  <dd><span>An ```optional``` ```string``` property which is used for password recovery.</span></dd>
   <dt>secretanswer</dt>
-  <dd><span>An ```optional``` ```masked``` string property which is used for password recovery.</span></dd>
+  <dd><span>An ```optional``` ```masked``` ```string``` property which is used for password recovery.</span></dd>
   <dt>isemailverified</dt>
   <dd><span>An ```optional``` ```bool``` property which is set to true once a user verifies his email address.</span></dd>
   <dt>isenabled</dt>
@@ -1157,7 +1157,7 @@ The additional predefined properties are as follows.
   <dt>isonline</dt>
   <dd><span>An ```optional``` ```bool``` property which lets you check whether the user is currently online.</span></dd>
   <dt>connectionid</dt>
-  <dd><span>An optional string property which lets you handle the user with real time messaging. For more info check out the RTM docs.</span></dd>
+  <dd><span>An ```optional``` ```string``` property which lets you manage the user with real time messaging. For more info check out the RTM docs.</span></dd>
 </dl>
 
 
@@ -1185,7 +1185,6 @@ $$$sample object
 	"__attributes": {}
 }
 ```
-
 
 ### Creating a new user
 
@@ -1465,23 +1464,11 @@ $$$Sample Response
 	}
 }
 ```
-### Update
 
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
+#### Link account with existing Appacitive user.
 
-``` javascript
-//TODO
-```
-``` csharp
-//Get the user which needs to be updated
-var user = await Users.GetByIdAsync("123456");
-user.FirstName = "jane";
-//Updating custom field 'city'
-user.Set<string>("city", "New York"); 
-await user.SaveAsync();
-```
 
-### Get
+### Retrieving users
 
 Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
 
@@ -1525,53 +1512,7 @@ Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae p
 var loggedInUser = await Users.GetLoggedInUserAsync();
 ```
 
-### Search
-
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
-
-``` javascript
-//TODO
-```
-``` csharp
-//Search user by building `Query`
-var token = "john";
-var query = BooleanOperator.Or(new[]{
-                          Query.Property("firstname").Like("*" + token + "*"),
-                          Query.Property("lastname").Like("*" + token + "*")
-                 });
-var users = await Users.FindAllAsync(query.ToString());
-```
-
-### Delete
-
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
-
-``` javascript
-//TODO
-```
-``` csharp
-//Delete user by it's `id`
-await Users.DeleteUserAsync("1234567");
-```
-
-#### Delete with Connection
-
-Vivamus malesuada purus eget neque hendrerit dignissim. Suspendisse dignissim sem vitae erat ultrices aliquet. Donec vulputate urna metus, non volutpat ipsum 
-
-``` javascript
-//Setting the third argument to true will delete its connections if they exist
-player.del(function(obj) {
-    alert('Deleted successfully');
-}, function(err, obj) {
-    alert('Delete failed')
-}, true); 
-```
-``` csharp
-//Delete user with connected articles
-await Users.DeleteUserAsync("1234567", true);
-```
-
-### Authentication
+### Authenticating a user
 
 Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
 
@@ -1606,6 +1547,108 @@ var creds = new UsernamePasswordCredentials("username", "password")
 var userSession = await App.LoginAsync(credentials);
 var user = userSession.LoggedInUser;  //Logged in user
 ```
+#### Authenticate with facebook access token
+
+#### Authenticate with twitter token and secret
+
+#### Authenticate with twitter token, secret and consumer key, secret
+
+### Link Management
+
+#### Link exising Appacitive user
+
+#### Delink Appacitive user
+
+#### Get a specefic linked account
+
+#### Get all linked accounts
+
+### Updating a user
+
+Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
+
+``` javascript
+//TODO
+```
+``` csharp
+//Get the user which needs to be updated
+var user = await Users.GetByIdAsync("123456");
+user.FirstName = "jane";
+//Updating custom field 'city'
+user.Set<string>("city", "New York"); 
+await user.SaveAsync();
+```
+
+### Searching for users
+
+Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
+
+``` javascript
+//TODO
+```
+``` csharp
+//Search user by building `Query`
+var token = "john";
+var query = BooleanOperator.Or(new[]{
+                          Query.Property("firstname").Like("*" + token + "*"),
+                          Query.Property("lastname").Like("*" + token + "*")
+                 });
+var users = await Users.FindAllAsync(query.ToString());
+```
+
+### Deleting a user
+
+#### Deleting a user by his id
+
+Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
+
+``` javascript
+//TODO
+```
+``` csharp
+//Delete user by it's `id`
+await Users.DeleteUserAsync("1234567");
+```
+
+#### Deleting a user by his username
+
+#### Deleting a user by his user token
+
+#### Deleting a user with connections
+
+Vivamus malesuada purus eget neque hendrerit dignissim. Suspendisse dignissim sem vitae erat ultrices aliquet. Donec vulputate urna metus, non volutpat ipsum 
+
+``` javascript
+//Setting the third argument to true will delete its connections if they exist
+player.del(function(obj) {
+    alert('Deleted successfully');
+}, function(err, obj) {
+    alert('Delete failed')
+}, true); 
+```
+``` csharp
+//Delete user with connected articles
+await Users.DeleteUserAsync("1234567", true);
+```
+
+### Session Management
+
+#### Validate session
+
+#### Invalidate session
+
+### Checkin Management
+
+### Password Management
+
+#### Reset password
+
+#### Send forgot password email
+
+#### Validate reset password token
+
+#### Reset forgot password
+
 
 Files
 ------------
@@ -1658,6 +1701,10 @@ await download.DownloadFileAsync(localFileName);
 var downloadUrl = await download.GetDownloadUrl(30);
 //Custom logic to download file
 ```
+
+### Delete
+
+### Update
 
 Querying Data
 ------------
