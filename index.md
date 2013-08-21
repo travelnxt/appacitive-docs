@@ -1118,14 +1118,15 @@ await Connections.MultiDeleteAsync("review", ids);
 Users
 ------------
 
-Users represent your apps' users whose management API's are provided out of the box. They are internally simply articles of an inbuilt schema ```user``` with added features of authentication, location tracking, password management, session management and third-party social integration.
-While working with user API(s) you need to pass an additional header ```Appacitive-User-Auth``` with its value set to a valid user session token generated for that user.
+Users represent your apps' users whose management API's are provided out of the box. They are internally simply articles of an inbuilt schema ```user``` with added features of authentication, location tracking, password management, session management and third-party social integration using OAuth 1.0 or OAuth 2.0.
+
+```Note```: While working with user API(s) you need to pass an additional header ```Appacitive-User-Auth``` with its value set to a valid user session token generated for that user.
 
 <span class="h3">The user object</span>
 
 ** System generated properties ** 
 
-The user object has all the system defined properties present in an article. It also has some additional predefined properties and you can add more properties to it the same way you would add properties to any other schema. 
+The user object contains all the system defined properties present in an article. It also has some additional predefined properties and you can add more properties to the user schema the same way you would add properties to any other schema. 
 The additional predefined properties are as follows.
 
 
@@ -1146,12 +1147,6 @@ The additional predefined properties are as follows.
   <dd><span>A ```masked``` and ```mandatory``` ```string``` property for storing and managing the password for that user.</span></dd>
   <dt>phone</dt>
   <dd><span>An ```optional``` ```string``` property for storing the phone number of the user.</span></dd>
-  <dt>secretquestion</dt>
-  <dd><span>An ```optional``` ```string``` property which is used for password recovery.</span></dd>
-  <dt>secretanswer</dt>
-  <dd><span>An ```optional``` ```masked``` ```string``` property which is used for password recovery.</span></dd>
-  <dt>isemailverified</dt>
-  <dd><span>An ```optional``` ```bool``` property which is set to true once a user verifies his email address.</span></dd>
   <dt>isenabled</dt>
   <dd><span>An ```optional``` ```bool``` property which lets you block the user.</span></dd>
   <dt>isonline</dt>
@@ -1179,7 +1174,6 @@ $$$sample object
 	"firstname": "John",
 	"lastname": "Doe",
 	"birthdate": "1982-11-17",
-	"isemailverified": "false",
 	"isenabled": "true",
 	"phone": "9876543210",
 	"__attributes": {}
@@ -1188,11 +1182,15 @@ $$$sample object
 
 ### Creating a new user
 
-Appacitive provides multiple ways a new user can be added to your app. You may choose to use the Appacitive user management system alone to manage all your app users or integrate with facebook, twitter or any other <a href="http://en.wikipedia.org/wiki/OAuth">OAuth</a> provider for identity management.
+Appacitive provides multiple ways in which a new user can be added to your app.
+You may choose to use the Appacitive user management system alone to manage all your app users or integrate with facebook, twitter or any other <a href="http://en.wikipedia.org/wiki/OAuth">OAuth</a> provider for identity management.
+Appacitive allows you to link as many OAuth accounts with Appacitive user objects and manage them using the user api(s).
 
 #### Creating a simple user
 
-Creates a new user in the Appacitive system.
+Creates a new user in the Appacitive system. This user is an independent user in the Appacitive system for your app without any linked identites. You can link it to a OAuth account later on.
+Some basic system properties are mandatory. These include ```username```, ```firstname``` and ```password```. The username should be unique for every user. Every user is assigned a unique ```__id```.
+All other properties are optional and you may wish to use them according to your app's requirements.
 
 ** Parameters ** 
 
@@ -1201,9 +1199,19 @@ Creates a new user in the Appacitive system.
   <dd>required<br/><span>The user object</span></dd>  
 </dl>
 
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
+
 ** Response **
 
-Returns the newly created user object with all the system defined properties (e.g., ``__id``) set.
+Returns the newly created user object with all the system defined properties set.
 In case of an error, the `status` object contains details for the failure.
 
 ``` rest
@@ -1244,7 +1252,7 @@ $$$Sample Response
 		"__attributes": {}
 	},
 	"status": {
-		"code": "200",
+		"code": "201",
 		"message": "Successful",
 		"faulttype": null,
 		"version": null,
@@ -1274,9 +1282,19 @@ Creates a new user in the Appacitive system and links it to a facebook account.
 <dl>
   <dt>user object</dt>
   <dd>required<br/><span>The user object</span></dd>  
-  <dt>```__link``` object property in the user object</dt>
-  <dd>required<br/><span>Details about the linked account</span></dd>  
+  <dt>```__link``` object</dt>
+  <dd>required<br/><span>Details about the linked account. These are enclosed inside the user object.</span></dd>  
 </dl>
+
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
 
 ``` rest
 $$$Method
@@ -1284,21 +1302,12 @@ PUT https://apis.appacitive.com/user/
 ```
 ``` rest
 $$$Sample Request
-//Create a new user
+//Create a new user and link it to a facebook account
 curl -X PUT \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: sandbox" \
 -H "Content-Type: application/json" \
--d '{
-	"username": "john.doe",
-	"firstname": "John",
-	"email": "john.doe@appacitive.com",
-	"password": "p@ssw0rd",
-	"__link": {
-		"authtype": "facebook",
-		"accesstoken": "{facebook access token}"
-	}
-}' \
+-d '{ "username": "john.doe", "firstname": "John", "email": "john.doe@appacitive.com", "password": "p@ssw0rd", "__link": { "authtype": "facebook", "accesstoken": "{facebook access token}"	}}' \
 https://apis.appacitive.com/user
 ```
 ``` rest
@@ -1325,7 +1334,7 @@ $$$Sample Response
 		"__attributes": {}
 	},
 	"status": {
-		"code": "200",
+		"code": "201",
 		"message": "Successful",
 		"faulttype": null,
 		"version": null,
@@ -1336,7 +1345,8 @@ $$$Sample Response
 ```
 #### Creating a user with twitter access token
 
-Creates a new user in the Appacitive system and links it to a twitter account.
+Creates a new user in the Appacitive system and links it to a twitter account. 
+If you have already specified the `consumerkey` and `consumersecret` in the management portal, you don't have to pass it again for this call.
 
 ** Parameters ** 
 
@@ -1347,30 +1357,28 @@ Creates a new user in the Appacitive system and links it to a twitter account.
   <dd>required<br/><span>Details about the linked account</span></dd>  
 </dl>
 
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
+
 ``` rest
 $$$Method
 PUT https://apis.appacitive.com/user/
 ```
 ``` rest
 $$$Sample Request
-//Create a new user
+//Create a new user and link it to a twitter account
 curl -X PUT \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: sandbox" \
 -H "Content-Type: application/json" \
--d '{
-	"username": "john.doe",
-	"firstname": "John",
-	"email": "john.doe@appacitive.com",
-	"password": "p@ssw0rd",
-	"__link": {
-             "authtype": "twitter",
-             "oauthtoken": "{twitter oauth token}",
-             "oauthtokensecret": "{twitter oauth token secret}",
-             "consumerkey": "{twitter consumer key}",
-             "consumersecret": "{twitter consumer secret}"
-         }
-}' \
+-d '{ "username": "john.doe", "firstname": "John", "email": "john.doe@appacitive.com", "password": "p@ssw0rd", "__link": { "authtype": "twitter", "oauthtoken": "{twitter oauth token}", "oauthtokensecret": "{twitter oauth token secret}", "consumerkey": "{twitter consumer key}", "consumersecret": "{twitter consumer secret}"}}' \
 https://apis.appacitive.com/user
 ```
 ``` rest
@@ -1397,7 +1405,7 @@ $$$Sample Response
 		"__attributes": {}
 	},
 	"status": {
-		"code": "200",
+		"code": "201",
 		"message": "Successful",
 		"faulttype": null,
 		"version": null,
@@ -1409,25 +1417,40 @@ $$$Sample Response
 
 #### Create a user with just the facebook access token
 
-You can optionally create a new user in the Appacitive system with just the facebook access token of the user. You can use this option to integrate facebook login in your app.
+You can optionally create a new user in the Appacitive system with just the OAth access token of the user. You can use this option to integrate facebook login in your app.
+You need to add an extra property in the request object called ```createnew``` with its value set to ```true```. This call will pull the required details about the user from the OAth provider and create a new Appacitive user for it.
+Note that this is a ```POST``` HTTP call.
+
+** Parameters ** 
+
+<dl>
+  <dt>```__link``` object</dt>
+  <dd>required<br/><span>Details about the linked account</span></dd>  
+</dl>
+
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
 
 ``` rest
 $$$Method
-PUT https://apis.appacitive.com/user/
+PUT https://apis.appacitive.com/user/authenticate
 ```
 ``` rest
 $$$Sample Request
-//Create a new user
-curl -X PUT \
+//Create a new user using the OAuth token
+curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: sandbox" \
 -H "Content-Type: application/json" \
--d '{
-	"type": "facebook",
-	"accesstoken": "{facebook access token}",
-	"createnew": true
-}' \
-https://apis.appacitive.com/user
+-d '{ "type": "facebook", "accesstoken": "{facebook access token}",	"createnew": true }' \
+https://apis.appacitive.com/user/authenticate
 ```
 ``` rest
 $$$Sample Response
@@ -1455,7 +1478,7 @@ $$$Sample Response
 		"__attributes": {}
 	},
 	"status": {
-		"code": "200",
+		"code": "201",
 		"message": "Successful",
 		"faulttype": null,
 		"version": null,
@@ -1467,6 +1490,138 @@ $$$Sample Response
 
 #### Link account with existing Appacitive user.
 
+You can link an existing Appacitive user to a social identity provider which works on OAuth 1.0 or OAuth 2.0.
+
+##### Link Appacitive user to facebook account 
+
+** Parameters ** 
+
+<dl>
+  <dt>```__link``` object</dt>
+  <dd>required<br/><span>Details about the linked account</span></dd>  
+</dl>
+
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/user/{userId}/link
+```
+``` rest
+$$$Sample Request
+//Link an account to a Appacitive user
+curl -X PUT \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Content-Type: application/json" \
+-d '{ "type": "facebook", "accesstoken": "{facebook access token}" }' \
+https://apis.appacitive.com/user/john.doe/link?useridtype=username
+```
+``` rest
+$$$Sample Response
+{
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
+		"additionalmessages": []
+	}
+}
+```
+
+##### Link Appacitive user to twitter account 
+
+** Parameters ** 
+
+<dl>
+  <dt>```__link``` object</dt>
+  <dd>required<br/><span>Details about the linked account</span></dd>  
+</dl>
+
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`. 
+
+``` rest
+$$$Method
+PUT https://apis.appacitive.com/user/{userId}/link
+```
+``` rest
+$$$Sample Request
+//Create a new user
+curl -X PUT \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Content-Type: application/json" \
+-d '{
+	"authtype": "twitter",
+	"oauthtoken": "{twitter oauth token}",
+	"oauthtokensecret": "{twitter oauth token secret}",
+	"consumerkey": "{twitter consumer key}",
+	"consumersecret": "{twitter consumer secret}"
+}' \
+https://apis.appacitive.com/user/john.doe/link?useridtype=username
+```
+``` rest
+$$$Sample Response
+{
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
+		"additionalmessages": []
+	}
+}
+```
+
+#### Delink account with existing Appacitive user.
+
+If you no longer want to associate an Appacitive user to a OAuth provider, you can delink the accounts.
+
+``` rest
+$$$Method
+PUT https://apis.appacitive.com/user/{userId}/delink
+```
+``` rest
+$$$Sample Request
+//Delink OAuth account
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/john.doe/delink?useridtype=username
+```
+``` rest
+$$$Sample Response
+{
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
+		"additionalmessages": []
+	}
+}
+```
 
 ### Retrieving users
 
