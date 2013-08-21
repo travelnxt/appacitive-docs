@@ -1208,6 +1208,7 @@ All other properties are optional and you may wish to use them according to your
 	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
 	<dt>Content-Type</dt>
 	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
 
 ** Response **
 
@@ -1295,6 +1296,7 @@ Creates a new user in the Appacitive system and links it to a facebook account.
 	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
 	<dt>Content-Type</dt>
 	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
 
 ``` rest
 $$$Method
@@ -1353,8 +1355,8 @@ If you have already specified the `consumerkey` and `consumersecret` in the mana
 <dl>
   <dt>user object</dt>
   <dd>required<br/><span>The user object</span></dd>  
-  <dt>```__link``` object property in the user object</dt>
-  <dd>required<br/><span>Details about the linked account</span></dd>  
+  <dt>```__link``` object</dt>
+  <dd>required<br/><span>Details about the linked account. This object is sent inside the user object.</span></dd>  
 </dl>
 
 ** HTTP headers **
@@ -1366,6 +1368,7 @@ If you have already specified the `consumerkey` and `consumersecret` in the mana
 	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
 	<dt>Content-Type</dt>
 	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
 
 ``` rest
 $$$Method
@@ -1437,6 +1440,7 @@ Note that this is a ```POST``` HTTP call.
 	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
 	<dt>Content-Type</dt>
 	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
 
 ``` rest
 $$$Method
@@ -1510,6 +1514,7 @@ You can link an existing Appacitive user to a social identity provider which wor
 	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
 	<dt>Content-Type</dt>
 	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
 
 ``` rest
 $$$Method
@@ -1556,7 +1561,8 @@ $$$Sample Response
 	<dt>Appacitive-Environment</dt>
 	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
 	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`. 
+	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
 
 ``` rest
 $$$Method
@@ -1594,11 +1600,20 @@ $$$Sample Response
 
 #### Delink account with existing Appacitive user.
 
-If you no longer want to associate an Appacitive user to a OAuth provider, you can delink the accounts.
+If you no longer want to associate an Appacitive user to a OAuth provider, you can delink the account using the linked identity's name.
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
 
 ``` rest
 $$$Method
-PUT https://apis.appacitive.com/user/{userId}/delink
+POST https://apis.appacitive.com/user/{userId}/{name}/delink
 ```
 ``` rest
 $$$Sample Request
@@ -1607,7 +1622,7 @@ curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: sandbox" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/user/john.doe/delink?useridtype=username
+https://apis.appacitive.com/user/john.doe/facebook/delink?useridtype=username
 ```
 ``` rest
 $$$Sample Response
