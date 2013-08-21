@@ -1602,6 +1602,8 @@ $$$Sample Response
 
 If you no longer want to associate an Appacitive user to a OAuth provider, you can delink the account using the linked identity's name.
 
+** HTTP headers **
+
 <dl>
 	<dt>Appacitive-Apikey</dt>
 	<dd>required<br/><span>The api key for your app.
@@ -1640,48 +1642,222 @@ $$$Sample Response
 
 ### Retrieving users
 
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
+There are three ways you could get user details. 
+This call takes an additional `Appacitive-User-Auth` header with its value set as a valid user token.
 
 #### Get User by Id
 
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
+** HTTP headers **
 
-``` javascript
-//TODO
-```
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Appacitive-User-Auth</dt>
+	<dd>required<br/><span>A session token generated for a user.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+
 ``` csharp
 //Get User by `id`
-var user = await Users.GetByIdAsync("123456");
+var user = await Users.GetByIdAsync("1234525435344346");
 
 //To get only specific fields (username, firstname and lastname)
-var user = await Users.GetByIdAsync("123456", 
+var user = await Users.GetByIdAsync("1234525435344346", 
                       new [] { "username", "firstname", "lastname" });
 ```
-
+``` rest
+$$$Method
+GET https://apis.appacitive.com/user/{userId}
+```
+``` rest
+$$$Sample Request
+//Delink OAuth account
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Appacitive-User-Auth: {User token}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/34912447775245454
+```
+``` rest
+$$$Sample Response
+{
+	"user": {
+		"__id": "34912447775245454",
+		"__schematype": "user",
+		"__createdby": "System",
+		"__lastmodifiedby": "System",
+		"__schemaid": "34888670847828365",
+		"__revision": "1",
+		"__tags": [],
+		"__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
+		"__utclastupdateddate": "2013-08-21T08:38:24.0000000Z",
+		"username": "john.doe",
+		"email": "john.doe@appacitive.com",
+		"firstname": "John",
+		"lastname": "Doe",
+		"birthdate": "1982-11-17",
+		"isemailverified": "false",
+		"isenabled": "true",
+		"location": "18.534064000000000,73.899551000000000",
+		"phone": "9876543210",
+		"__attributes": {}
+	},
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
+		"additionalmessages": []
+	}
+}
+```
 #### Get User by Username
 
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
+An additional query string parameter called `useridtype` is sent to specify the kind of user identifier you are using.
 
-``` javascript
-//TODO
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Appacitive-User-Auth</dt>
+	<dd>required<br/><span>A session token generated for a user.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+
+``` rest
+$$$Method
+GET https://apis.appacitive.com/user/{username}?useridtype=username
+```
+``` rest
+$$$Sample Request
+//Delink OAuth account
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Appacitive-User-Auth: {User token}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/john.doe?useridtype=username
+```
+``` rest
+$$$Sample Response
+{
+	"user": {
+		"__id": "34912447775245454",
+		"__schematype": "user",
+		"__createdby": "System",
+		"__lastmodifiedby": "System",
+		"__schemaid": "34888670847828365",
+		"__revision": "1",
+		"__tags": [],
+		"__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
+		"__utclastupdateddate": "2013-08-21T08:38:24.0000000Z",
+		"username": "john.doe",
+		"email": "john.doe@appacitive.com",
+		"firstname": "John",
+		"lastname": "Doe",
+		"birthdate": "1982-11-17",
+		"isemailverified": "false",
+		"isenabled": "true",
+		"location": "18.534064000000000,73.899551000000000",
+		"phone": "9876543210",
+		"__attributes": {}
+	},
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
+		"additionalmessages": []
+	}
+}
 ```
 ``` csharp
 //Get User by `username`
 var user = await Users.GetByUsernameAsync("john.doe");
 ```
 
-#### Get logged in User
+#### Get user by user token
 
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
+Here you can get a user by his session token. 
+A valid session token still needs to be passed in the `Appacitive-User-Auth` header, but the user that is returned is the user whose token you pass as the query string parameter `token`.
 
-``` javascript
-//TODO
-```
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Appacitive-User-Auth</dt>
+	<dd>required<br/><span>A session token generated for a user.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
 ``` csharp
 //Get logged in User
 var loggedInUser = await Users.GetLoggedInUserAsync();
 ```
-
+``` rest
+$$$Method
+GET https://apis.appacitive.com/user/me?useridtype=token&token={user token}
+```
+``` rest
+$$$Sample Request
+//Delink OAuth account
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Appacitive-User-Auth: {User token}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/me?useridtype=token&token=K2liWXVlSHZ0elNESUloTFlLRE5EQ2lzWXZtM0FFL0JxYW01WTBtVFlmTHZ6aHFMaWtEKzRUdlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa2kvekJpTUZGYyt2ZEFTVi9mbGdNN2xRaEZuWUJidVByR3lFMkZlTzNrRHV3cldVUFRNbFA5M3B6NFN5Rkd3K1dNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==
+```
+``` rest
+$$$Sample Response
+{
+	"user": {
+		"__id": "34912447775245454",
+		"__schematype": "user",
+		"__createdby": "System",
+		"__lastmodifiedby": "System",
+		"__schemaid": "34888670847828365",
+		"__revision": "1",
+		"__tags": [],
+		"__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
+		"__utclastupdateddate": "2013-08-21T08:38:24.0000000Z",
+		"username": "john.doe",
+		"email": "john.doe@appacitive.com",
+		"firstname": "John",
+		"lastname": "Doe",
+		"birthdate": "1982-11-17",
+		"isemailverified": "false",
+		"isenabled": "true",
+		"location": "18.534064000000000,73.899551000000000",
+		"phone": "9876543210",
+		"__attributes": {}
+	},
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
+		"additionalmessages": []
+	}
+}
+```
 ### Authenticating a user
 
 Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
