@@ -1142,7 +1142,7 @@ The additional predefined properties are as follows.
   <dt>email</dt>
   <dd><span>An ```optional``` ```string``` property with a email ```regex``` validation on it for storing and managing the users email address.</span></dd>
   <dt>location</dt>
-  <dd><span>An ```optional``` ```geo``` property for checkin management and geo-based querying.</span></dd>
+  <dd><span>An ```optional``` ```geography``` property for checkin management and geo-based querying.</span></dd>
   <dt>password</dt>
   <dd><span>A ```masked``` and ```mandatory``` ```string``` property for storing and managing the password for that user.</span></dd>
   <dt>phone</dt>
@@ -2181,7 +2181,7 @@ await user.SaveAsync();
 
 ### Searching for users
 
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
+Searching for users follows all the same principles as searching for articles of any other schema.
 
 ``` javascript
 //TODO
@@ -2403,13 +2403,16 @@ player.del(function(obj) {
 await Users.DeleteUserAsync("1234567", true);
 ```
 
+### Location Tracking
+
+You can store the users last known location in the `geography` property called `location`. 
+
 ### Session Management
 
 #### Validate session
 
 #### Invalidate session
 
-### Checkin Management
 
 ### Password Management
 
@@ -2425,15 +2428,66 @@ await Users.DeleteUserAsync("1234567", true);
 Files
 ------------
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. 
+Appacitive allows you to upload files like images, videos etc. onto the Appacitive platform so you can build rich media applications and deliver media using an extensive CDN. 
+The files API works by providing a `pre-signed` url to a third-party cloud storage service (<a href="http://aws.amazon.com/s3/">Amazon S3</a>), where the files can be uploaded to or downloaded from.
+You can upload and download files of any size and most filetypes are supported. 
 
 ### Upload
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce 
+To upload a file on Appacitive for your app, you need to get a pre-signed Amazon S3 url to which you will be uploading your file. 
+You can get this url by sending a HTTP GET request to the Appacitive file `getupload` url. 
+The `contenttype` query string parameter you send here should match the `content-type` header value when uploading the file onto amazon s3.
+A unique string `id` is associated with every file you store on the Appacitive platform. This string `id` is either the optional `filename` query string parameter you pass while generating the upload url or Appacitive assigns it a unique value.
+You can use this unique string `id` to manage your file. Uploading multiple files using the same `filename` will lead to overwriting the file.
 
-``` javascript
-//TODO
+In the request you can provide some optional query string paramertes.
+
+** Query string parameters **
+
+<dl>
+<dt>contenttype</dt>
+	<dd>required<br/><span>Mime-type of the file you are uploading.	
+	<dt>filename</dt>
+	<dd>optional<br/><span>Name of the file.
+	<dt>expires</dt>
+	<dd>optional<br/><span>Time in minutes for which the URI will be valid, default value 5 mins.	
+</dl>
+
+``` rest
+$$$Method
+GET https://apis.appacitive.com/file/uploadurl?contenttype={content-type}
 ```
+``` rest
+$$$Sample Request
+//	generate upload url
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/file/uploadurl?filename=mypicture&contenttype=image/jpeg
+```
+``` rest
+$$$Sample Response
+{
+	"url": "https://stageblobstorage.s3.amazonaws.com/35003686659949394/_applications/35003695411364691/_deployments/35003749377377197/mypicture?AWSAccessKeyId=AKIAI5YIAGHRQS6VJETQ&Expires=1377164142&Signature=CELV5LBQs7d%2FJ%2FukBEnQJc%2Fb%2BBc%3D",
+	"id": "mypicture",
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "4f5a30f7-6b27-4d2b-92b5-c449d3083328",
+		"additionalmessages": []
+	}
+}
+```
+
+When the above request is successful, the HTTP response is a `200` OK and the response body is a JSON object containing the upload `url` and the file `id`, which is the orignal `filename` provided by you or a unique system generated identifier for the file.
+Now upload the file by making a PUT request to the `url` in the response above. The necessary authorization information is already embedded in the URI. For more details, refer to <a href="http://aws.amazon.com/documentation/s3/">Amazon S3 documentation</a>. 
+This url is valid for 5 minutes if `expires` was not specified while retreiving the url and only allows you to perform a PUT on the file. 
+You need to provied the same value for the `Content-Type` header, which you provided while retreiving the url and if not provided use 'application/octet-stream' or 'binary/octet-stream'. 
+
+
 ``` csharp
 //Upload via Byte Stream
 var fileName = "serverFileName.jpg";
@@ -2454,10 +2508,44 @@ string uploadUrl = await upload.GetUploadUrlAsync(30);
 
 ### Download
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce 
+To download a file from Appacitive for your app, you need to get a pre-signed download url which you will be using to download the file.
+You can retrieve the file by sending a GET request to the file download url with the file `id` that you received while uploading the file.
 
-``` javascript
-//TODO
+** Parameters **
+
+<dl>
+	<dt>filename</dt>
+	<dd>required<br/><span>The filename used when generating the uploadurl.
+	<dt>expires</dt>
+	<dd>optional<br/><span>Time in minutes for which the url will be valid, default value 5 mins.	
+</dl>
+ 
+``` rest
+$$$Method
+GET https://apis.appacitive.com/file/download/{file id}
+```
+``` rest
+$$$Sample Request
+//	generate download url
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/file/download/mypicture
+```
+``` rest
+$$$Sample Response
+{
+	"uri": "https://stageblobstorage.s3.amazonaws.com/35003686659949394/_applications/35003695411364691/_deployments/35003749377377197/mypicture?AWSAccessKeyId=AKIAI5YIAGHRQS6VJETQ&Expires=1377171161&Signature=%2FGpFSIMTVMdq%2FKf%2F8jvdPbvoGgs%3D",
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "0514cae7-2f8a-4232-8712-ed14e2a0c6ef",
+		"additionalmessages": []
+	}
+}
 ```
 ``` csharp
 //Three ways to download file
@@ -2473,10 +2561,14 @@ await download.DownloadFileAsync(localFileName);
 var downloadUrl = await download.GetDownloadUrl(30);
 //Custom logic to download file
 ```
+You can now download the file by making a GET request to the pre-signed download `url` in the response object. 
+No additional headers are required. For more details, refer to <a href="http://aws.amazon.com/documentation/s3/">Amazon S3 documentation</a>. 
+Url is valid for 1 minute by default, but if you want to increase the expiry time set the `expires` query string parameter while retreiving the url. 
+This url only allows you to perform a GET on the file.
 
-### Delete
+### Delete a file
 
-### Update
+### Update a file
 
 Querying Data
 ------------
