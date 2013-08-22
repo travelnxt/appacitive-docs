@@ -2407,6 +2407,59 @@ await Users.DeleteUserAsync("1234567", true);
 
 You can store the users last known location in the `geography` property called `location`. 
 
+** Parameters **
+
+<dl>
+	<dt>userid</dt>
+	<dd>required<br/><span>The userid of the user you want to track location for.
+	<dt>lat</dt>
+	<dd>required<br/><span>The latitude of the coordinates (decimal) where the user is checking in.
+	<dt>long</dt>
+	<dd>required<br/><span>The longitude of the coordinates (decimal) where the user is checking in.
+</dl>
+
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Appacitive-User-Auth</dt>
+	<dd>required<br/><span>A session token generated for a user.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/user/{userid}/checkin?lat={latitude}&long={longitude}
+```
+``` rest
+$$$Sample Request
+//	Delete user using his session token
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Appacitive-User-Auth: {User token}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/john.doe/checkin?useridtype=username&lat=10.10&long=20.20
+```
+
+``` rest
+$$$Sample Response
+{
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
+		"additionalmessages": []
+	}
+}
+```
+
 ### Session Management
 
 #### Validate session
