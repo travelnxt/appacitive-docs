@@ -46,19 +46,13 @@ api.
 </dl>
 
 
-```nolang
-<span class="h3">Sample html with h3 size</span><br/><i>Libraries are <a href="http://help.appacitive.com">available in several languages</a></i>
-Some html content on a New line
-```
-
-
 Response format
 ------------
 
 The response from the api will always return a JSON object (even in the case of a failure). The success or failure status of the transaction will be returned in the form of a status object. Incase the operation does not return any data then the json response would contain just the status object itself.
 The JSON structure of the status object is shown.
 
-** Status object attributes **
+** Status object properties **
 
 <dl>
   <dt>code</dt>
@@ -73,7 +67,7 @@ The JSON structure of the status object is shown.
 
 **Note**: The http status code for the response will always be returned as ``200``.
 
-```nolang-rest
+```rest
 $$$Status object
 {
 ...,
@@ -1118,15 +1112,17 @@ await Connections.MultiDeleteAsync("review", ids);
 Users
 ------------
 
-Users represent your apps' users whose management API's are provided out of the box. They are internally simply articles of an inbuilt schema ```user``` with added features of authentication, location tracking, password management, session management and third-party social integration using OAuth 1.0 or OAuth 2.0.
+Users represent your apps' users whose management API's are provided out of the box. 
+They are internally simply articles of an inbuilt schema called `user` with added features like authentication, location tracking, password management, session management and third-party social integration using OAuth 1.0 or OAuth 2.0.
 
-```Note```: While working with user API(s) you need to pass an additional header ```Appacitive-User-Auth``` with its value set to a valid user session token generated for that user.
+`Note` : While working with user API(s) you need to pass an additional http header `Appacitive-User-Auth` with its value set to a valid user session token generated for that user.
 
 <span class="h3">The user object</span>
 
 ** System generated properties ** 
 
-The user object contains all the system defined properties present in an article. It also has some additional predefined properties and you can add more properties to the user schema the same way you would add properties to any other schema. 
+The `user` object contains all the `system defined properties` present in an article of any schema. 
+It also has some additional `predefined properties` and you can add more properties to the `user` schema the same way you would add properties to any other schema through the management portal. 
 The additional predefined properties are as follows.
 
 
@@ -1152,7 +1148,7 @@ The additional predefined properties are as follows.
   <dt>isonline</dt>
   <dd><span>An ```optional``` ```bool``` property which lets you check whether the user is currently online.</span></dd>
   <dt>connectionid</dt>
-  <dd><span>An ```optional``` ```string``` property which lets you manage the user with real time messaging. For more info check out the RTM docs.</span></dd>
+  <dd><span>An ```optional``` ```string``` property which lets you manage the bi-directional websocket on the user with real time messaging. For more info check out the RTM docs.</span></dd>
 </dl>
 
 
@@ -1165,7 +1161,7 @@ $$$sample object
 	"__lastmodifiedby": "System",
 	"__schemaid": "34888670844153416",
 	"__revision": "1",
-	"__tags": ["newuser", "male"],
+	"__tags": ["tall", "male"],
 	"__utcdatecreated": "2013-08-21T02:31:42.8498473Z",
 	"__utclastupdateddate": "2013-08-21T02:31:42.8498473Z",
 	"username": "john.doe",
@@ -1175,22 +1171,29 @@ $$$sample object
 	"lastname": "Doe",
 	"birthdate": "1982-11-17",
 	"isenabled": "true",
-	"phone": "9876543210",
-	"__attributes": {}
+	"phone": "+91 9041-222-333",
+	"__attributes": {
+		"company": "appacitive",
+		"niche": "ux",
+		"gender": "male"
+	}
 }
 ```
 
 ### Creating a new user
 
-Appacitive provides multiple ways in which a new user can be added to your app.
-You may choose to use the Appacitive user management system alone to manage all your app users or integrate with facebook, twitter or any other <a href="http://en.wikipedia.org/wiki/OAuth">OAuth</a> provider for identity management.
-Appacitive allows you to link as many OAuth accounts with Appacitive user objects and manage them using the user api(s).
+Appacitive provides multiple ways in which new users can be added to your app.
+You may choose to use the appacitive's `user management` system alone to manage all of your app's users or additionally integrate with facebook, twitter or any other <a href="http://en.wikipedia.org/wiki/OAuth">OAuth</a> provider for identity management.
+Appacitive allows you to link as many OAuth accounts with Appacitive user objects and manage them using Appacitive's user api(s). 
+And because `user` objects are internally similar to `article` objects, you can connect a `user` object to other users or articles of other schemas by creating corresponding relations through the management portal.
 
 #### Creating a simple user
 
-Creates a new user in the Appacitive system. This user is an independent user in the Appacitive system for your app without any linked identites. You can link it to a OAuth account later on.
-Some basic system properties are mandatory. These include ```username```, ```firstname``` and ```password```. The username should be unique for every user. Every user is assigned a unique ```__id```.
-All other properties are optional and you may wish to use them according to your app's requirements.
+Creates a new user in the appacitive system. This user is an independent user in the sppacitive system for your app, in the environment you specify through the `Appacitive-Environment` header, without any linked identites. 
+You can link it to a OAuth account later on.
+Some basic system properties are mandatory, namely `username`, `firstname` and `password`. The `username` should be unique for every user. 
+Every user is assigned a unique `__id` by the system.
+All other predefined properties are optional and you may wish to use them according to your app's requirements or add more if required through the management portal.
 
 ** Parameters ** 
 
@@ -1212,21 +1215,20 @@ All other properties are optional and you may wish to use them according to your
 
 ** Response **
 
-Returns the newly created user object with all the system defined properties set.
+Returns the newly created user object with all the system defined properties set like `__id`, `__utcdatecreated`, `__createdby` etc.
 In case of an error, the `status` object contains details for the failure.
 
 ``` rest
 $$$Method
-PUT https://apis.appacitive.com/user/
+PUT https://apis.appacitive.com/user
 ```
 ``` rest
 $$$Sample Request
-//Create a new user
 curl -X PUT \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: sandbox" \
 -H "Content-Type: application/json" \
--d '{ "__tags": ["newuser"], "username": "john.doe", "firstname": "John", "email": "john.doe@appacitive.com", "password": "p@ssw0rd" }' \
+-d '{ "__tags": ["male"], "username": "john.doe", "firstname": "John", "email": "john.doe@appacitive.com", "password": "p@ssw0rd" }' \
 https://apis.appacitive.com/user
 ```
 ``` rest
@@ -1240,16 +1242,15 @@ $$$Sample Response
 		"__schemaid": "34888670847828365",
 		"__revision": "1",
 		"__tags": [
-			"newuser"
+			"male"
 		],
 		"__utcdatecreated": "2013-08-21T02:41:19.5142397Z",
 		"__utclastupdateddate": "2013-08-21T02:41:19.5142397Z",
 		"username": "john.doe",
 		"email": "john.doe@appacitive.com",
 		"firstname": "John",
-		"isemailverified": "false",
 		"isenabled": "true",
-		"phone": "N/A",
+		"phone": null,
 		"__attributes": {}
 	},
 	"status": {
@@ -1274,16 +1275,23 @@ var user = new User
 };
 await user.SaveAsync();
 ```
-#### Creating a user with facebook access token
+
+The `__createdby` and `__lastmodifiedby` properties are set to `System`. They will be set to a user id if you use another user's session token to perform actions on this user.
+The `__revision` is initially set to 1 when a new user is created. This number gets incremented by 1 everytime you perform a successful update operation on the user object.
+`__attributes` are simple string key-value pairs which you can assign to every `user`, `article` and `connection` object. 
+The `__tags` object is a list of string tags. You can perform search queries on `__attributes` and `__tags`. 
+
+#### Creating a user with a link to a OAuth 2.0 provider
 
 Creates a new user in the Appacitive system and links it to a facebook account.
+Here onwards, the linked identity can be accessed using the `name` of the identity.
 
 ** Parameters ** 
 
 <dl>
   <dt>user object</dt>
   <dd>required<br/><span>The user object</span></dd>  
-  <dt>```__link``` object</dt>
+  <dt>`__link` object</dt>
   <dd>required<br/><span>Details about the linked account. These are enclosed inside the user object.</span></dd>  
 </dl>
 
@@ -1304,7 +1312,7 @@ PUT https://apis.appacitive.com/user/
 ```
 ``` rest
 $$$Sample Request
-//Create a new user and link it to a facebook account
+//	Create a new user and link it to a facebook account
 curl -X PUT \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: sandbox" \
@@ -1332,7 +1340,7 @@ $$$Sample Response
 		"firstname": "John",
 		"isemailverified": "false",
 		"isenabled": "true",
-		"phone": "N/A",
+		"phone": null,
 		"__attributes": {}
 	},
 	"status": {
@@ -1345,7 +1353,7 @@ $$$Sample Response
 	}
 }
 ```
-#### Creating a user with twitter access token
+#### Creating a user and link it to a OAuth 1.0 provider
 
 Creates a new user in the Appacitive system and links it to a twitter account. 
 If you have already specified the `consumerkey` and `consumersecret` in the management portal, you don't have to pass it again for this call.
@@ -1355,7 +1363,7 @@ If you have already specified the `consumerkey` and `consumersecret` in the mana
 <dl>
   <dt>user object</dt>
   <dd>required<br/><span>The user object</span></dd>  
-  <dt>```__link``` object</dt>
+  <dt>`__link` object</dt>
   <dd>required<br/><span>Details about the linked account. This object is sent inside the user object.</span></dd>  
 </dl>
 
@@ -1404,7 +1412,7 @@ $$$Sample Response
 		"firstname": "John",
 		"isemailverified": "false",
 		"isenabled": "true",
-		"phone": "N/A",
+		"phone": null,
 		"__attributes": {}
 	},
 	"status": {
@@ -1418,16 +1426,20 @@ $$$Sample Response
 }
 ```
 
-#### Create a user with just the facebook access token
+#### Create a user with just the OAuth access token
 
-You can optionally create a new user in the Appacitive system with just the OAth access token of the user. You can use this option to integrate facebook login in your app.
-You need to add an extra property in the request object called ```createnew``` with its value set to ```true```. This call will pull the required details about the user from the OAth provider and create a new Appacitive user for it.
-Note that this is a ```POST``` HTTP call.
+You can optionally create a new user in the appacitive system with just the OAth access token of the user. 
+You can use this option to integrate facebook login in your app.
+You need to add an extra property in the request object called `createnew` with its value set to `true`. 
+The system will pull the required details about the user from the OAth provider and create a new appacitive user with it.
+Note that this is a `POST` HTTP call.
+
+In this example we will use facebook's access token.
 
 ** Parameters ** 
 
 <dl>
-  <dt>```__link``` object</dt>
+  <dt>`__link` object</dt>
   <dd>required<br/><span>Details about the linked account</span></dd>  
 </dl>
 
@@ -1448,12 +1460,12 @@ PUT https://apis.appacitive.com/user/authenticate
 ```
 ``` rest
 $$$Sample Request
-//Create a new user using the OAuth token
+//	Create a new user using the OAuth token
 curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: sandbox" \
 -H "Content-Type: application/json" \
--d '{ "type": "facebook", "accesstoken": "{facebook access token}",	"createnew": true }' \
+-d '{ "type": "facebook", "accesstoken": "{facebook access token}", "createnew": true }' \
 https://apis.appacitive.com/user/authenticate
 ```
 ``` rest
@@ -1466,9 +1478,6 @@ $$$Sample Response
 		"__lastmodifiedby": "System",
 		"__schemaid": "34888670847828365",
 		"__revision": "1",
-		"__tags": [
-			"newuser"
-		],
 		"__utcdatecreated": "2013-08-21T02:41:19.5142397Z",
 		"__utclastupdateddate": "2013-08-21T02:41:19.5142397Z",
 		"username": "john.doe",
@@ -1478,7 +1487,7 @@ $$$Sample Response
 		"birthdate": "1980-05-20",
 		"isemailverified": "false",
 		"isenabled": "true",
-		"phone": "N/A",
+		"phone": null,
 		"__attributes": {}
 	},
 	"status": {
@@ -1492,11 +1501,11 @@ $$$Sample Response
 }
 ```
 
-#### Link account with existing Appacitive user.
+#### Link account with existing appacitive user.
 
-You can link an existing Appacitive user to a social identity provider which works on OAuth 1.0 or OAuth 2.0.
+You can link an existing appacitive user to a social identity provider which works on OAuth 1.0 or OAuth 2.0.
 
-##### Link Appacitive user to facebook account 
+##### Link appacitive user to a OAuth 2.0 account 
 
 ** Parameters ** 
 
@@ -1516,13 +1525,17 @@ You can link an existing Appacitive user to a social identity provider which wor
 	<dd>required<br/><span>This should be set to `application/json`.
 </dl>
 
+** Response **
+
+The response contains a `status` object which describes the status of the request.
+
 ``` rest
 $$$Method
 POST https://apis.appacitive.com/user/{userId}/link
 ```
 ``` rest
 $$$Sample Request
-//Link an account to a Appacitive user
+//	Link an account to a appacitive user
 curl -X PUT \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: sandbox" \
@@ -1544,12 +1557,14 @@ $$$Sample Response
 }
 ```
 
-##### Link Appacitive user to twitter account 
+##### Link appacitive user to a OAuth 1.0 account
+
+We can link an appacitive user to a twitter account after the user has already been created in appacitive.
 
 ** Parameters ** 
 
 <dl>
-  <dt>```__link``` object</dt>
+  <dt>`__link` object</dt>
   <dd>required<br/><span>Details about the linked account</span></dd>  
 </dl>
 
@@ -1563,6 +1578,10 @@ $$$Sample Response
 	<dt>Content-Type</dt>
 	<dd>required<br/><span>This should be set to `application/json`.
 </dl>
+
+** Response **
+
+The response contains a `status` object which describes the status of the request.
 
 ``` rest
 $$$Method
@@ -1592,9 +1611,18 @@ $$$Sample Response
 }
 ```
 
-#### Delink account with existing Appacitive user.
+#### Delink account with existing appacitive user.
 
-If you no longer want to associate an Appacitive user to a OAuth provider, you can delink the account using the linked identity's name.
+If you no longer want to associate an appacitive user to a OAuth provider, you can delink the account using the linked identity's `name`.
+
+** Parameters ** 
+
+<dl>
+  <dt>user id</dt>
+  <dd>required<br/><span>A user identifier for the user</span></dd> 
+  <dt>name</dt>
+  <dd>required<br/><span>The name of the linked identity you want to remove for the user</span></dd>  
+</dl>
 
 ** HTTP headers **
 
@@ -1653,7 +1681,7 @@ You will pass this session token as a HTTP header called `Appacitive-User-Auth`.
 	<dt>password</dt>
 	<dd>required<br/><span>The password associated for the user.
 	<dt>expiry</dt>
-	<dd>optional<br/><span>An optional integer which specifies the cascading window duration (in minutes) for the validity of the created token.
+	<dd>optional<br/><span>An optional integer which specifies the cascading window duration (in minutes) before the created token expires.
 	<dt>attempts</dt>
 	<dd>optional<br/><span>An optional integer which specifies for how many calls is the token valid for.
 </dl>
@@ -1703,7 +1731,7 @@ POST https://apis.appacitive.com/user/authenticate
 ```
 ``` rest
 $$$Sample Request
-//Authenticate user with his username and password
+//	Authenticate user with his username and password
 curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: sandbox" \
@@ -1747,9 +1775,29 @@ $$$Sample Response
 }
 ```
 
-#### Authenticate with facebook access token
+#### Authenticate with OAuth 2.0 access token
 
-You can authenticate a user using a session token for one of his linked identities like facebook or twitter.
+You can authenticate a user and generate a session token using a access token from one of his linked identities like facebook.
+
+** Parameter **
+
+<dl>
+	<dt>name</dt>
+	<dd>required<br/><span>The name of the linked identity.
+	<dt>accesstoken</dt>
+	<dd>required<br/><span>The access token linked to the user for the linked identity identified by the name above.	
+</dl>
+
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
 
 ``` rest
 $$$Method
@@ -1757,7 +1805,7 @@ POST https://apis.appacitive.com/user/authenticate
 ```
 ``` rest
 $$$Sample Request
-//Authenticate user with his username and password
+//	Authenticate user using an access token associate with him in one of his linked identities
 curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: sandbox" \
@@ -1802,11 +1850,10 @@ $$$Sample Response
 ```
 
 
-#### Authenticate with twitter token, secret and consumer key, secret
+#### Authenticate with a OAuth 1.0 access token
 
 The `consumerkey` and `consumersecret` are optional here. 
 You can set them up once using the management portal in the social network settings tab.
-
 
 ``` rest
 $$$Method
@@ -1814,7 +1861,7 @@ POST https://apis.appacitive.com/user/authenticate
 ```
 ``` rest
 $$$Sample Request
-//Authenticate user with his username and password
+//	Authenticate user using an access token associate with him in one of his linked identities
 curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: sandbox" \
@@ -1860,10 +1907,24 @@ $$$Sample Response
 
 ### Retrieving users
 
-There are three ways you could get user details. 
+Once a user is created in appacitive, a unique long `__id` is assigned to it and a unique string `username` which you provide is associated with it.
+You can access the a specific user for retrieving, updating, deleting etc. using one of three ways, by his `id`, by his `username` or by a session `token` generated for that user.
+You can specify what type of user accessing way you are using by passing a query string parameter called `useridtype`. 
+The values for `useridtype` can be `id`, `username` and `token` for accessing the user using his unique system generated `__id`, a unique string `username` assigned by you or a generated token using his credentials respectively.
+In the absense of the parameter `useridtype`, the system assumes it to be `id`.
+
 This call takes an additional `Appacitive-User-Auth` header with its value set as a valid user token.
+The following three example illustrate retrieving the user in the three possible ways. The same pattern applies for other calls like deleting the user or updating the user as well.
 
 #### Get User by Id
+
+
+** Parameter **
+
+<dl>
+	<dt>id</dt>
+	<dd>required<br/><span>The long user id assigned to the user by the system.
+</dl>
 
 ** HTTP headers **
 
@@ -1878,6 +1939,10 @@ This call takes an additional `Appacitive-User-Auth` header with its value set a
 	<dd>required<br/><span>This should be set to `application/json`.
 </dl>
 
+** Response **
+
+The user object is returned if a user exists in the system for your app with the id you supplied.
+
 
 ``` csharp
 //Get User by `id`
@@ -1889,11 +1954,11 @@ var user = await Users.GetByIdAsync("1234525435344346",
 ```
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/user/{userId}
+GET https://apis.appacitive.com/user/{user Id}
 ```
 ``` rest
 $$$Sample Request
-//Delink OAuth account
+//	Get user by id
 curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: sandbox" \
@@ -1935,9 +2000,18 @@ $$$Sample Response
 	}
 }
 ```
-#### Get User by Username
 
-An additional query string parameter called `useridtype` is sent to specify the kind of user identifier you are using.
+#### Get User by username
+
+A user can be retrieved using his unique string `username` which you supplied when creating the user. 
+The value of `useridtype` is set to `username`.
+
+** Parameter **
+
+<dl>
+	<dt>username</dt>
+	<dd>required<br/><span>The string unique username assigned to the user by you while creating the user.
+</dl>
 
 ** HTTP headers **
 
@@ -1959,7 +2033,7 @@ GET https://apis.appacitive.com/user/{username}?useridtype=username
 ```
 ``` rest
 $$$Sample Request
-//Delink OAuth account
+//	Get user by username
 curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: sandbox" \
@@ -2008,8 +2082,16 @@ var user = await Users.GetByUsernameAsync("john.doe");
 
 #### Get user by user token
 
-Here you can get a user by his session token. 
+Here you can get a user by a session token generated for that user using his credentials. 
 A valid session token still needs to be passed in the `Appacitive-User-Auth` header, but the user that is returned is the user whose token you pass as the query string parameter `token`.
+The `useridtype` query string parameter is set to `token`.
+
+** Parameter **
+
+<dl>
+	<dt>token</dt>
+	<dd>required<br/><span>A string token generated for the user using his credentials.
+</dl>
 
 ** HTTP headers **
 
@@ -2025,7 +2107,7 @@ A valid session token still needs to be passed in the `Appacitive-User-Auth` hea
 </dl>
 
 ``` csharp
-//Get logged in User
+//	Get logged in User
 var loggedInUser = await Users.GetLoggedInUserAsync();
 ```
 ``` rest
@@ -2034,7 +2116,7 @@ GET https://apis.appacitive.com/user/me?useridtype=token&token={user token}
 ```
 ``` rest
 $$$Sample Request
-//Delink OAuth account
+//	Retrieve user with his session token
 curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: sandbox" \
@@ -2080,11 +2162,13 @@ $$$Sample Response
 ### Updating a user
 
 The update user call is similar to the update article call. 
-The properties you send with non-null values will get modified if they aren't immutable.
-The properties you don't send in the body of the POST call stay unchanged.
-The properties you send with values set to `null` are deleted from the user.
-The same convention is followed with `__attributes`.
-Use the `__addtags` and `__removetags` properties to update tags.
+The property keys which you send with non-null values will get updated if they aren't marked as immutable.
+The property keys you don't send in the body of the POST call stay unchanged.
+The property keys you send with values set as `null` are deleted from the user object.
+The same convention is followed with `__attributes` as with the properties.
+Use the `__addtags` and `__removetags` array of strings properties to update tags.
+
+You can specify which user you are updating by using either his `id`, `username` or `token`. You will use the `useridtype` parameter to specify which option you are using.
  
 ** Parameters ** 
 
@@ -2199,7 +2283,7 @@ var users = await Users.FindAllAsync(query.ToString());
 ### Deleting a user
 
 Delete requests follow the same practise as get request for user, the only difference being that you send a DELETE HTTP request instead of a GET request.
-There are three ways you could delete the user.
+There are three ways you could delete the user, the same as retrieving a user, by his `id`, by his `username` or by his `token` generated for him.
 
 ** Parameters **
 
@@ -2348,7 +2432,7 @@ $$$Sample Response
 ```
 #### Deleting a user along with all connections to it
 
-You can pass an optional query string parameter called `deleteconnections` with its value set to `true` to also delete all connections associated with the user object you want to delete.
+You can pass an optional query string parameter in the delete call called `deleteconnections` with its value set to `true` to also delete all connections associated with the user object you want to delete.
 
 ** HTTP headers **
 
@@ -2405,7 +2489,7 @@ await Users.DeleteUserAsync("1234567", true);
 
 ### Location Tracking
 
-You can store the users last known location in the `geography` property called `location`. 
+You can store the users last known location in the `geography` property called `location`. You can use these geo-coordinates in searches. 
 
 ** Parameters **
 
@@ -2462,10 +2546,111 @@ $$$Sample Response
 
 ### Session Management
 
-#### Validate session
+#### Validate session token
+
+Once you create a session `token` for a user using one of the aunthenticating mechanisms, you may want to validate whether the token is a valid token or not.
+
+** Parameters **
+
+<dl>
+	<dt>token</dt>
+	<dd>required<br/><span>The string session token previously generated for the user.
+</dl>
+
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Appacitive-User-Auth</dt>
+	<dd>required<br/><span>A session token generated for the user.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/user/validate?userToken={user session token}
+```
+``` rest
+$$$Sample Request
+//	Delete user using his session token
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Appacitive-User-Auth: {User token}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/validate?userToken=RlYzRlcxY3lsRDlqYUpmQlNha0IwcTJRTXJDYVd6QWZOMlVPR0JWSmNhbTgyWVZxSTVnTmkvR1N0MXJMZm1nZGZCYWNZVk40eEZ4dTB3V3NBOFNVa3FUSEdQZVBTZDBWazJFUW03R0dZQVc5MjdZZmtGRFd1Q092enpTSUpQSWI1VEpqV2xsUUU0U3dIZGcwVTdZTkdNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==```
+
+``` rest
+$$$Sample Response
+{
+	"result": true,
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "d7cf599a-bce3-44db-b404-c9fe09d4c0f4",
+		"additionalmessages": []
+	}
+}
+```
+
 
 #### Invalidate session
 
+Yoy may want to invalidate a previously generated session token for a user.
+
+** Parameters **
+
+<dl>
+	<dt>token</dt>
+	<dd>required<br/><span>The string session token previously generated for the user.
+</dl>
+
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Appacitive-User-Auth</dt>
+	<dd>required<br/><span>A session token generated for the user.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/user/invalidate?userToken={user session token}
+```
+``` rest
+$$$Sample Request
+//	Delete user using his session token
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Appacitive-User-Auth: {User token}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/invalidate?userToken=RlYzRlcxY3lsRDlqYUpmQlNha0IwcTJRTXJDYVd6QWZOMlVPR0JWSmNhbTgyWVZxSTVnTmkvR1N0MXJMZm1nZGZCYWNZVk40eEZ4dTB3V3NBOFNVa3FUSEdQZVBTZDBWazJFUW03R0dZQVc5MjdZZmtGRFd1Q092enpTSUpQSWI1VEpqV2xsUUU0U3dIZGcwVTdZTkdNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==```
+
+``` rest
+$$$Sample Response
+{
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "d7cf599a-bce3-44db-b404-c9fe09d4c0f4",
+		"additionalmessages": []
+	}
+}
+```
 
 ### Password Management
 
@@ -2481,29 +2666,29 @@ $$$Sample Response
 Files
 ------------
 
-Appacitive allows you to upload files like images, videos etc. onto the Appacitive platform so you can build rich media applications and deliver media using an extensive CDN. 
-The files API works by providing a `pre-signed` url to a third-party cloud storage service (<a href="http://aws.amazon.com/s3/">Amazon S3</a>), where the files can be uploaded to or downloaded from.
+Appacitive allows you to upload, download and ditribute media files like images, videos etc. on the appacitive platform so you can build rich applications and deliver media using an extensive CDN. 
+The appacitive files api works by providing you `pre-signed` urls to a third-party cloud storage service (<a href="http://aws.amazon.com/s3/">Amazon S3</a>), where the files can be uploaded to or downloaded from.
 You can upload and download files of any size and most filetypes are supported. 
 
 ### Upload
 
-To upload a file on Appacitive for your app, you need to get a pre-signed Amazon S3 url to which you will be uploading your file. 
-You can get this url by sending a HTTP GET request to the Appacitive file `getupload` url. 
-The `contenttype` query string parameter you send here should match the `content-type` header value when uploading the file onto amazon s3.
-A unique string `id` is associated with every file you store on the Appacitive platform. This string `id` is either the optional `filename` query string parameter you pass while generating the upload url or Appacitive assigns it a unique value.
-You can use this unique string `id` to manage your file. Uploading multiple files using the same `filename` will lead to overwriting the file.
+To upload a file on appacitive for your app, you need to get a pre-signed Amazon S3 url to which you will be uploading your file. 
+You can get this url by making a HTTP GET request to the appacitive file `getupload` url. 
+The `contenttype` query string parameter you send here should match the `content-type` http header value when uploading the file onto amazon s3 in the subsequent call.
+A unique string `id` is associated with every file you store on the appacitive platform. This string `id` is either the optional `filename` query string parameter you pass while generating the upload url or appacitive assigns it a unique system generated value.
+You can use this unique string file `id` to access, update or delete that file. Uploading multiple files using the same `filename` will lead to overwriting the file.
 
-In the request you can provide some optional query string paramertes.
+In the request, the optional query string paramertes you can provide are.
 
 ** Query string parameters **
 
 <dl>
-<dt>contenttype</dt>
+	<dt>contenttype</dt>
 	<dd>required<br/><span>Mime-type of the file you are uploading.	
 	<dt>filename</dt>
-	<dd>optional<br/><span>Name of the file.
+	<dd>optional<br/><span>Unique name for the file.
 	<dt>expires</dt>
-	<dd>optional<br/><span>Time in minutes for which the URI will be valid, default value 5 mins.	
+	<dd>optional<br/><span>Duration (in minutes) for which the upload url will be valid, default value is 5.	
 </dl>
 
 ``` rest
@@ -2512,12 +2697,12 @@ GET https://apis.appacitive.com/file/uploadurl?contenttype={content-type}
 ```
 ``` rest
 $$$Sample Request
-//	generate upload url
-curl -X DELETE \
+//	Generate upload url
+curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: sandbox" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/file/uploadurl?filename=mypicture&contenttype=image/jpeg
+https://apis.appacitive.com/file/uploadurl?filename=mypicture&contenttype=image/jpeg&expires=10
 ```
 ``` rest
 $$$Sample Response
@@ -2535,11 +2720,11 @@ $$$Sample Response
 }
 ```
 
-When the above request is successful, the HTTP response is a `200` OK and the response body is a JSON object containing the upload `url` and the file `id`, which is the orignal `filename` provided by you or a unique system generated identifier for the file.
+When the above request is successful, the HTTP response is a `200` OK and the response body is a json object containing the third party cloud storage providers upload `url` and the file `id`, which is the parameter `filename`'s value provided by you or a unique system generated identifier for the file.
 Now upload the file by making a PUT request to the `url` in the response above. The necessary authorization information is already embedded in the URI. For more details, refer to <a href="http://aws.amazon.com/documentation/s3/">Amazon S3 documentation</a>. 
-This url is valid for 5 minutes if `expires` was not specified while retreiving the url and only allows you to perform a PUT on the file. 
-You need to provied the same value for the `Content-Type` header, which you provided while retreiving the url and if not provided use 'application/octet-stream' or 'binary/octet-stream'. 
-
+This url is valid for 5 minutes if `expires` was not specified while retreiving the url and only allows you to perform a PUT on the url. 
+You need to provied the same value for the `Content-Type` http header, which you provided while retreiving the url and if not provided, use 'application/octet-stream' or 'binary/octet-stream'. 
+You send the media file in the payload object of the PUT call.
 
 ``` csharp
 //Upload via Byte Stream
@@ -2561,8 +2746,7 @@ string uploadUrl = await upload.GetUploadUrlAsync(30);
 
 ### Download
 
-To download a file from Appacitive for your app, you need to get a pre-signed download url which you will be using to download the file.
-You can retrieve the file by sending a GET request to the file download url with the file `id` that you received while uploading the file.
+To download a file from Appacitive for your app, you need to get a `pre-signed` download url for the file using its file `id`, from where you will be able to download the file.
 
 ** Parameters **
 
@@ -2579,8 +2763,8 @@ GET https://apis.appacitive.com/file/download/{file id}
 ```
 ``` rest
 $$$Sample Request
-//	generate download url
-curl -X DELETE \
+//	Generate download url
+curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: sandbox" \
 -H "Content-Type: application/json" \
@@ -2614,9 +2798,9 @@ await download.DownloadFileAsync(localFileName);
 var downloadUrl = await download.GetDownloadUrl(30);
 //Custom logic to download file
 ```
-You can now download the file by making a GET request to the pre-signed download `url` in the response object. 
+You can now download the file by making a GET request to the `pre-signed` download `url` in the response object. 
 No additional headers are required. For more details, refer to <a href="http://aws.amazon.com/documentation/s3/">Amazon S3 documentation</a>. 
-Url is valid for 1 minute by default, but if you want to increase the expiry time set the `expires` query string parameter while retreiving the url. 
+Url is valid for 1 minute by default, but if you want to increase the expiry time set the `expires` query string parameter while retreiving the download url. 
 This url only allows you to perform a GET on the file.
 
 ### Delete a file
