@@ -1662,10 +1662,6 @@ $$$Sample Response
 }
 ```
 
-#### Get a specific linked account
-
-#### Get all linked accounts
-
 ### Authenticating a user
 
 You need to authenticate the user to the Appacitive API and create a session `token` for the user every time he logs into your app, to make user specefic API calls.
@@ -2522,7 +2518,7 @@ POST https://apis.appacitive.com/user/{userid}/checkin?lat={latitude}&long={long
 ``` rest
 $$$Sample Request
 //	Delete user using his session token
-curl -X DELETE \
+curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: sandbox" \
 -H "Appacitive-User-Auth: {User token}" \
@@ -2691,6 +2687,15 @@ In the request, the optional query string paramertes you can provide are.
 	<dd>optional<br/><span>Duration (in minutes) for which the upload url will be valid, default value is 5.	
 </dl>
 
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.	
+</dl>
+
 ``` rest
 $$$Method
 GET https://apis.appacitive.com/file/uploadurl?contenttype={content-type}
@@ -2805,7 +2810,45 @@ This url only allows you to perform a GET on the file.
 
 ### Delete a file
 
+This deletes a previously uploaded file from appacitive.
+
+** Parameters **
+
+<dl>
+	<dt>filename</dt>
+	<dd>required<br/><span>The unique filename associated with the file in the app.	
+</dl>
+ 
+``` rest
+$$$Method
+DELETE https://apis.appacitive.com/file/delete/{file id}
+```
+``` rest
+$$$Sample Request
+//	Delete file
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: sandbox" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/file/delete/mypicture
+```
+``` rest
+$$$Sample Response
+{
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "0514cae7-2f8a-4232-8712-ed14e2a0c6ef",
+		"additionalmessages": []
+	}
+}
+```
 ### Update a file
+
+You can update a previously uploaded file for your app by using it's unique file name and re-uploading another file in its place.
+
 
 Querying Data
 ------------
