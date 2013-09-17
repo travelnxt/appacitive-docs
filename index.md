@@ -123,15 +123,15 @@ App.Initialize(Net45.WindowsHost.Instance,
 // The header information includes the api key and the environment (sandbox in this example)
 curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 https://apis.appacitive.com/article/device/find/all
 ```
 
-Appacitive Entities
+Appacitive Modules
 =======
 In the next few sections we briefly describe some of the basic terms used in Appacitive like articles, connections, users, files etc.
 
-Article
+Articles
 -------
 Articles represent your data stored inside the Appacitive platform. Every article has a dedicated type. This type is mapped to the schema that you create via the designer in your management console. If we were to use conventional databases as a metaphor, then a schema would correspond to a table and an article would correspond to one row inside that table.
 
@@ -248,7 +248,7 @@ $$$Sample Request
 //Create an article of type post
 curl -X PUT \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {environment (sandbox or live)}" \
 -H "Content-Type: application/json" \
 -d '{ "title" : "test", "text" : "This is a test post.", "__attributes" : { "has_verified" : "false" }}' \
 https://apis.appacitive.com/article/post
@@ -346,7 +346,7 @@ $$$Sample Request
 //Get article of type post with id 33017891581461312
 curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 https://apis.appacitive.com/article/post/33017891581461312
 ```
 ``` rest
@@ -462,7 +462,7 @@ $$$Sample Request
 //Get article of type posts with id 33017891581461312 and 33017891581461313
 curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 https://apis.appacitive.com/article/post/multiget/33017891581461312,33017891581461313
 ```
 ``` rest
@@ -571,7 +571,7 @@ $$$Sample Request
 //Get article of type post with id 33017891581461312 with text and title field alone.
 curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 https://apis.appacitive.com/article/post/33017891581461312?fields=text,title
 ```
 ``` rest
@@ -673,7 +673,7 @@ $$$Sample Request
 
 curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "title" : "updated title", "text" : "This is updated text for the post.", "__attributes" : { "topic" : "testing" }, "__addtags" : ["tagA", "tagB"], "__removetags" : ["tagC"]}' \
 https://apis.appacitive.com/article/post/33017891581461312
@@ -776,19 +776,113 @@ post.save(function(){
 
 ### Delete an article
 
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
+You can delete existing articles by simply providing the article id of the article tht you want to delete.
+This operation will fail if the article has existing connections with other articles.
+
+** Parameters ** 
+
+<dl>
+  <dt>type</dt>
+  <dd>required<br/><span>The type of the article to be retrieved</span></dd>
+  <dt>id</dt>
+  <dd>required<br/><span>The system generated id for the article</span></dd>
+</dl>
+
+** Response **
+
+Returns successful `status` object.
+In case of an error, the `status` object contains details for the failure.
+
+
+``` rest
+$$$Method
+DELETE https://apis.appacitive.com/article/{type}/{id}
+```
+``` rest
+$$$Sample Request
+// Will delete the article of type player with the id 123456678809
+
+curl -X DELETE \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Appacitive-Apikey: {Your api key}" \
+https://apis.appacitive.com/article/player/123456678809
+
+```
+``` rest
+$$$Sample Response
+{
+  "code": "200",
+  "message": "Successful",
+  "faulttype": null,
+  "version": null,
+  "referenceid": "d8740cfc-f669-443c-9d6d-f3204fd65ab3",
+  "additionalmessages": []
+}
+```
 
 ``` javascript
-/*Single Delete*/
+/* Delete a single article */
 player.del(function(obj) {
     alert('Deleted successfully');
 }, function(err, obj) {
     alert('Delete failed')
 });
 
-/*Multi Delete*/
+```
+``` csharp
+/* Delete a single article */
+await Articles.DeleteAsync("player", "123456678809");
+```
+
+#### Delete multiple articles
+Incase you want to delete multiple articles, simply pass a comma separated list of the ids of the articles that you want to delete.
+Do note that all the articles should be of the same type and must not be connected with any other articles.
+
+** Parameters ** 
+
+<dl>
+  <dt>type</dt>
+  <dd>required<br/><span>The type of the article to be retrieved</span></dd>
+  <dt>id list</dt>
+  <dd>required<br/><span>List of ids for the articles to be deleted</span></dd>
+</dl>
+
+** Response **
+
+Returns successful `status` object.
+In case of an error, the `status` object contains details for the failure.
+
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/article/{type}/bulkdelete
+```
+``` rest
+$$$Sample Request
+// Will delete players with the ids 14696753262625025 and 14696753262625026.
+
+curl -X POST \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Appacitive-Apikey: {Your api key}" \
+-d '{"idlist":["14696753262625025","14696753262625026"]}' \
+https://apis.appacitive.com/article/player/bulkdelete
+
+```
+``` rest
+$$$Sample Response
+{
+  "code": "200",
+  "message": "Successful",
+  "faulttype": null,
+  "version": null,
+  "referenceid": "ece1f32e-3590-4514-a73d-1d9662049010",
+  "additionalmessages": []
+}
+```
+``` javascript
+/*  Delete multiple articles. */
 Appacitive.Article.multiDelete({    
-    schema: 'players', //mandatory
+    schema: 'player', //mandatory
     ids: ["14696753262625025", "14696753262625026"], //mandatory
 }, function() { 
     //successfully deleted all articles
@@ -797,19 +891,55 @@ Appacitive.Article.multiDelete({
 });
 ```
 ``` csharp
-/*Single Delete*/
-await Articles.DeleteAsync("friend", "123456678809");
-
-/*Multi Delete*/
-var ids = new [] { "234234", "71231230", "97637282" };
-await Articles.MultiDeleteAsync("friend", ids);
+/*  Delete multiple articles. */
+var ids = new [] { "14696753262625025", "14696753262625026" };
+await Articles.MultiDeleteAsync("player", ids);
 ```
-
-
 #### Delete with Connection
 
-Vivamus malesuada purus eget neque hendrerit dignissim. Suspendisse dignissim sem vitae erat ultrices aliquet. Donec vulputate urna metus, non volutpat ipsum 
+There are scenarios where you might want to delete an article irrespective of existing connections. To do this in the delete operation, you need to explicitly indicate that you want to delete any existing connectons as well. This will cause the delete operation to delete any existing connections along with the specified article.
 
+`NOTE`: This override is not available when deleting multiple articles in a single operation.
+
+** Parameters ** 
+
+<dl>
+  <dt>type</dt>
+  <dd>required<br/><span>The type of the article to be retrieved</span></dd>
+  <dt>id</dt>
+  <dd>required<br/><span>The system generated id for the article</span></dd>
+</dl>
+
+** Response **
+
+Returns successful `status` object.
+In case of an error, the `status` object contains details for the failure.
+
+
+``` rest
+$$$Method
+DELETE https://apis.appacitive.com/article/{type}/{id}?deleteconnections=true
+```
+``` rest
+$$$Sample Request
+// Will delete the article of type player with the id 123456678809
+curl -X DELETE \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Appacitive-Apikey: {Your api key}" \
+https://apis.appacitive.com/article/player/123456678809?deleteconnections=true
+
+```
+``` rest
+$$$Sample Response
+{
+  "code": "200",
+  "message": "Successful",
+  "faulttype": null,
+  "version": null,
+  "referenceid": "d8740cfc-f669-443c-9d6d-f3204fd65ab3",
+  "additionalmessages": []
+}
+```
 ``` javascript
 //Setting the third argument to true will delete its connections if they exist
 player.del(function(obj) {
@@ -819,30 +949,177 @@ player.del(function(obj) {
 }, true); 
 ```
 ``` csharp
-/*Single Delete with connected articles*/
-await Articles.DeleteAsync("friend", "123456678809", true);
+/* Single Delete with connected articles */
+var deleteConnection = true;
+await Articles.DeleteAsync("friend", "123456678809", deleteConnection);
 ```
 
 
 Connections
 ------------
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero. Vivamus malesuada purus eget neque hendrerit dignissim. Suspendisse dignissim sem vitae erat ultrices aliquet. Donec vulputate urna metus, non volutpat ipsum laoreet at. Mauris diam lacus, suscipit consequat lobortis interdum, vulputate ac leo. Praesent quis iaculis mi. Maecenas nec molestie ligula, a tincidunt orci. Proin et nulla diam.
+Connections represent business relationships between articles. As an example, a `employee` connection between a user article and a company article would indicate an `employment` relationship. In a typical relational database, linkages between data are represented via foreign key relationships. Connections are similar to foreign key relationships to the extent that they connect two articles. However, unlike foreign keys, connections can also define properties and store data just like articles. In the `employee` connection example we took earlier, the connection could contain a property called `joining_data` which would store the date the employee joined the company. This data is only relevant as long as the connection is relevant. 
+
+Just like articles, every connection also has a dedicated type. This type is called a `Relation` and is defined using the designer in your management console. 
+
+The connections api allows you to store, retrieve and manage connections between articles. It also allows you to query for connected data based on existing connections.
+
+<span class="h3">The connection object</span>
+
+** System generated properties ** 
+
+<dl>
+  <dt>\__id</dt>
+  <dd><span>Unique time-series strictly <a href="http://en.wikipedia.org/wiki/Monotonic_function">monotonically</a> increasing id automatically assigned by the system on creation. This is immutable.</span></dd>
+  <dt>\__relationtype</dt>
+  <dd><span>The type of the connection as per the relation structure designed by you via the model designer.</span></dd>
+  <dt>\__createdby</dt>
+  <dd><span>The id of the user that created the connection. Incase a user token is provided during creation, then the created by will use the id of the corresponding user. The client can alternatively also provide this in the request.</span></dd>
+  <dt>\__lastmodifiedby</dt>
+  <dd><span>The id of the user that last updated the connection. The id of the user that updated the connection. Incase a user token is provided during creation, then the created by will use the id of the corresponding user. The client can alternatively also provide this in the request.</span></dd>
+  <dt>\__revision</dt>
+  <dd><span>The revision number of the connection. This is incremented on every update and is used to provide <a href="http://en.wikipedia.org/wiki/Multiversion_concurrency_control">multi version concurrency control</a> incase of concurrent updates on the same connection.</span></dd>
+  <dt>\__tags</dt>
+  <dd><span>This is an array of strings that you can use to "tag" specific connections. These tags can be used to search specific connections.</span></dd>
+  <dt>\__utcdatecreated</dt>
+  <dd><span>The timestamp of the time when the connection was created, stored in ISO 8601 format with millisecond precision (YYYY-MM-DDTHH:MM:SS.MMMZ).</span></dd>
+  <dt>\__utclastupdateddate</dt>
+  <dd><span>The timestamp of the time when the connection was last updated, stored in ISO 8601 format with millisecond precision (YYYY-MM-DDTHH:MM:SS.MMMZ).</span></dd>
+  <dt>\__attributes</dt>
+  <dd><span>List of key value pair values that can be stored with the connection and are not validated by the relation definition.</span></dd>
+  <dt>Endpoints</dt>
+  <dd><span>The two endpoints of the connection. Refers the two articles linked via the connection.</span></dd>
+  <dt>label</dt>
+  <dd><span>The name of the endpoint in the connection.</span></dd>
+  <dt>type</dt>
+  <dd><span>The type of the article referred in the endpoint.</span></dd>
+  <dt>articleid</dt>
+  <dd><span>The id of article referred in the endpoint.</span></dd>
+</dl>
+
+`NOTE`: The endpoint names `__endpointa` and `__endpointb` are interchangable. Do NOT use them to refer to the endpoint.
+Do use the label of the endpoint to identify the correct endpoint.
 
 
-### Create
+** User defined properties ** 
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio.
+User defined properties are fields defined by you via the model designer. These are exposed as fields directly on the connection object.
+
+``` rest
+$$$sample object 
+{
+    // system properties
+    "__id": "37266320704799820",
+    "__relationtype": "parent",
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__revision": "1",
+    "__tags": [],
+    "__utcdatecreated": "2013-09-16T08:12:15.4798000Z",
+    "__utclastupdateddate": "2013-09-16T08:12:15.4798000Z",
+    
+    // user defined properties 
+    "joining_date" : "2013-09-16",
+
+    // endpoints
+    "__endpointa": {
+      "label": "employer",
+      "type": "company",
+      "articleid": "37266319911026961"
+    },
+    "__endpointb": {
+      "label": "employee",
+      "type": "user",
+      "articleid": "37266320027419512"
+    },
+
+    // attributes
+    "__attributes": {},
+
+    // tags
+    "__tags": ["amateur","unverified"]
+    
+}
+```
+
+### Create a new connection
+
+The Appacitive platform supports creating connections between existing as well as new articles. 
+The different scenarios that are supported when creating a new connection are detailed in the sections below.
 
 
-#### New Connection between two existing Articles
+#### Create a connection between two existing articles
 
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero. Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero. 
+To create a connection between two existing articles, you need to pass the connection object with the article ids in the specific endpoints. You can also specify the connection properties that you would like to set when creating the connection.
 
+** Parameters ** 
+
+<dl>
+  <dt>connection object</dt>
+  <dd>required<br/><span>The connection object</span></dd>
+</dl>
+
+** Response **
+
+Returns the newly created connection object with all the system defined properties (e.g., ``__id``) set.
+In case of an error, the `status` object contains details for the failure.
+
+
+``` rest
+$$$Method
+PUT https://apis.appacitive.com/connection/{relation type}
+```
+``` rest
+$$$Sample Request
+// Will create a new reviewer connection between 
+//    * user article with id 123445678 and 
+//    * hotel article with id 987654321.
+// The reviewer relation defines two endpoints "reviewer" and "hotel" for this information.
+curl -X PUT \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Appacitive-Apikey: {Your api key}" \
+-d '{"__endpointa":{"label":"reviewer","articleid":"123445678"},"__endpointb":{"label":"hotel","articleid":"987654321"}}' \
+https://apis.appacitive.com/connection/reviewer
+```
+``` rest
+$$$Sample Response
+{
+  "connection": {
+    "__id": "37398331888157174",
+    "__relationtype": "reviewer",
+    "__endpointa": {
+      "label": "reviewer",
+      "type": "user",
+      "articleid": "123445678"
+    },
+    "__endpointb": {
+      "label": "hotel",
+      "type": "hotel",
+      "articleid": "987654321"
+    },
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__relationid": "27474673757454962",
+    "__revision": "1",
+    "__tags": [],
+    "__utcdatecreated": "2013-09-17T19:10:25.0748000Z",
+    "__utclastupdateddate": "2013-09-17T19:10:25.0748000Z",
+    "__attributes": {}
+  },
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "84879761-ca28-49a0-8410-579fbd670473",
+    "additionalmessages": []
+  }
+}
+```
 ``` javascript
 //`review` is relation name, 
-//`reviewer` and `hotel` are endpoint A and B labels
+//`reviewer` and `hotel` are the endpoint labels
 var connection = new Appacitive.Connection({
-                  relation: 'review',
+                  relation: 'reviewer',
                   endpoints: [{
                       articleid: '123445678',
                       label: 'reviewer'
@@ -860,7 +1137,7 @@ connection.save(function () {
 //Optionally you can provide the complete article object
 //instead of providing article id, to do so
 var connection = new Appacitive.Connection({
-                  relation: 'review',
+                  relation: 'reviewer',
                   endpoints: [{
                       article: reviewerArticle,
                       label: 'reviewer'
@@ -877,11 +1154,18 @@ connection.save(function () {
 ```
 ``` csharp
 //`review` is relation name, 
-//`reviewer` and `hotel` are endpoint A and B labels
+//`reviewer` and `hotel` are the endpoint labels
 var connection = Connection
-                    .New("review")
+                    .New("reviewer")
                     .FromExistingArticle("reviewer", "123445678")
                     .ToExistingArticle("hotel", "987654321");
+await connection .SaveAsync();
+
+// This can interchangably also be written as 
+var connection = Connection
+                    .New("reviewer")
+                    .FromExistingArticle("hotel", "987654321")
+                    .ToExistingArticle("reviewer", "123445678");
 await connection .SaveAsync();
 ```
 
@@ -1226,7 +1510,7 @@ PUT https://apis.appacitive.com/user
 $$$Sample Request
 curl -X PUT \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "__tags": ["male"], "username": "john.doe", "firstname": "John", "email": "john.doe@appacitive.com", "password": "p@ssw0rd" }' \
 https://apis.appacitive.com/user
@@ -1315,7 +1599,7 @@ $$$Sample Request
 //	Create a new user and link it to a facebook account
 curl -X PUT \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "username": "john.doe", "firstname": "John", "email": "john.doe@appacitive.com", "password": "p@ssw0rd", "__link": { "authtype": "facebook", "accesstoken": "{facebook access token}"	}}' \
 https://apis.appacitive.com/user
@@ -1387,7 +1671,7 @@ $$$Sample Request
 //Create a new user and link it to a twitter account
 curl -X PUT \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "username": "john.doe", "firstname": "John", "email": "john.doe@appacitive.com", "password": "p@ssw0rd", "__link": { "authtype": "twitter", "oauthtoken": "{twitter oauth token}", "oauthtokensecret": "{twitter oauth token secret}", "consumerkey": "{twitter consumer key}", "consumersecret": "{twitter consumer secret}"}}' \
 https://apis.appacitive.com/user
@@ -1463,7 +1747,7 @@ $$$Sample Request
 //	Create a new user using the OAuth token
 curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "type": "facebook", "accesstoken": "{facebook access token}", "createnew": true }' \
 https://apis.appacitive.com/user/authenticate
@@ -1538,7 +1822,7 @@ $$$Sample Request
 //	Link an account to a appacitive user
 curl -X PUT \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "type": "facebook", "accesstoken": "{facebook access token}" }' \
 https://apis.appacitive.com/user/john.doe/link?useridtype=username
@@ -1592,7 +1876,7 @@ $$$Sample Request
 //Create a new user
 curl -X PUT \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "authtype": "twitter", "oauthtoken": "{twitter oauth token}",	"oauthtokensecret": "{twitter oauth token secret}",	"consumerkey": "{twitter consumer key}", "consumersecret": "{twitter consumer secret}" }' \
 https://apis.appacitive.com/user/john.doe/link?useridtype=username
@@ -1644,7 +1928,7 @@ $$$Sample Request
 //Delink OAuth account
 curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 https://apis.appacitive.com/user/john.doe/facebook/delink?useridtype=username
 ```
@@ -1730,7 +2014,7 @@ $$$Sample Request
 //	Authenticate user with his username and password
 curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "username": "john.doe", "password": "p@ssw0rd" }' \
 https://apis.appacitive.com/user/authenticate
@@ -1804,7 +2088,7 @@ $$$Sample Request
 //	Authenticate user using an access token associate with him in one of his linked identities
 curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "type": "facebook", "accesstoken": "{facebook access token}" }' \
 https://apis.appacitive.com/user/authenticate
@@ -1860,7 +2144,7 @@ $$$Sample Request
 //	Authenticate user using an access token associate with him in one of his linked identities
 curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "type": "twitter", "oauthtoken": "{oAuth token}",	"oauthtokensecret": "{oAuth token secret}",	"consumerKey": "{consumer key}", "consumerSecret": "{consumer secret}" }' \
 https://apis.appacitive.com/user/authenticate
@@ -1957,7 +2241,7 @@ $$$Sample Request
 //	Get user by id
 curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
 https://apis.appacitive.com/user/34912447775245454
@@ -2032,7 +2316,7 @@ $$$Sample Request
 //	Get user by username
 curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
 https://apis.appacitive.com/user/john.doe?useridtype=username
@@ -2115,7 +2399,7 @@ $$$Sample Request
 //	Retrieve user with his session token
 curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
 https://apis.appacitive.com/user/me?useridtype=token&token=K2liWXVlSHZ0elNESUloTFlLRE5EQ2lzWXZtM0FFL0JxYW01WTBtVFlmTHZ6aHFMaWtEKzRUdlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa2kvekJpTUZGYyt2ZEFTVi9mbGdNN2xRaEZuWUJidVByR3lFMkZlTzNrRHV3cldVUFRNbFA5M3B6NFN5Rkd3K1dNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==
@@ -2198,7 +2482,7 @@ $$$Sample Request
 //	Update user
 curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{
         "firstname":"john",
@@ -2317,7 +2601,7 @@ $$$Sample Request
 //	Delete user using his id
 curl -X DELETE \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
 https://apis.appacitive.com/user/34912447775245454
@@ -2362,7 +2646,7 @@ $$$Sample Request
 //	Delete user using his username
 curl -X DELETE \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
 https://apis.appacitive.com/user/john.doe?useridtype=username
@@ -2408,7 +2692,7 @@ $$$Sample Request
 //	Delete user using his session token
 curl -X DELETE \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
 https://apis.appacitive.com/user/me?useridtype=token&token=K2liWXVlSHZ0elNESUloTFlLRE5EQ2lzWXZtM0FFL0JxYW01WTBtVFlmTHZ6aHFMaWtEKzRUdlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa2kvekJpTUZGYyt2ZEFTVi9mbGdNN2xRaEZuWUJidVByR3lFMkZlTzNrRHV3cldVUFRNbFA5M3B6NFN5Rkd3K1dNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==
@@ -2452,7 +2736,7 @@ $$$Sample Request
 //	Delete user using his session token
 curl -X DELETE \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
 https://apis.appacitive.com/user/416176845248641548?deleteconnections=true
@@ -2520,7 +2804,7 @@ $$$Sample Request
 //	Delete user using his session token
 curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
 https://apis.appacitive.com/user/john.doe/checkin?useridtype=username&lat=10.10&long=20.20
@@ -2575,7 +2859,7 @@ $$$Sample Request
 //	Delete user using his session token
 curl -X DELETE \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
 https://apis.appacitive.com/user/validate?userToken=RlYzRlcxY3lsRDlqYUpmQlNha0IwcTJRTXJDYVd6QWZOMlVPR0JWSmNhbTgyWVZxSTVnTmkvR1N0MXJMZm1nZGZCYWNZVk40eEZ4dTB3V3NBOFNVa3FUSEdQZVBTZDBWazJFUW03R0dZQVc5MjdZZmtGRFd1Q092enpTSUpQSWI1VEpqV2xsUUU0U3dIZGcwVTdZTkdNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==```
@@ -2629,7 +2913,7 @@ $$$Sample Request
 //	Delete user using his session token
 curl -X DELETE \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
 https://apis.appacitive.com/user/invalidate?userToken=RlYzRlcxY3lsRDlqYUpmQlNha0IwcTJRTXJDYVd6QWZOMlVPR0JWSmNhbTgyWVZxSTVnTmkvR1N0MXJMZm1nZGZCYWNZVk40eEZ4dTB3V3NBOFNVa3FUSEdQZVBTZDBWazJFUW03R0dZQVc5MjdZZmtGRFd1Q092enpTSUpQSWI1VEpqV2xsUUU0U3dIZGcwVTdZTkdNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==```
@@ -2705,7 +2989,7 @@ $$$Sample Request
 //	Generate upload url
 curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 https://apis.appacitive.com/file/uploadurl?filename=mypicture&contenttype=image/jpeg&expires=10
 ```
@@ -2771,7 +3055,7 @@ $$$Sample Request
 //	Generate download url
 curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 https://apis.appacitive.com/file/download/mypicture
 ```
@@ -2828,7 +3112,7 @@ $$$Sample Request
 //	Delete file
 curl -X DELETE \
 -H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 https://apis.appacitive.com/file/delete/mypicture
 ```
