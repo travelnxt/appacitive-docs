@@ -957,13 +957,29 @@ await Articles.DeleteAsync("friend", "123456678809", deleteConnection);
 
 Connections
 ------------
-Connections represent business relationships between articles. As an example, a `employee` connection between a user article and a company article would indicate an `employment` relationship. In a typical relational database, linkages between data are represented via foreign key relationships. Connections are similar to foreign key relationships to the extent that they connect two articles. However, unlike foreign keys, connections can also define properties and store data just like articles. In the `employee` connection example we took earlier, the connection could contain a property called `joining_data` which would store the date the employee joined the company. This data is only relevant as long as the connection is relevant. 
+Connections represent business relationships between articles. As an example, a `employment` connection between a user article and a company article would indicate an relationship of "employment". In a typical relational database, linkages between data are represented via foreign key relationships. Connections are similar to foreign key relationships to the extent that they connect two articles. However, unlike foreign keys, connections can also define properties and store data just like articles. In the `employment` connection example we took earlier, the connection could contain a property called `joining_date` which would store the date the employee joined the company. This data is only relevant as long as the connection is relevant. 
 
 Just like articles, every connection also has a dedicated type. This type is called a `Relation` and is defined using the designer in your management console. 
 
 The connections api allows you to store, retrieve and manage connections between articles. It also allows you to query for connected data based on existing connections.
 
 <span class="h3">The connection object</span>
+
+** Endpoint **
+
+The connection object will contain two endpoints representing the  articles that it is connecting. 
+The contents of the endpoints are detailed below.
+<dl style="border-bottom: none;">
+  <dt>label</dt>
+  <dd><span>The name of the endpoint in the connection.</span></dd>
+  <dt>type</dt>
+  <dd><span>The type of the article referred in the endpoint.</span></dd>
+  <dt>articleid</dt>
+  <dd><span>The id of article referred in the endpoint.</span></dd>
+</dl>
+
+`NOTE`: The endpoint names `__endpointa` and `__endpointb` are interchangable. Do NOT use them to refer to the endpoint.
+Do use the label of the endpoint to identify the correct endpoint.
 
 ** System generated properties ** 
 
@@ -986,19 +1002,7 @@ The connections api allows you to store, retrieve and manage connections between
   <dd><span>The timestamp of the time when the connection was last updated, stored in ISO 8601 format with millisecond precision (YYYY-MM-DDTHH:MM:SS.MMMZ).</span></dd>
   <dt>\__attributes</dt>
   <dd><span>List of key value pair values that can be stored with the connection and are not validated by the relation definition.</span></dd>
-  <dt>Endpoints</dt>
-  <dd><span>The two endpoints of the connection. Refers the two articles linked via the connection.</span></dd>
-  <dt>label</dt>
-  <dd><span>The name of the endpoint in the connection.</span></dd>
-  <dt>type</dt>
-  <dd><span>The type of the article referred in the endpoint.</span></dd>
-  <dt>articleid</dt>
-  <dd><span>The id of article referred in the endpoint.</span></dd>
 </dl>
-
-`NOTE`: The endpoint names `__endpointa` and `__endpointb` are interchangable. Do NOT use them to refer to the endpoint.
-Do use the label of the endpoint to identify the correct endpoint.
-
 
 ** User defined properties ** 
 
@@ -1007,19 +1011,6 @@ User defined properties are fields defined by you via the model designer. These 
 ``` rest
 $$$sample object 
 {
-    // system properties
-    "__id": "37266320704799820",
-    "__relationtype": "parent",
-    "__createdby": "System",
-    "__lastmodifiedby": "System",
-    "__revision": "1",
-    "__tags": [],
-    "__utcdatecreated": "2013-09-16T08:12:15.4798000Z",
-    "__utclastupdateddate": "2013-09-16T08:12:15.4798000Z",
-    
-    // user defined properties 
-    "joining_date" : "2013-09-16",
-
     // endpoints
     "__endpointa": {
       "label": "employer",
@@ -1031,6 +1022,19 @@ $$$sample object
       "type": "user",
       "articleid": "37266320027419512"
     },
+
+    // system properties
+    "__id": "37266320704799820",
+    "__relationtype": "employment",
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__revision": "1",
+    "__tags": [],
+    "__utcdatecreated": "2013-09-16T08:12:15.4798000Z",
+    "__utclastupdateddate": "2013-09-16T08:12:15.4798000Z",
+    
+    // user defined properties 
+    "joining_date" : "2013-09-16",
 
     // attributes
     "__attributes": {},
