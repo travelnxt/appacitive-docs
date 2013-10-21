@@ -1823,28 +1823,122 @@ var ids = new [] {"40438996554377032", "40440007982449139", "40440007982449139"}
 await Connections.MultiDeleteAsync("review", ids);
 ```
 
+### Querying connections
 
-#### Get Connected Articles
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio.
+Data inside the Appacitive platform is stored in the form of a data graph. This is very useful since most queries for data
+can be broken down into some form of graph traversal. The sections below detail out how to use connections to query for
+connected data inside the platform.
+
+#### Get connected articles
+
+In a relational database, you can query for related data by querying over a table's foreign key. Similarly, on the Appacitive platform,
+related data can be retreived by querying connections. You can query for all articles connected to a specific article via a given connection type. 
+
+For example<br>
+Querying for all users who have visited San Franciso can be represented as <br>
+`Get all user articles connected to the city article (San Francisco) via the visited connection`.
+
+The query for connected data, you need to specify the type of the connection and the article (type & id ) for which you need connected data.
+
+** Parameters ** 
+
+<dl>
+  <dt>connection_type</dt>
+  <dd>required<br/><span>The type of the connection to be queried</span></dd>
+  <dt>article_type</dt>
+  <dd>required<br/><span>type of article for which to get the connected articles</span></dd>
+  <dt>article id</dt>
+  <dd>required<br/><span>The article id for which to get the connected articles</span></dd>
+  <dt>returnEdge</dt>
+  <dd>optional<br/><span>Flag indicating whether or not to return the individial connection information as well. True be default.</span></dd>
+</dl>
+
+** Response **
+
+Returns the list of articles (along with connection information) connected to the given article via the given connection type.
+
+
+``` rest
+$$$Method
+GET https://apis.appacitive.com/connection/{connection_type}/{article_type}/{article_id}/find?returnedge={true/false}
+```
+``` rest
+$$$Sample Request
+// Get all users who have visited San Francisco (city article with id 636523636) 
+
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+GET https://apis.appacitive.com/connection/visitor/city/636523636/find?returnedge=true
+```
+``` rest
+$$$Sample Response
+
+// System attributes have been removed for readability // 
+
+{
+  "paginginfo": {
+    "pagenumber": 1,
+    "pagesize": 20,
+    "totalrecords": 2
+  },
+  "parent": "city",
+  "nodes": [
+    {
+      "__id": "40440013641645242",
+      "__schematype": "user",
+      "username" : "john.doe",
+      ...
+      // Connection information is available in the __edge node. 
+      // It is only returned if returnedge=true in request.
+      "__edge": {
+        "__label": "user",
+        "__id": "40440013690928316",
+        "__relationtype": "visitor"
+      }
+    },
+    {
+      "__id": "30440013682145242",
+      "__schematype": "user",
+      "username" : "jane.doe",
+      ...
+      "__edge": {
+        "__label": "user",
+        "__id": "30447393690923721",
+        "__relationtype": "visitor"
+      }
+    }
+  ],
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "ab30a26c-6757-40f7-8c61-1f888e57f2c1",
+    "additionalmessages": []
+  }
+}
+```
 
 ``` javascript
-//Get an instance of Article
-var hotel = new Appacitive.Article({ __id : '123345456', schema : 'hotel');
-var connectionCollection = hotel.getConnectedArticles({ relation : 'review' });
+// Get all users who have visited San Francisco (city article with id 636523636) 
+var city = new Appacitive.Article({ __id : '636523636', schema : 'city');
+var connectionCollection = city.getConnectedArticles({ relation : 'visitor' });
 connectionCollection.fetch(function(){
-  //itirating on the collection
+  //iterating on the collection
   connectionCollection.forEach(function (connection) {
   }
 }, function(err) {
     alert("code:" + err.code + "\nmessage:" + err.message);
 });
 ```
-``` csharp
-//Get an instance of Article
-var hotel = new Article("123345456");
-var response = await hotel.GetConnectedArticlesAsync("review");
-```
 
+``` csharp
+// Get all users who have visited San Francisco (city article with id 636523636) 
+var city = new Article("city", "636523636");
+var visitors = await city.GetConnectedArticlesAsync("visitor");
+```
 
 
 Users
