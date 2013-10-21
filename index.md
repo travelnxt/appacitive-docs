@@ -3238,3 +3238,313 @@ var pt4 = new Geocode(36.1749687195M, -114.1372222900M);
 var geocodes = new[] { pt1, pt2, pt3, pt4 };
 var polygonQuery = Query.Property("location").WithinPolygon(geocodes);
 ```
+
+Email
+------------
+Appacitive allows you to send emails without having to worry about the underlying infrastructure.
+To send out emails you do need to provide your account settings (your own SMTP username,password etc). You can set these values by visiting the Portal and saving the settings there, or else pass them along with the API call.
+
+Appacitive allows you to send Templated emails as well. For this, you will have to visit the Portal, and create templates, save it with a name. 
+
+### Sending Raw Email
+
+You can send across a raw email using the following API
+
+** Parameter **
+
+<dl>
+	<dt>smtp</dt>
+	<dd>required (if not preconfigured)<br/><span>This is the SMPT settings.
+	<dt>to</dt>
+	<dd>required<br/><span>List of email ids to send email to
+	<dt>cc</dt>
+	<dd>optional<br/><span>List of email ids to cc to
+	<dt>bcc</dt>
+	<dd>optional<br/><span>List of email ids to bcc to
+	<dt>from</dt>
+	<dd>optional<br/><span>The email id from which email is sent
+	<dt>replyto</dt>
+	<dd>optional<br/><span>The reply to email address
+	<dt>subject</dt>
+	<dd>required<br/><span>The subject of the email to send
+	<dt>body</dt>
+	<dd>required<br/><span>The body of the email to send
+</dl>
+ 
+``` rest
+$$$Method
+POST https://apis.appacitive.com/email/send
+```
+``` rest
+$$$Sample Request
+//	Send an email
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d
+{
+	"smtp": {
+		"username": "john@doe.com",
+		"password": "john'sPwd",
+		"host": "smtp.gmail.com",
+		"port": 465,
+		"enablessl": true
+	},
+	"to": ["jane@doe.com"],
+  	"cc":["support@doe.com"],
+	"subject": "Welcome Jane",
+	"from": "john@doe.com",
+	"replyto": "john@doe.com",
+	"body": {
+		"content": "Welcome to Appacitive !!",
+		"ishtml": false
+	}
+}
+```
+
+``` rest
+$$$Sample Response
+{
+	"email": {
+		"__id": "40440008658821032",
+		"subject": "Welcome Jane",
+		"from": "john@appacitive.com",
+		"to": ["jane@doe.com"],
+		"cc": ["support@doe.com"],
+		"bcc": [],
+		"body": {
+			"content": "Welcome to Appacitive !!",
+			"ishtml": false
+		}
+	},
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "707c8597-112e-4af7-ad37-8d08e2532497",
+		"additionalmessages": []
+	}
+}
+```
+
+``` javascript
+$$$Method 
+Appacitive.Email.sendRawEmail(email, successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+// Email setup is not necessary if it is setup form Portal
+Appacitive.Email.setupEmail({
+    username: 'john@doe.com',
+    password: 'johnPWD',
+    host: 'smtp.gmail.com',
+    port: 465,
+    enablessl: true,
+    from: 'john@doe.com',
+    replyto: 'john@doe.com'
+});
+
+var email = {
+    to: ['jane@doe.com'],
+    cc: ['support@doe.com'],
+    subject: 'Welcome Jane',
+    body: 'Welcome to Appacitive',
+    ishtml: false
+};
+
+Appacitive.Email.sendRawEmail(email, function (email) {
+    alert('Successfully sent.');
+}, function(err) {
+    alert('Email sending failed.')
+});
+```
+
+
+``` csharp
+$$$Sample Request
+
+var to = new [] {"email1", "email2"..}
+var cc = new [] {"email1", "email2"..}
+var bcc = new [] {"email1", "email2"..}
+
+//Passing the SMTP setting in the call
+await NewEmail
+.Create("Put the subject here")
+.To(to, cc, bcc)
+.From("john@doe.com", "john@doe.com")
+.WithBody("This is a raw body email.", false)
+.Using("smtp.gmail.com", 465, "john@doe.com","johnsPWD")
+.SendAsync();
+
+//Using a preconfigured SMTP setting
+await NewEmail
+.Create("Put the subject here")
+.To(to, cc, bcc)
+.From("john@doe.com", "john@doe.com")
+.WithBody("This is a raw body email.", false)
+.SendAsync();
+```
+ 
+### Sending Templated Email
+
+You can send an email using a saved template.
+The template can be created and saved using the Portal.
+
+** Parameter **
+
+<dl>
+	<dt>smtp</dt>
+	<dd>required (if not preconfigured)<br/><span>This is the SMPT settings.
+	<dt>to</dt>
+	<dd>required<br/><span>List of email ids to send email to
+	<dt>cc</dt>
+	<dd>optional<br/><span>List of email ids to cc to
+	<dt>bcc</dt>
+	<dd>optional<br/><span>List of email ids to bcc to
+	<dt>from</dt>
+	<dd>optional<br/><span>The email id from which email is sent
+	<dt>replyto</dt>
+	<dd>optional<br/><span>The reply to email address
+	<dt>subject</dt>
+	<dd>required<br/><span>The subject of the email to send
+	<dt>body</dt>
+	<dd>required<br/><span>The body of the email to send
+</dl>
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/email/send
+```
+``` rest
+$$$Sample Request
+//	Send an email
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d
+{
+	"smtp": {
+		"username": "john@doe.com",
+		"password": "john'sPwd",
+		"host": "smtp.gmail.com",
+		"port": 465,
+		"enablessl": true
+	},
+	"to": ["jane@doe.com"],
+  	"cc":["support@doe.com"],
+	"subject": "Welcome Jane",
+	"from": "john@doe.com",
+	"replyto": "john@doe.com",
+	"body": {
+		"templatename": "{templateName}",
+		"data": {
+			"placeholder1": "PLace holder 1 value",
+			"placeholder2": "Place holder 2 value"
+		},
+		"ishtml": true
+	}
+}
+```
+
+``` rest
+$$$Sample Response
+{
+	"email": {
+		"__id": "40440008658821032",
+		"subject": "Welcome Jane",
+		"from": "john@appacitive.com",
+		"to": ["jane@doe.com"],
+		"cc": ["support@doe.com"],
+		"bcc": [],
+		"body": {
+			"templatename": "{templateName}",
+			"data": {
+				"placeholder1": "PLace holder 1 value",
+				"placeholder2": "Place holder 2 value"
+			},
+			"ishtml": true		
+		}
+	},
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "707c8597-112e-4af7-ad37-8d08e2532497",
+		"additionalmessages": []
+	}
+}
+```          
+``` csharp
+$$$Sample Request
+
+var to = new [] {"email1", "email2"..}
+var cc = new [] {"email1", "email2"..}
+var bcc = new [] {"email1", "email2"..}
+
+//Passing the SMTP setting in the call
+await NewEmail
+.Create("Put the subject here")
+.To(to, cc, bcc)
+.From("john@doe.com", "john@doe.com")
+.WithTemplateBody( "sample", 
+        new Dictionary<string, string> 
+        {
+            {"placeholder1", "Place holder 1 value"},
+            {"placeholder2", "Place holder 2 value"}
+        },true)
+.Using("smtp.gmail.com", 465, "john@doe.com","johnsPWD")
+.SendAsync();
+
+//Using a preconfigured SMTP setting
+await NewEmail
+.Create("Put the subject here")
+.To(to, cc, bcc)
+.From("john@doe.com", "john@doe.com")
+.WithTemplateBody( "sample", 
+        new Dictionary<string, string> 
+        {
+            {"placeholder1", "Place holder 1 value"},
+            {"placeholder2", "Place holder 2 value"}
+        },false)
+.SendAsync();
+```
+``` javascript
+$$$Method 
+Appacitive.Email.sendTemplatedEmail(email, successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+// Email setup is not necessary if it is setup form Portal
+Appacitive.Email.setupEmail({
+    username: 'john@doe.com',
+    password: 'johnPWD',
+    host: 'smtp.gmail.com',
+    port: 465,
+    enablessl: true,
+    from: 'john@doe.com',
+    replyto: 'john@doe.com'
+});
+
+var email = {
+    to: ['jane@doe.com'],
+    cc: ['support@doe.com'],
+    subject: 'Welcome Jane',
+    templateName: 'sample',
+    data: 
+    {
+    	'placeholder1': 'placeholder 1 value',
+    	'placeholder2' : 'placeholder 2 value'	
+    },
+    ishtml: false
+};
+
+Appacitive.Email.sendTemplatedEmail(email, function (email) {
+    alert('Successfully sent.');
+}, function(err) {
+    alert('Email sending failed.')
+});
+```
