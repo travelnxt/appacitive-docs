@@ -1586,7 +1586,8 @@ However, in all other ways, connections behave exactly like articles. All proper
 can be updated using the update connection operation. 
 
 To update an existing connection, you need to provide the type and id of the connection along with the list of updates that are to be made. 
-As the Appacitive platform supports partial updates, and update only needs the information that has actually changed.
+
+The Appacitive platform supports partial updates on connections. As a result, instead of sending the complete connection object, you can send just the fields that have actually changed.
 
 ** Parameters ** 
 
