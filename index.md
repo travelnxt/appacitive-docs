@@ -644,9 +644,9 @@ and update only needs the information that has actually changed.
 
 <dl>
   <dt>type</dt>
-  <dd>required<br/><span>The type of the article to be retrieved</span></dd>
+  <dd>required<br/><span>The type of the article</span></dd>
   <dt>id</dt>
-  <dd>required<br/><span>The system generated id for the article</span></dd>
+  <dd>required<br/><span>The system generated id of the article</span></dd>
   <dt>article updates</dt>
   <dd>required<br/><span>The article object with the fields to be updated.</span></dd>
   <dt>revision</dt>
@@ -957,13 +957,29 @@ await Articles.DeleteAsync("friend", "123456678809", deleteConnection);
 
 Connections
 ------------
-Connections represent business relationships between articles. As an example, a `employee` connection between a user article and a company article would indicate an `employment` relationship. In a typical relational database, linkages between data are represented via foreign key relationships. Connections are similar to foreign key relationships to the extent that they connect two articles. However, unlike foreign keys, connections can also define properties and store data just like articles. In the `employee` connection example we took earlier, the connection could contain a property called `joining_data` which would store the date the employee joined the company. This data is only relevant as long as the connection is relevant. 
+Connections represent business relationships between articles. As an example, a `employment` connection between a user article and a company article would indicate an relationship of "employment". In a typical relational database, linkages between data are represented via foreign key relationships. Connections are similar to foreign key relationships to the extent that they connect two articles. However, unlike foreign keys, connections can also define properties and store data just like articles. In the `employment` connection example we took earlier, the connection could contain a property called `joining_date` which would store the date the employee joined the company. This data is only relevant as long as the connection is relevant. 
 
 Just like articles, every connection also has a dedicated type. This type is called a `Relation` and is defined using the designer in your management console. 
 
 The connections api allows you to store, retrieve and manage connections between articles. It also allows you to query for connected data based on existing connections.
 
 <span class="h3">The connection object</span>
+
+** Endpoint **
+
+The connection object will contain two endpoints representing the  articles that it is connecting. 
+The contents of the endpoints are detailed below.
+<dl style="border-bottom: none;">
+  <dt>label</dt>
+  <dd><span>The name of the endpoint in the connection.</span></dd>
+  <dt>type</dt>
+  <dd><span>The type of the article referred in the endpoint.</span></dd>
+  <dt>articleid</dt>
+  <dd><span>The id of article referred in the endpoint.</span></dd>
+</dl>
+
+`NOTE`: The endpoint names `__endpointa` and `__endpointb` are interchangable. Do NOT use them to refer to the endpoint.
+Do use the label of the endpoint to identify the correct endpoint.
 
 ** System generated properties ** 
 
@@ -986,19 +1002,7 @@ The connections api allows you to store, retrieve and manage connections between
   <dd><span>The timestamp of the time when the connection was last updated, stored in ISO 8601 format with millisecond precision (YYYY-MM-DDTHH:MM:SS.MMMZ).</span></dd>
   <dt>\__attributes</dt>
   <dd><span>List of key value pair values that can be stored with the connection and are not validated by the relation definition.</span></dd>
-  <dt>Endpoints</dt>
-  <dd><span>The two endpoints of the connection. Refers the two articles linked via the connection.</span></dd>
-  <dt>label</dt>
-  <dd><span>The name of the endpoint in the connection.</span></dd>
-  <dt>type</dt>
-  <dd><span>The type of the article referred in the endpoint.</span></dd>
-  <dt>articleid</dt>
-  <dd><span>The id of article referred in the endpoint.</span></dd>
 </dl>
-
-`NOTE`: The endpoint names `__endpointa` and `__endpointb` are interchangable. Do NOT use them to refer to the endpoint.
-Do use the label of the endpoint to identify the correct endpoint.
-
 
 ** User defined properties ** 
 
@@ -1007,19 +1011,6 @@ User defined properties are fields defined by you via the model designer. These 
 ``` rest
 $$$sample object 
 {
-    // system properties
-    "__id": "37266320704799820",
-    "__relationtype": "parent",
-    "__createdby": "System",
-    "__lastmodifiedby": "System",
-    "__revision": "1",
-    "__tags": [],
-    "__utcdatecreated": "2013-09-16T08:12:15.4798000Z",
-    "__utclastupdateddate": "2013-09-16T08:12:15.4798000Z",
-    
-    // user defined properties 
-    "joining_date" : "2013-09-16",
-
     // endpoints
     "__endpointa": {
       "label": "employer",
@@ -1032,6 +1023,19 @@ $$$sample object
       "articleid": "37266320027419512"
     },
 
+    // system properties
+    "__id": "37266320704799820",
+    "__relationtype": "employment",
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__revision": "1",
+    "__tags": [],
+    "__utcdatecreated": "2013-09-16T08:12:15.4798000Z",
+    "__utclastupdateddate": "2013-09-16T08:12:15.4798000Z",
+    
+    // user defined properties 
+    "joining_date" : "2013-09-16",
+
     // attributes
     "__attributes": {},
 
@@ -1040,7 +1044,13 @@ $$$sample object
     
 }
 ```
-
+``` csharp
+    var conn = Connection
+                    .New("employment")
+                    .FromExistingArticle("employee", "21317231283123")
+                    .ToExistingArticle("employer", "716238712836");
+    conn.Set<DateTime>("joining_date", new DateTime(2012,1,1));
+```
 ### Create a new connection
 
 The Appacitive platform supports creating connections between existing as well as new articles. 
@@ -1070,22 +1080,22 @@ PUT https://apis.appacitive.com/connection/{relation type}
 ```
 ``` rest
 $$$Sample Request
-// Will create a new reviewer connection between 
+// Will create a new reviewed connection between 
 //    * user article with id 123445678 and 
 //    * hotel article with id 987654321.
-// The reviewer relation defines two endpoints "reviewer" and "hotel" for this information.
+// The reviewed relation defines two endpoints "reviewer" and "hotel" for this information.
 curl -X PUT \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-Apikey: {Your api key}" \
 -d '{"__endpointa":{"label":"reviewer","articleid":"123445678"},"__endpointb":{"label":"hotel","articleid":"987654321"}}' \
-https://apis.appacitive.com/connection/reviewer
+https://apis.appacitive.com/connection/reviewed
 ```
 ``` rest
 $$$Sample Response
 {
   "connection": {
     "__id": "37398331888157174",
-    "__relationtype": "reviewer",
+    "__relationtype": "reviewed",
     "__endpointa": {
       "label": "reviewer",
       "type": "user",
@@ -1119,7 +1129,7 @@ $$$Sample Response
 //`review` is relation name, 
 //`reviewer` and `hotel` are the endpoint labels
 var connection = new Appacitive.Connection({
-                  relation: 'reviewer',
+                  relation: 'reviewed',
                   endpoints: [{
                       articleid: '123445678',
                       label: 'reviewer'
@@ -1137,7 +1147,7 @@ connection.save(function () {
 //Optionally you can provide the complete article object
 //instead of providing article id, to do so
 var connection = new Appacitive.Connection({
-                  relation: 'reviewer',
+                  relation: 'reviewed',
                   endpoints: [{
                       article: reviewerArticle,
                       label: 'reviewer'
@@ -1156,38 +1166,113 @@ connection.save(function () {
 //`review` is relation name, 
 //`reviewer` and `hotel` are the endpoint labels
 var connection = Connection
-                    .New("reviewer")
+                    .New("reviewed")
                     .FromExistingArticle("reviewer", "123445678")
                     .ToExistingArticle("hotel", "987654321");
 await connection .SaveAsync();
 
 // This can interchangably also be written as 
 var connection = Connection
-                    .New("reviewer")
+                    .New("reviewed")
                     .FromExistingArticle("hotel", "987654321")
                     .ToExistingArticle("reviewer", "123445678");
 await connection .SaveAsync();
 ```
 
 
-#### New Connection between existing article and a new article
+#### Create a connection between a new and existing article.
 
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero. Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero. 
+In your application, you might want to be able to create a new article and connect it with an existing article 
+as part of one transactional operation. The create connection operation allows you to interchangable provide 
+either an existing article reference or a completely new article inside the endpoint definition.
 
+If a new article is provided in the request, then the operation will create both the article and the connection 
+as part of a single transaction.
+
+``` rest
+$$$Method
+PUT https://apis.appacitive.com/connection/{relation type}
+```
+``` rest
+$$$Sample Request
+// Will create a new my_score connection between 
+//    * existing player article with id 123445678 and 
+//    * new score article which will also be created when the connection is created.
+// The my_score relation defines two endpoints "player" and "score" for this information.
+curl -X PUT \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Appacitive-Apikey: {Your api key}" \
+-d '{"__endpointa":{"label":"score","article":{"__schematype":"score","points":"150"}},"__endpointb":{"label":"player","articleid":"123445678"}}' \
+https://apis.appacitive.com/connection/my_score
+
+```
+``` rest
+$$$Sample Response
+{
+  "connection": {
+    "__id": "37529356259689055",
+    "__relationtype": "my_score",
+    "__endpointa": {
+      "label": "score",
+      "type": "score",
+      "articleid": "37529356194677342",
+      "article": {
+        "__id": "37529356194677342",
+        "__schematype": "score",
+        "__createdby": "System",
+        "__lastmodifiedby": "System",
+        "__revision": "1",
+        "__tags": [],
+        "__utcdatecreated": "2013-09-19T05:52:57.9392000Z",
+        "__utclastupdateddate": "2013-09-19T05:52:57.9392000Z",
+        "points": "150"
+      }
+    },
+    "__endpointb": {
+      "label": "player",
+      "type": "player",
+      "articleid": "123445678"
+    },
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__relationid": "27474673757454962",
+    "__revision": "1",
+    "__tags": [],
+    "__utcdatecreated": "2013-09-19T05:52:58.0172000Z",
+    "__utclastupdateddate": "2013-09-19T05:52:58.0172000Z",
+    "__attributes": {}
+  },
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "b7a7e058-4853-406e-9601-611aa7f38665",
+    "additionalmessages": []
+  }
+}
+```
 ``` javascript
-//Create an instance of Article 
-var hotelArticle = new Appacitive.Article({ schema: 'hotel' });
-hotelArticle.set('name', 'Caesar Palace');
-//Other hotel properties
+// Will create a new my_score connection between 
+//    * existing player article with id 123445678 and 
+//    * new score article which will also be created when the connection is created.
+// The my_score relation defines two endpoints "player" and "score" for this information.
+
+//Create an instance of an article of type score. 
+var score = new Appacitive.Article({ schema: 'score' });
+score.set('points', '150');
+
+// existing player article.
+var playerId = '123445678';
 
 var connection = new Appacitive.Connection({
-                  relation: 'review',
+                  relation: 'my_scores',
                   endpoints: [{
-                      articleid: '123445678',
-                      label: 'reviewer'
+                      articleid: playerId,
+                      label: 'player'
                   }, {
-                      article: hotelArticle,
-                      label: 'hotel'
+                      article: score,
+                      label: 'score'
                   }]                
               });
 connection.save(function () {
@@ -1197,36 +1282,128 @@ connection.save(function () {
 });
 ```
 ``` csharp
-//Create an instance of Article
-var hotelArticle = new Article("hotel");
-hotelArticle.Set("name", "Caesar Palace");
-//Other hotel properties
+/* Will create a new my_score connection between 
+    - existing player article with id 123445678 and 
+    - new score article which will also be created when the connection is created.
+*/ The my_score relation defines two endpoints "player" and "score" for this information.
+
+//Create an instance of article of type score
+var score = new Article("score");
+score.Set("points", 150);
 
 var connection = Connection
-                    .New("review")
-                    .FromExistingArticle("reviewer", "123445678")
-                    .ToNewArticle("hotel", hotelArticle);
+                    .New("my_scores")
+                    .FromExistingArticle("player", "123445678")
+                    .ToNewArticle("score", score);
 await connection .SaveAsync();
+
+// The id of the score object should now be set since it has also been created on the server.
+var scoreId = score.Id;
 ```
 
 
-#### New Connection between two new articles
+#### Create a connection between two new articles.
 
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero. Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero. 
+As indicated in the earlier example, the create connection operation allows you to pass either an existing article id
+or a new article object in its two endpoints. Passing a new article in each of the endpoints will allow you to create 
+both the endpoints as well as the connection between the two in a single operation.
 
+``` rest
+$$$Method
+PUT https://apis.appacitive.com/connection/{relation type}
+```
+``` rest
+$$$Sample Request
+// Will create a new my_score connection between 
+//    * new player article
+//    * new score article
+// The my_score relation defines two endpoints "player" and "score" for this information.
+curl -X PUT \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Appacitive-Apikey: {Your api key}" \
+-d '{"__endpointa":{"label":"score","article":{"__schematype":"score","points":"150"}},"__endpointb":{"label":"player", "article":{"__schematype":"player","name":"sirius"}}}' \
+https://apis.appacitive.com/connection/my_score
+
+```
+``` rest
+$$$Sample Response
+{
+  "connection": {
+    "__id": "41449356194671234",
+    "__relationtype": "my_score",
+    "__endpointa": {
+      "label": "score",
+      "type": "score",
+      "articleid": "37529356194677342",
+      "article": {
+        "__id": "37529356194677342",
+        "__schematype": "score",
+        "__createdby": "System",
+        "__lastmodifiedby": "System",
+        "__revision": "1",
+        "__tags": [],
+        "__utcdatecreated": "2013-09-19T05:52:57.9392000Z",
+        "__utclastupdateddate": "2013-09-19T05:52:57.9392000Z",
+        "points": "150"
+      }
+    },
+    "__endpointb": {
+      "label": "player",
+      "type": "player",
+      "articleid": "37529356194677889",
+      "article": {
+        "__id": "37529356194677889",
+        "__schematype": "player",
+        "__createdby": "System",
+        "__lastmodifiedby": "System",
+        "__revision": "1",
+        "__tags": [],
+        "__utcdatecreated": "2013-09-19T05:52:57.9392000Z",
+        "__utclastupdateddate": "2013-09-19T05:52:57.9392000Z",
+        "name": "sirius"
+      }
+    },
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__relationid": "27474673757454962",
+    "__revision": "1",
+    "__tags": [],
+    "__utcdatecreated": "2013-09-19T05:52:58.0172000Z",
+    "__utclastupdateddate": "2013-09-19T05:52:58.0172000Z",
+    "__attributes": {}
+  },
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "b7a7e058-4853-406e-9601-611aa7f38665",
+    "additionalmessages": []
+  }
+}
+```
 ``` javascript
-//Create two new articles which needs to be connected
-var article1= new Appacitive.Article({ schema: 'schema1' });
-var article2 = new Appacitive.Article({ schema: 'schema2' });
+// Will create a new my_score connection between 
+//    * new player article
+//    * new score article 
+// The my_score relation defines two endpoints "player" and "score" for this information.
+
+//Create an instance of an article of type score. 
+var score = new Appacitive.Article({ schema: 'score' });
+score.set('points', '150');
+
+// existing player article.
+var player = new Appacitive.Article({ schema: 'player' });
+player.set('name', 'sirius');
 
 var connection = new Appacitive.Connection({
-                  relation: 'review',
+                  relation: 'my_scores',
                   endpoints: [{
-                      article: article1,
-                      label: 'labela'
+                      article: player,
+                      label: 'player'
                   }, {
-                      article: article2,
-                      label: 'labelb'
+                      article: score,
+                      label: 'score'
                   }]                
               });
 connection.save(function () {
@@ -1236,58 +1413,106 @@ connection.save(function () {
 });
 ```
 ``` csharp
-//Create two new articles which needs to be connected
-var article1= new Article("schema1");
-var article2 = new Article("schema2");
+/* Will create a new my_score connection between 
+    - existing player article with id 123445678 and 
+    - new score article which will also be created when the connection is created.
+  The my_score relation defines two endpoints "player" and "score" for this information.
+*/ 
+
+//Create an instance of article of type score
+var score = new Article("score");
+score.Set("points", 150);
+
+//Create an instance of article of type player
+var player = new Article("player");
+score.Set("name", "sirius");
 
 var connection = Connection
-                    .New("relationtype")
-                    .FromNewArticle("labela", article1)
-                    .ToNewArticle("labelb", article2);
-await connection.SaveAsync();
+                    .New("my_scores")
+                    .FromExistingArticle("player", player)
+                    .ToNewArticle("score", score);
+await connection .SaveAsync();
+
+// The ids of the score and player objects will now be available.
+var scoreId = score.Id;
+var playerId = player.Id;
 ```
+### Retrieve an existing connection
 
-### Update
+The appacitive platform allows you to get connections in 3 ways depending on the usecase for your application.
+The section below detail out each of the 3 scenarios.
 
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
+#### Retrieve a single connection by id
 
-``` javascript
-//Get the connection object and update the description
-Appacitive.Article.get({ 
-    relation: 'review',    //mandatory
-    id: '1234345'          //mandatory
-}, function(obj) {
-    // connection obj is returned as argument to onsuccess
-    obj.set('description','good hotel')
-    obj.save(function(){
-      alert('review connection saved successfully.');
-    }, function(err, obj){
-      alert('Save failed for review connection');
-    });
-}, function(err, obj) {
-    alert('Could not fetch, probably because of an incorrect id');
-});
+Returns a single connection specified by id. To get a single connection you need to specify it's id and type.
+
+** Parameters ** 
+
+<dl>
+  <dt>type</dt>
+  <dd>required<br/><span>The type of the connection to be retrieved</span></dd>
+  <dt>id</dt>
+  <dd>required<br/><span>The system generated id for the connection</span></dd>
+  <dt>fields</dt>
+  <dd>optional<br/><span>Comma separated list of properties to be returned.</span></dd>
+</dl>
+
+** Response **
+
+Returns the existing connection object matching the given id.
+In case of an error, the `status` object contains details for the failure.
+
+``` rest
+$$$Method
+GET https://apis.appacitive.com/connection/{type}/{id}?fields={(optional) comma separated list of fields}
 ```
-``` csharp
-//Get the connection object and update the description
-var connection = await Connections.GetAsync("review", "1234345");
-connection.Set<string>("description", "good hotel");
-await connection.SaveAsync();
+``` rest
+$$$Sample Request
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+https://apis.appacitive.com/connection/reviewed/33017891581461312
 ```
-
-### Get
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio.
-
-#### Get Connection by Id
-
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
-
+``` rest
+$$$Sample Response
+{
+  "connection": {
+    "__id": "33017891581461312",
+    "__relationtype": "reviewed",
+    
+    "__endpointa": {
+      "label": "hotel",
+      "type": "hotel",
+      "articleid": "37266379552981902"
+    },
+    "__endpointb": {
+      "label": "reviewer",
+      "type": "user",
+      "articleid": "37266380289082256"
+    },
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__relationid": "25394030771831308",
+    "__revision": "2",
+    "__utcdatecreated": "2013-09-16T08:13:10.0000000Z",
+    "__utclastupdateddate": "2013-09-23T01:09:12.6510000Z",
+    "__attributes": {}
+  },
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "24877b7e-b6ec-4d3d-81dd-c691087b4893",
+    "additionalmessages": []
+  }
+}
+```
 ``` javascript
 //Get the connection object and update the description
 Appacitive.Connection.get({ 
-    relation: 'review',    //mandatory
-    id: '1234345'          //mandatory
+    relation: 'reviewed',       //mandatory
+    id: '33017891581461312'     //mandatory
 }, function(obj) {
     // connection obj is returned as argument to onsuccess
     alert('review connection fetched successfully.');
@@ -1297,22 +1522,35 @@ Appacitive.Connection.get({
 ```
 ``` csharp
 //Single connection by connection id
-var connection1 = await Connections.GetAsync("reivew", "12345");
+var conn = await Connections.GetAsync("review", "33017891581461312");
 ```
 
-#### Get Connection by Endpoint Article Ids
+#### Retrieve multiple connections by id
 
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
+#### Retrieve a single connection via its endpoints
+
+Only a single instance of a connection of a specific type can be created between two article instances.
+As a result, a connection can also be uniquely identified by its type and the id pair of its endpoints.
+As an example, say you have two users and you want to see if they are friends (by virtue of a "friend" connection between them),
+the you can simply try and retrieve that connection by specifying the type as "friend" and providing the ids of the two users.
 
 ``` javascript
-//Single connection by endpoint article ids
+// Try and get an existing friend connection between two users John and Jane
+
+var idForJohn = "22322";
+var idForJane = "22322";
+
 Appacitive.Connection.getBetweenArticlesForRelation({ 
     relation: "review", 
-    articleAId : "22322", 
-    articleBId : "33422"
+    articleAId : idForJohn, 
+    articleBId : "idForJane"
 }, function(obj){
     // connection obj is returned as argument to onsuccess
-    alert('Connection fetched successfully');
+    if( obj !== null && obj !== undefined ) {
+      alert('John and Jane are friends.');
+    } else {
+      alert('John and Jane are not friends.');
+    }
 }, function(err, obj) {
     alert('Could not fetch, probably because of an incorrect id');
 });
@@ -1340,6 +1578,125 @@ Appacitive.Connection.getBetweenArticlesForRelation({
 var connection2 = await Connections.GetAsync("reivew", 
                                              "22322", "33422");
 ```
+
+### Update a connection
+
+The endpoint information in a connection is immutable and cannot be modified after a connection has been created.
+However, in all other ways, connections behave exactly like articles. All properties, attributes, tags etc
+can be updated using the update connection operation. 
+
+To update an existing connection, you need to provide the type and id of the connection along with the list of updates that are to be made. 
+As the Appacitive platform supports partial updates, and update only needs the information that has actually changed.
+
+** Parameters ** 
+
+<dl>
+  <dt>type</dt>
+  <dd>required<br/><span>The type of the connection</span></dd>
+  <dt>id</dt>
+  <dd>required<br/><span>The system generated id for the connection</span></dd>
+  <dt>article updates</dt>
+  <dd>required<br/><span>The connection object with the fields to be updated.</span></dd>
+  <dt>revision</dt>
+  <dd>optional<br/><span>The revision of the article. Incase the revision does not match on the server, the call will fail.</span></dd>
+</dl>
+
+** Response **
+
+Returns the updated connection object.
+In case of an error, the `status` object contains details for the failure.
+
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/connection/{type}/{id}?revision={current revision}
+```
+``` rest
+$$$Sample Request
+// Will update the connection of type employment with id 33017891581461312
+// Will set the joining_date property along with some attributes and tags.
+// NOTE: Notice the fact that we do not have to send the endpoints.
+
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d '{ "joining_date" : "2012-09-16", "__attributes" : { "topic" : "testing" }, "__addtags" : ["tagA", "tagB"], "__removetags" : ["tagC"]}' \
+https://apis.appacitive.com/connection/employment/33017891581461312
+```
+``` rest
+$$$Sample Response
+{
+  "connection": {
+    "__id": "33017891581461312",
+    "__relationtype": "employment",
+    
+    // user defined property (updated)
+    "joining_date" : "2012-09-16",
+
+    "__endpointa": {
+      "label": "employer",
+      "type": "company",
+      "articleid": "37266379552981902"
+    },
+    "__endpointb": {
+      "label": "employee",
+      "type": "user",
+      "articleid": "37266380289082256"
+    },
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__relationid": "25394030771831308",
+    "__revision": "2",
+
+    // updated tags
+    "__tags": [
+      "tagA",
+      "tagB"
+    ],
+    "__utcdatecreated": "2013-09-16T08:13:10.0000000Z",
+    "__utclastupdateddate": "2013-09-23T01:09:12.6510000Z",
+    "__attributes": {
+      // newly added attribute
+      "topic": "testing"
+    }
+  },
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "24877b7e-b6ec-4d3d-81dd-c691087b4893",
+    "additionalmessages": []
+  }
+}
+```
+
+``` javascript
+//Get the connection object and update the description
+Appacitive.Article.get({ 
+    relation: 'review',    //mandatory
+    id: '1234345'          //mandatory
+}, function(obj) {
+    // connection obj is returned as argument to onsuccess
+    obj.set('description','good hotel')
+    obj.save(function(){
+      alert('review connection saved successfully.');
+    }, function(err, obj){
+      alert('Save failed for review connection');
+    });
+}, function(err, obj) {
+    alert('Could not fetch, probably because of an incorrect id');
+});
+```
+``` csharp
+//Get the connection object and update the description
+var connection = await Connections.GetAsync("review", "1234345");
+connection.Set<string>("description", "good hotel");
+await connection.SaveAsync();
+```
+
+
 
 #### Get Connected Articles
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio.
