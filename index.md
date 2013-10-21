@@ -3598,14 +3598,14 @@ var polygonQuery = Query.Property("location").WithinPolygon(geocodes);
 
 Email
 ------------
-Appacitive allows you to send emails without having to worry about the underlying infrastructure.
-To send out emails you do need to provide your account settings (your own SMTP username,password etc). You can set these values by visiting the Portal and saving the settings there, or else pass them along with the API call.
+Appacitive allows you to integrate your current email providers to send out emails through our APIs.
+The provider settings can be configured in the Portal, or you can send them along with each call that you make.
 
-Appacitive allows you to send Templated emails as well. For this, you will have to visit the Portal, and create templates, save it with a name. 
+You can send simple and templated emails with Emails. Below you can see an e.g of both.
 
-### Sending Raw Email
+### Sending a simple email
 
-You can send across a raw email using the following API
+You can use this API to send simple (non template based) emails.
 
 ** Parameter **
 
@@ -3692,7 +3692,8 @@ Appacitive.Email.sendRawEmail(email, successHandler, errorHandler);
 ```
 ``` javascript
 $$$Sample Request
-// Email setup is not necessary if it is setup form Portal
+//Email setup is not necessary if it is setup form Portal
+//This is supposed to be called just once as an initial setup
 Appacitive.Email.setupEmail({
     username: 'john@doe.com',
     password: 'johnPWD',
@@ -3726,25 +3727,27 @@ var to = new [] {"email1", "email2"..}
 var cc = new [] {"email1", "email2"..}
 var bcc = new [] {"email1", "email2"..}
 
-//Passing the SMTP setting in the call
-await NewEmail
-.Create("Put the subject here")
-.To(to, cc, bcc)
-.From("john@doe.com", "john@doe.com")
-.WithBody("This is a raw body email.", false)
-.Using("smtp.gmail.com", 465, "john@doe.com","johnsPWD")
-.SendAsync();
-
 //Using a preconfigured SMTP setting
 await NewEmail
-.Create("Put the subject here")
-.To(to, cc, bcc)
-.From("john@doe.com", "john@doe.com")
-.WithBody("This is a raw body email.", false)
-.SendAsync();
+      .Create("Put the subject here")
+      .To(to, cc, bcc)
+      .From("john@doe.com", "john@doe.com")
+      .WithBody("This is a raw body email.", false)
+      .SendAsync();
+
+//Passing the SMTP setting in the call
+await NewEmail
+      .Create("Put the subject here")
+      .To(to, cc, bcc)
+      .From("john@doe.com", "john@doe.com")
+      .WithBody("This is a raw body email.", false)
+      .Using("smtp.gmail.com", 465, "john@doe.com","johnsPWD")
+      .SendAsync();
+
+
 ```
  
-### Sending Templated Email
+### Sending a templated email
 
 You can send an email using a saved template.
 The template can be created and saved using the Portal.
@@ -3842,32 +3845,34 @@ var to = new [] {"email1", "email2"..}
 var cc = new [] {"email1", "email2"..}
 var bcc = new [] {"email1", "email2"..}
 
-//Passing the SMTP setting in the call
-await NewEmail
-.Create("Put the subject here")
-.To(to, cc, bcc)
-.From("john@doe.com", "john@doe.com")
-.WithTemplateBody( "sample", 
-        new Dictionary<string, string> 
-        {
-            {"placeholder1", "Place holder 1 value"},
-            {"placeholder2", "Place holder 2 value"}
-        },true)
-.Using("smtp.gmail.com", 465, "john@doe.com","johnsPWD")
-.SendAsync();
-
 //Using a preconfigured SMTP setting
 await NewEmail
-.Create("Put the subject here")
-.To(to, cc, bcc)
-.From("john@doe.com", "john@doe.com")
-.WithTemplateBody( "sample", 
-        new Dictionary<string, string> 
-        {
-            {"placeholder1", "Place holder 1 value"},
-            {"placeholder2", "Place holder 2 value"}
-        },false)
-.SendAsync();
+      .Create("Put the subject here")
+      .To(to, cc, bcc)
+      .From("john@doe.com", "john@doe.com")
+      .WithTemplateBody( "sample", 
+              new Dictionary<string, string> 
+              {
+                  {"placeholder1", "Place holder 1 value"},
+                  {"placeholder2", "Place holder 2 value"}
+              },false)
+      .SendAsync();
+
+//Passing the SMTP setting in the call
+await NewEmail
+      .Create("Put the subject here")
+      .To(to, cc, bcc)
+      .From("john@doe.com", "john@doe.com")
+      .WithTemplateBody( "sample", 
+              new Dictionary<string, string> 
+              {
+                  {"placeholder1", "Place holder 1 value"},
+                  {"placeholder2", "Place holder 2 value"}
+              },true)
+      .Using("smtp.gmail.com", 465, "john@doe.com","johnsPWD")
+      .SendAsync();
+
+
 ```
 ``` javascript
 $$$Method 
@@ -3875,7 +3880,8 @@ Appacitive.Email.sendTemplatedEmail(email, successHandler, errorHandler);
 ```
 ``` javascript
 $$$Sample Request
-// Email setup is not necessary if it is setup form Portal
+//Email setup is not necessary if it is setup form Portal
+//This is supposed to be called just once as an initial setup
 Appacitive.Email.setupEmail({
     username: 'john@doe.com',
     password: 'johnPWD',
