@@ -783,7 +783,7 @@ This operation will fail if the article has existing connections with other arti
 
 <dl>
   <dt>type</dt>
-  <dd>required<br/><span>The type of the article to be retrieved</span></dd>
+  <dd>required<br/><span>The type of the article to be deleted</span></dd>
   <dt>id</dt>
   <dd>required<br/><span>The system generated id for the article</span></dd>
 </dl>
@@ -842,7 +842,7 @@ Do note that all the articles should be of the same type and must not be connect
 
 <dl>
   <dt>type</dt>
-  <dd>required<br/><span>The type of the article to be retrieved</span></dd>
+  <dd>required<br/><span>The type of the article to be deleted</span></dd>
   <dt>id list</dt>
   <dd>required<br/><span>List of ids for the articles to be deleted</span></dd>
 </dl>
@@ -905,7 +905,7 @@ There are scenarios where you might want to delete an article irrespective of ex
 
 <dl>
   <dt>type</dt>
-  <dd>required<br/><span>The type of the article to be retrieved</span></dd>
+  <dd>required<br/><span>The type of the article to be deleted</span></dd>
   <dt>id</dt>
   <dd>required<br/><span>The system generated id for the article</span></dd>
 </dl>
@@ -1697,6 +1697,131 @@ connection.Set<string>("description", "good hotel");
 await connection.SaveAsync();
 ```
 
+### Delete a connection
+You can delete a connection by simply providing the type of the connection along with it's id.
+
+** Parameters ** 
+
+<dl>
+  <dt>type</dt>
+  <dd>required<br/><span>The type of the connection to be deleted</span></dd>
+  <dt>id</dt>
+  <dd>required<br/><span>The system generated id for the connection</span></dd>
+</dl>
+
+** Response **
+
+If the delete is successful, the response will contain a successful `status` object.
+Incase the given id does not exist or in the event of a failure, the response will contain a `status` object with 
+details of the failure.
+
+``` rest
+$$$Method
+DELETE https://apis.appacitive.com/connection/{type}/{id}
+```
+``` rest
+$$$Sample Request
+// delete review connection with id 123123 //
+
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/connection/review/123123
+```
+``` rest
+$$$Sample Response
+{
+  "code": "200",
+  "message": "Successful",
+  "faulttype": null,
+  "version": null,
+  "referenceid": "a01d2c73-78b5-49e3-9d56-f18f6103d3af",
+  "additionalmessages": []
+}
+```
+
+``` javascript
+/* delete review connection with id 123123 */
+var review = new Appacitive
+  .Connection({relation: 'review', __id : '123123'});
+review.del(function(obj) {
+    alert('Deleted successfully');
+}, function(err, obj) {
+    alert('Delete failed')
+});
+
+```
+``` csharp
+/* delete review connection with id 123123 */
+await Connections.DeleteAsync("review", "123345");
+
+```
+
+#### Delete multiple connections
+Incase you want to delete multiple connections, simply pass a list of the ids of the connections that you want to delete.
+One caveat here is that, all the connections should be of the same type.
+
+** Parameters ** 
+
+<dl>
+  <dt>type</dt>
+  <dd>required<br/><span>The type of the connection to be deleted</span></dd>
+  <dt>idlist</dt>
+  <dd>required<br/><span>The list of connection id to be deleted</span></dd>
+</dl>
+
+** Response **
+
+If the delete is successful, the response will contain a successful `status` object.
+Incase any of the given id do not exist or in the event of a failure, the response will contain a `status` object with 
+details of the failure.
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/connection/{type}/bulkdelete
+```
+``` rest
+$$$Sample Request
+// delete review connections with ids 40438996554377032, 40440007982449139 & 40440007982449139 //
+
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d '{ "idlist": [ "40438996554377032", "40440007982449139", "40440007982449139"] }' \
+https://apis.appacitive.com/connection/review/bulkdelete
+```
+``` rest
+$$$Sample Response
+{
+  "code": "200",
+  "message": "Successful",
+  "faulttype": null,
+  "version": null,
+  "referenceid": "a01d2c73-78b5-49e3-9d56-f18f6103d3af",
+  "additionalmessages": []
+}
+```
+
+``` javascript
+/* delete review connections with ids 40438996554377032, 40440007982449139 & 40440007982449139 */
+
+Appacitive.Connection.multiDelete({    
+    relation: 'reivew', //mandatory
+    ids: ["40438996554377032", "40440007982449139", "40440007982449139"], //mandatory
+}, function() { 
+    //successfully deleted all connections
+}, function(err) {
+    alert("code:" + err.code + "\nmessage:" + err.message);
+});
+```
+``` csharp
+/* delete review connections with ids 40438996554377032, 40440007982449139 & 40440007982449139 */
+
+var ids = new [] {"40438996554377032", "40440007982449139", "40440007982449139"};
+await Connections.MultiDeleteAsync("review", ids);
+```
 
 
 #### Get Connected Articles
@@ -1720,36 +1845,7 @@ var hotel = new Article("123345456");
 var response = await hotel.GetConnectedArticlesAsync("review");
 ```
 
-### Delete
-Duis at ullamcorper nunc. Sed quis tincidunt lacus, et congue nunc. Duis vitae pharetra justo. Curabitur at ornare nibh, posuere facilisis tortor. Fusce ac consequat ipsum, id vehicula libero.
 
-``` javascript
-/*Single Delete*/
-var review = new Appacitive.Connection({relation: 'review', __id : '123123'});
-review.del(function(obj) {
-    alert('Deleted successfully');
-}, function(err, obj) {
-    alert('Delete failed')
-});
-
-/*Multi Delete*/
-Appacitive.Connection.multiDelete({    
-    relation: 'reivew', //mandatory
-    ids: ["14696753262625025", "14696753262625026"], //mandatory
-}, function() { 
-    //successfully deleted all connections
-}, function(err) {
-    alert("code:" + err.code + "\nmessage:" + err.message);
-});
-```
-``` csharp
-//Single delete
-await Connections.DeleteAsync("review", "123345");
-
-//Multi Delete
-var ids = new [] {"123345","3452341"};
-await Connections.MultiDeleteAsync("review", ids);
-```
 
 Users
 ------------
