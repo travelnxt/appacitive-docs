@@ -551,6 +551,7 @@ Also includes:
         this.addIDs($content);
         this.buttonize($content);
         this.smartquotes($content);
+        this.addPermaLinks($content);
     };
 
     /**
@@ -558,7 +559,7 @@ Also includes:
      */
 
     Transformer.addIDs = function ($content) {
-        $content.find('h1, h2, h3').each(function () {
+        $content.find('h1, h2, h3, h4').each(function () {
             var $el = $(this);
             var text = $el.text();
 
@@ -567,6 +568,10 @@ Also includes:
 
             if ($el.is('h3'))
                 text = $el.prevAll("h1:first").html() + "_" + $el.prevAll("h2:first").html() + "_" + text;
+
+            if ($el.is('h4'))
+                text = $el.prevAll("h1:first").html() + "_" + $el.prevAll("h2:first").html() + "_" + $el.prevAll("h3:first").html() + "_" + text;
+
             var id = slugify(text);
             $el.attr('id', id);
         });
@@ -599,7 +604,7 @@ Also includes:
             return cache[level];
         }
 
-        $content.find('h1, h2, h3').each(function () {
+        $content.find('h1, h2, h3, h4').each(function () {
             var $el = $(this);
             var level = +(this.nodeName.substr(1));
 
@@ -637,6 +642,18 @@ Also includes:
             var node = nodes[i];
             node.nodeValue = quotify(node.nodeValue);
         }
+    };
+
+
+    /**
+     * Adds permalinks for all heading tags
+     */
+    Transformer.addPermaLinks = function ($content) {
+        $content.find('h1, h2, h3, h4').each(function () {
+            var $el = $(this);
+            var id = $el.attr('id');
+            $el.prepend('<a name="' + id + '" class="anchor" href="#' + id + '"><span class="hash hash-link"></span></a>')
+        });
     };
 
     /**
@@ -2140,6 +2157,8 @@ Also includes:
 })(this);
 
 ///#source 1 1 /scripts/code/script.js
+
+isDev = false;
 (function ($) {
     var $window = $(window);
     var $document = $(document);
@@ -2156,7 +2175,27 @@ Also includes:
             $("[href='#" + currentId + "']").trigger("click");
         }
         var preId = null;
-        $("h1,h2,h3").scrollagent({ offset: 0, reCal: reCal }, function (cid, pid, currentElement, previousElement) {
+        $("h1,h2,h3,h4").scrollagent({ offset: 0, reCal: reCal }, function (cid, pid, currentElement, previousElement) {
+
+            var isLevel4 = false;
+            if ($("[href='#" + cid + "']").hasClass("level-4")) {
+
+                // Add the location hash via replaceState for level4 only.
+                isLevel4 = true;
+                currentId = cid;
+
+                if (reCal == false && window.history.replaceState) {
+                    var href = window.location.href.replace(window.location.hash, "") + "#" + window.lang + "/" + cid;
+                    window.history.replaceState({ href: href }, "", href);
+                }
+
+                cid = $($("[href='#" + cid + "']")[0]).parent().parent().siblings().attr('href').replace("#", "");
+            }
+
+            if ($("[href='#" + pid + "']").hasClass("level-4")) {
+                $('a', '.menubar').removeClass('active');
+            }
+
             if (pid) {
                 $("[href='#" + pid + "']").removeClass('active');
                 if ($("[href='#" + pid + "']").hasClass("level-2"))
@@ -2167,7 +2206,7 @@ Also includes:
                 $("[href='#" + cid + "']").addClass('active');
             }
 
-            if ($(".menu .active").hasClass("level-3")) {
+            if ($(".menu .active").hasClass("level-3") || isLevel4) {
                 preId = $(".menu .active").parent().parent().siblings().attr("href").replace("#", "");
                 $("[href='#" + preId + "']").siblings().show();
                 $("li.level-2 ul.level-3").not($("[href='#" + preId + "']").siblings()).hide();
@@ -2176,14 +2215,18 @@ Also includes:
                 preId = $(".menu .active").attr("href").replace("#", "");
                 $("[href='#" + preId + "']").siblings().show();
                 $("li.level-2 ul.level-3").not($("[href='#" + preId + "']").siblings()).hide();
-            } else { $("li.level-2 ul.level-3").hide(); }
+            } else {
+                $("li.level-2 ul.level-3").hide();
+            }
 
+
+            if (isLevel4) return;
 
             currentId = cid;
-            // Add the location hash via pushState.
-            if (reCal == false && window.history.pushState) {
+            // Add the location hash via replaceState.
+            if (reCal == false && window.history.replaceState) {
                 var href = window.location.href.replace(window.location.hash, "") + "#" + window.lang + "/" + cid;
-                window.history.pushState({ href: href }, "", href);
+                window.history.replaceState({ href: href }, "", href);
             }
         });
         if (reCal) {
@@ -2250,6 +2293,7 @@ Also includes:
 
             }
 
+
             if (first)
                 setTimeout(function () {
                     alignScroll();
@@ -2258,6 +2302,7 @@ Also includes:
             setTimeout(function () {
                 alignScroll();
             }, 50);
+
             storeCookie(cLangName, selected);
         };
         $(".nav-pills a").unbind("click").click(function (e) {
@@ -2544,7 +2589,7 @@ Also includes:
 
 (function ($) {
     var defaults = {
-        'speed': 100,
+        'speed': 00,
         'offset': 0,
         'for': null,
         'parent': null
@@ -2599,9 +2644,9 @@ Also includes:
 
         $('body').trigger('anchor', href);
 
-        // Add the location hash via pushState.
-        if (window.history.pushState) {
-            window.history.pushState({ href: href }, "", href);
+        // Add the location hash via replaceState.
+        if (window.history.replaceState) {
+            window.history.replaceState({ href: href }, "", href);
         }
     };
 })(jQuery);

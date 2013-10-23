@@ -33,7 +33,7 @@ var path = require('path');
      *     });
      */
 
-    var Flatdoc  = {};
+    var Flatdoc = {};
 
     /**
      * Creates a runner.
@@ -41,7 +41,7 @@ var path = require('path');
      */
 
     Flatdoc.run = function (options) {
-        (new Flatdoc.runner(options)).run(); 
+        (new Flatdoc.runner(options)).run();
     };
 
     /**
@@ -51,26 +51,26 @@ var path = require('path');
      * See [Runner#run()] for a description of fetcher functions.
      */
 
-    Flatdoc.file = function(filePath) {
+    Flatdoc.file = function (filePath) {
         return function (callback) {
-            require('fs').readFile(filePath, "UTF-8", function(err, markdown) {
+            require('fs').readFile(filePath, "UTF-8", function (err, markdown) {
                 if (err) callback(err, null);
                 callback(null, markdown);
             });
         };
     };
 
-     /**
-     * Github fetcher.
-     * Fetches from repo `repo` (in format 'user/repo').
-     * 
-     * If the parameter `filepath` is supplied, it fetches the contents of that
-     * given file in the repo.
-     *
-     * See [Runner#run()] for a description of fetcher functions.
-     *
-     * See: http://developer.github.com/v3/repos/contents/
-     */
+    /**
+    * Github fetcher.
+    * Fetches from repo `repo` (in format 'user/repo').
+    * 
+    * If the parameter `filepath` is supplied, it fetches the contents of that
+    * given file in the repo.
+    *
+    * See [Runner#run()] for a description of fetcher functions.
+    *
+    * See: http://developer.github.com/v3/repos/contents/
+    */
     Flatdoc.github = function (repo, filepath) {
         var url;
         if (filepath) {
@@ -110,7 +110,7 @@ var path = require('path');
      * See `Parser` for more info.
      */
     Parser.parse = function (source) {
-      
+
         Parser.setMarkedOptions();
 
         var html = $("<div>" + marked(source));
@@ -175,6 +175,7 @@ var path = require('path');
         this.addIDs($content);
         this.buttonize($content);
         this.smartquotes($content);
+        this.addPermaLinks($content);
     };
 
     /**
@@ -182,7 +183,7 @@ var path = require('path');
      */
 
     Transformer.addIDs = function ($content) {
-        $content.find('h1, h2, h3').each(function () {
+        $content.find('h1, h2, h3, h4').each(function () {
             var $el = $(this);
             var text = $el.text();
 
@@ -191,6 +192,11 @@ var path = require('path');
 
             if ($el.is('h3'))
                 text = $el.prevAll("h1:first").html() + "_" + $el.prevAll("h2:first").html() + "_" + text;
+
+
+            if ($el.is('h4'))
+                text = $el.prevAll("h1:first").html() + "_" + $el.prevAll("h2:first").html() + "_" + $el.prevAll("h3:first").html() + "_" + text;
+
             var id = slugify(text);
             $el.attr('id', id);
         });
@@ -223,7 +229,7 @@ var path = require('path');
             return cache[level];
         }
 
-        $content.find('h1, h2, h3').each(function () {
+        $content.find('h1, h2, h3, h4').each(function () {
             var $el = $(this);
             var level = +(this.nodeName.substr(1));
 
@@ -261,6 +267,17 @@ var path = require('path');
             var node = nodes[i];
             node.nodeValue = quotify(node.nodeValue);
         }
+    };
+
+    /**
+     * Adds permalinks for all heading tags
+     */
+    Transformer.addPermaLinks = function ($content) {
+        $content.find('h1, h2, h3, h4').each(function () {
+            var $el = $(this);
+            var id = $el.attr('id');
+            $el.prepend('<a name="' + id + '" class="anchor" href="#' + id + '"><span class="hash hash-link"></span></a>')
+        });
     };
 
     /**
@@ -321,7 +338,7 @@ var path = require('path');
      */
 
     var Runner = Flatdoc.runner = function (options) {
-        this.cb = function() {};
+        this.cb = function () { };
         this.initialize(options);
     };
 
