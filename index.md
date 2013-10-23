@@ -28,7 +28,7 @@ A quick summary of the different urls is detailed below.
 
 
 Request format
-------------
+------------ 
 
 The request body for all requests using PUT and POST must be in JSON format with ``Content-Type`` set as ``application/json``.
 All authentication and contextual information is sent via http headers. The following http headers are currently supported by the
@@ -1576,7 +1576,7 @@ Appacitive.Connection.getBetweenArticlesForRelation({
 ``` csharp
 //Single connection by endpoint article ids
 var connection2 = await Connections.GetAsync("reivew", 
-                                             "22322", "33422");
+                                       "22322", "33422");
 ```
 
 ### Update a connection
@@ -3558,8 +3558,8 @@ var complexQuery = BooleanOperator.And(new[]{
                       }),
                       Query.Property("location")
                           .WithinCircle(center, 
-                                        10.0M, 
-                                        DistanceUnit.Miles)
+                                  10.0M, 
+                                  DistanceUnit.Miles)
           });
 ```
 
@@ -3575,8 +3575,8 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus q
 var center = new Geocode(36.1749687195M, -115.1372222900M);
 var radialQuery = Query.Property("location")
                           .WithinCircle(center, 
-                                        10.0M, 
-                                        DistanceUnit.Miles);
+                                  10.0M, 
+                                  DistanceUnit.Miles);
 ```
 
 ### Polygon Search
@@ -3910,4 +3910,1122 @@ Appacitive.Email.sendTemplatedEmail(email, function (email) {
 }, function(err) {
     alert('Email sending failed.')
 });
+```
+
+Push
+=======
+Push is a great way to send timely and relevant targetted messages to users of your app and enhance their overall experience and keep them informed of the latest developements on your app.
+Appacitive allows you to send push notifications to your users in a variety of ways and targets android, ios and windows phone.
+
+For detailed info around how platform specific push notifications work, you can check out their specific docs.
+
+iOS       : https://developer.apple.com/notifications/
+
+Android     : http://developer.android.com/google/gcm/index.html
+
+Windows Phone : http://msdn.microsoft.com/en-us/library/hh221549.aspx
+
+Registering the devices
+------------
+
+Push message anatomy
+------------
+You can see the anatomy of the Push message that you will need to send to the Appacitive API
+
+** Parameter **
+
+<dl>
+  <dt>broadcast</dt>
+  <dd>optional<br/><span>Set true to send push to every device
+  <dt>deviceids</dt>
+  <dd>optional<br/><span>List of specific device ids to send push to
+  <dt>query</dt>
+  <dd>optional<br/><span>Filter out devices on which you want to send a Push
+  <dt>channels</dt>
+  <dd>optional<br/><span>List of channels(groups) to which you want to send a Push
+  <dt>data</dt>
+  <dd>required<br/><span>This contains the message, badges,custom data etc for the notification
+  <dt>expireafter</dt>
+  <dd>optional<br/><span>Specified the time to live for message in case it is not recieved by the device
+  <dt>platformoptions</dt>
+  <dd>optional<br/><span>Sending extra data which is specific to the device platform
+</dl>
+
+```rest
+{
+        "broadcast": true,
+        "deviceids": [
+           "{{deviceId}}",
+           "{{deviceId}}",
+           "{{deviceId}}"
+        ],
+        "query": "{{your query goes here}}",
+        "channels": [
+           "{{nameOfChannel}}",
+           "{{nameOfChannel}}",
+           "{{nameOfChannel}}"
+        ],
+        "data": {
+           "alert": "{{your message}}",
+           "badge": "1",
+           "customdata1": "customvalue1",
+           "customdata2": "customvalue2",
+        },
+        "expireafter": "100000",
+        "platformoptions": {
+           "ios": {
+              "sound": "test"
+           },
+           "android": {
+              "title": "test title"
+           },
+           "wp": {
+              "notificationtype":"tile"
+           }
+        }
+     }
+```
+
+Sending a Push message
+------------
+Once you have configured your Push settings in the Portal, you can send a Push by making a simple API call.
+There are mutiple ways you can send a Push. It could be a broadcast, or to a channel or based on a query.
+
+###Broadcasting a Push
+
+This is for sending a push to all the devices that are registered for a push.
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/push/
+```
+``` rest
+$$$Sample Request
+//  Broadcast a Push
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d
+{
+  "broadcast": true,
+  "query": null,
+  "channels": null,
+  "platformoptions": {
+    "ios": {
+      "sound": "test"
+    },
+    "android": {
+      "title": "test title"
+    }
+  },
+  "data": {
+    "alert": "Testing!!",
+    "badge": "1",
+    "customvalue": "my custom value"
+  },
+  "expireafter": "100000"
+}
+```
+
+``` rest
+$$$Sample Response
+{
+  "id": "40613473488604239",
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "c6ae0d24-529f-4752-a6a0-d127900f9e7c",
+    "additionalmessages": []
+  }
+}
+```
+
+``` javascript
+$$$Method 
+Appacitive.Push.send(options, successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+
+//This is supposed to be called just once as an initial setup
+var options = {
+    "broadcast": true, // set this to true for broadcast
+    "platformoptions": {
+        // platform specific options
+        "ios": {
+            "sound": "test"
+        },
+        "android": {
+            "title": "test title"
+        }
+    },
+    "data": {
+        // message to send
+        "alert": "Testing!!",
+        // Increment existing badge by 1
+        "badge": "+1",
+        //Custom data field1 and field2
+        "field1": "my custom value",
+        "field2": "my custom value"
+    },
+    "expireafter": "100000" // Expiry in seconds
+}
+
+Appacitive.Push.send(options, function(notification) {
+    alert('Push notification sent successfully');
+}, function(err) {
+    alert('Sending Push Notification failed.');
+});
+```
+``` csharp
+$$$Sample Request
+
+await PushNotification
+      .Broadcast("Message")
+      .WithBadge("+1")
+      .WithExpiry(1000)
+      .WithData(new { field1 = "value1", field2 = "value2" })
+      .WithPlatformOptions(
+            new IOsOptions
+            {
+                SoundFile = soundFile
+            })
+        .WithPlatformOptions(
+            new AndroidOptions
+            {
+                NotificationTitle = title
+            })
+        .WithPlatformOptions(
+            new WindowsPhoneOptions
+            {
+                Notification = new ToastNotification
+                {
+                    Text1 = wp_text1,
+                    Text2 = wp_text2,
+                    Path = wp_path
+                }
+            })
+      .SendAsync();
+
+```
+
+###Sending a Query based Push
+
+You can send a push depending on certain filters.
+Like say you want to send a Push to just the iOS devices. You can specifiy that using a query based Push.
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/push/
+```
+``` rest
+$$$Sample Request
+//  Send a push based on a query
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d
+{
+  "broadcast": false,
+  "query": "*devicetoken == 'ios'",
+  "channels": null,
+  "platformoptions": {
+    "ios": {
+      "sound": "test"
+    },
+    "android": {
+      "title": "test title"
+    }
+  },
+  "data": {
+    "alert": "Testing!!",
+    "badge": "1",
+    "customvalue": "my custom value"
+  },
+  "expireafter": "100000"
+}
+```
+
+``` rest
+$$$Sample Response
+{
+  "id": "40613473488604239",
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "c6ae0d24-529f-4752-a6a0-d127900f9e7c",
+    "additionalmessages": []
+  }
+}
+```
+
+``` javascript
+$$$Method 
+Appacitive.Push.send(options, successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+
+//This is supposed to be called just once as an initial setup
+var options = {
+    "query": "*devicetype == 'ios'",
+    "broadcast": false,
+    "platformoptions": {
+        // platform specific options
+        "ios": {
+            "sound": "test"
+        },
+        "android": {
+            "title": "test title"
+        }
+    },
+    "data": {
+        // message to send
+        "alert": "Testing!!",
+        // Increment existing badge by 1
+        "badge": "+1",
+        //Custom data field1 and field2
+        "field1": "my custom value",
+        "field2": "my custom value"
+    },
+    "expireafter": "100000" // Expiry in seconds
+}
+
+Appacitive.Push.send(options, function(notification) {
+    alert('Push notification sent successfully');
+}, function(err) {
+    alert('Sending Push Notification failed.');
+});
+```
+``` csharp
+$$$Sample Request
+
+await PushNotification
+      .ToQueryResult("Message","*devicetoken == 'ios'")
+      .WithBadge("+1")
+      .WithExpiry(1000)
+      .WithData(new { field1 = "value1", field2 = "value2" })
+      .WithPlatformOptions(
+            new IOsOptions
+            {
+                SoundFile = soundFile
+            })
+        .WithPlatformOptions(
+            new AndroidOptions
+            {
+                NotificationTitle = title
+            })
+        .WithPlatformOptions(
+            new WindowsPhoneOptions
+            {
+                Notification = new ToastNotification
+                {
+                    Text1 = wp_text1,
+                    Text2 = wp_text2,
+                    Path = wp_path
+                }
+            })
+      .SendAsync();
+```
+```csharp
+$$$OR
+
+await PushNotification
+      .ToQueryResult("Message",Query.Property("devicetype").IsEqualTo("ios").ToString())
+      .WithBadge("+1")
+      .WithExpiry(1000)
+      .WithData(new { field1 = "value1", field2 = "value2" })
+      .WithPlatformOptions(
+            new IOsOptions
+            {
+                SoundFile = soundFile
+            })
+        .WithPlatformOptions(
+            new AndroidOptions
+            {
+                NotificationTitle = title
+            })
+        .WithPlatformOptions(
+            new WindowsPhoneOptions
+            {
+                Notification = new ToastNotification
+                {
+                    Text1 = wp_text1,
+                    Text2 = wp_text2,
+                    Path = wp_path
+                }
+            })
+      .SendAsync();
+
+```
+
+###Sending a Push to Channels
+
+You can send a Push to channels (groups). 
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/push/
+```
+``` rest
+$$$Sample Request
+//  Sending to channels
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d
+{
+  "broadcast": false,
+  "query": null,
+  "channels": [
+     "channel1",
+     "channel2"
+  ],
+  "platformoptions": {
+    "ios": {
+      "sound": "test"
+    },
+    "android": {
+      "title": "test title"
+    }
+  },
+  "data": {
+    "alert": "Testing!!",
+    "badge": "1",
+    "customvalue": "my custom value"
+  },
+  "expireafter": "100000"
+}
+```
+
+``` rest
+$$$Sample Response
+{
+  "id": "40613473488604239",
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "c6ae0d24-529f-4752-a6a0-d127900f9e7c",
+    "additionalmessages": []
+  }
+}
+```
+
+``` javascript
+$$$Method 
+Appacitive.Push.send(options, successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+
+var options = {
+    "query": null,
+    "channels":[
+        "channel1",
+        "channel2"
+    ]
+    "broadcast": false,
+    "platformoptions": {
+        // platform specific options
+        "ios": {
+            "sound": "test"
+        },
+        "android": {
+            "title": "test title"
+        }
+    },
+    "data": {
+        // message to send
+        "alert": "Testing!!",
+        // Increment existing badge by 1
+        "badge": "+1",
+        //Custom data field1 and field2
+        "field1": "my custom value",
+        "field2": "my custom value"
+    },
+    "expireafter": "100000" // Expiry in seconds
+}
+
+Appacitive.Push.send(options, function(notification) {
+    alert('Push notification sent successfully');
+}, function(err) {
+    alert('Sending Push Notification failed.');
+});
+```
+``` csharp
+$$$Sample Request
+
+await PushNotification
+      .ToChannels("Message","channel1","channel2")
+      .WithBadge("+1")
+      .WithExpiry(1000)
+      .WithData(new { field1 = "value1", field2 = "value2" })
+      .WithPlatformOptions(
+            new IOsOptions
+            {
+                SoundFile = soundFile
+            })
+        .WithPlatformOptions(
+            new AndroidOptions
+            {
+                NotificationTitle = title
+            })
+        .WithPlatformOptions(
+            new WindowsPhoneOptions
+            {
+                Notification = new ToastNotification
+                {
+                    Text1 = wp_text1,
+                    Text2 = wp_text2,
+                    Path = wp_path
+                }
+            })
+      .SendAsync();
+```
+
+###Sending a Push to a list of devices
+
+You can send a Push to just a specific set of device ids as well. 
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/push/
+```
+``` rest
+$$$Sample Request
+//  Sending to devices
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d
+{
+  "broadcast": false,
+  "query": null,
+  "channels": null,
+  "deviceids": [
+    "6ae0d2459f4752a6a0d127900f9e7c",
+    "4ff790cc012543a49abf653e880ae"
+  ],
+  "platformoptions": {
+    "ios": {
+      "sound": "test"
+    },
+    "android": {
+      "title": "test title"
+    }
+  },
+  "data": {
+    "alert": "Testing!!",
+    "badge": "1",
+    "customvalue": "my custom value"
+  },
+  "expireafter": "100000"
+}
+```
+
+``` rest
+$$$Sample Response
+{
+  "id": "40613473488604239",
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "c6ae0d24-529f-4752-a6a0-d127900f9e7c",
+    "additionalmessages": []
+  }
+}
+```
+
+``` javascript
+$$$Method 
+Appacitive.Push.send(options, successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+
+var options = {
+    "query": null,
+    "deviceids": [
+      "6ae0d2459f4752a6a0d127900f9e7c",
+      "4ff790cc012543a49abf653e880ae"
+    ],
+    "broadcast": false,
+    "platformoptions": {
+        // platform specific options
+        "ios": {
+            "sound": "test"
+        },
+        "android": {
+            "title": "test title"
+        }
+    },
+    "data": {
+        // message to send
+        "alert": "Testing!!",
+        // Increment existing badge by 1
+        "badge": "+1",
+        //Custom data field1 and field2
+        "field1": "my custom value",
+        "field2": "my custom value"
+    },
+    "expireafter": "100000" // Expiry in seconds
+}
+
+Appacitive.Push.send(options, function(notification) {
+    alert('Push notification sent successfully');
+}, function(err) {
+    alert('Sending Push Notification failed.');
+});
+```
+``` csharp
+$$$Sample Request
+
+await PushNotification
+      .ToDeviceIds("Message","deviceid1","deviceid2")
+      .WithBadge("+1")
+      .WithExpiry(1000)
+      .WithData(new { field1 = "value1", field2 = "value2" })
+      .WithPlatformOptions(
+            new IOsOptions
+            {
+                SoundFile = soundFile
+            })
+        .WithPlatformOptions(
+            new AndroidOptions
+            {
+                NotificationTitle = title
+            })
+        .WithPlatformOptions(
+            new WindowsPhoneOptions
+            {
+                Notification = new ToastNotification
+                {
+                    Text1 = wp_text1,
+                    Text2 = wp_text2,
+                    Path = wp_path
+                }
+            })
+      .SendAsync();
+```
+
+Platform specific options
+------------
+
+There is a section of platform specific options which are different for the different platforms.
+Here I shall explain these options that we support
+
+###iOS options
+
+As of now the extra option that iOS supports is the ability to specificy a sound file which the device will play when it recevies the notification.
+This sound file should be shipped with the App.
+
+``` rest
+$$$JSON object
+
+"platformoptions": {
+    "ios": {
+      "sound": "{name of sound file}"
+    }
+  }
+```
+
+```javascript
+$$$Sample options
+var options = 
+{
+  "broadcast":true,
+  ..
+  ..
+  "platformoptions": {
+     "ios": {
+        "sound": "{name of sound file}"
+      }
+    }
+}
+```
+
+```csharp
+await PushNotification
+      .ToDeviceIds(....)
+      ...
+      ...
+      .WithPlatformOptions(
+            new IOsOptions
+            {
+                SoundFile = "{name of sound file}"
+            })
+      .SendAsync();
+
+```
+
+###Android options
+
+The option specific to the android platform is the "title" which the android user will see along with the message in case of a notification
+
+``` rest
+$$$JSON object
+
+"platformoptions": {
+    "android": {
+              "title": "test title"
+    }
+  }
+```
+
+```javascript
+$$$Sample options
+var options = 
+{
+  "broadcast":true,
+  ..
+  ..
+  "platformoptions": {
+     "android": {
+              "title": "test title"
+      }
+    }
+}
+```
+
+```csharp
+await PushNotification
+      .ToDeviceIds(....)
+      ...
+      ...
+      new AndroidOptions
+            {
+                NotificationTitle = title
+            })
+      .SendAsync();
+
+```
+
+###Windows Options
+
+Windows Phone supports three types of Push Notifications.
+
+1)Toast<br>
+2)Raw<br>
+3)Tile
+
+We shall discuss them below, one by one.
+####Toast
+A toast displays at the top of the screen to notify users of an event, such as a news or weather alert. 
+For more details on what each param exactly means you can check <a href='http://msdn.microsoft.com/en-us/library/windowsphone/develop/jj662938(v=vs.105).aspx'>Toasts for Windows Phone.</a><br>
+Toast notification is supported by all windows phone.
+
+```rest
+
+"platformoptions": {
+            "wp": {
+                   "navigatepath": "",
+                   "notificationtype": "toast",
+                   "text1": "App text1",
+                   "text2": "App text2"
+            }
+     }
+```
+
+```javascript
+
+var options = {
+  "broadcast" : true,
+  ..
+  ..
+  "platformoptions": {
+            "wp": {
+                   "navigatepath": "",
+                   "notificationtype": "toast",
+                   "text1": "App text1",
+                   "text2": "App text2"
+            }
+     }
+}
+```
+
+```csharp
+
+await PushNotification
+        .Broadcast("message")
+        ..
+        ..
+        .WithPlatformOptions(
+            new WindowsPhoneOptions
+            {
+                Notification = new ToastNotification
+                {
+                    Text1 = wp_text1,
+                    Text2 = wp_text2,
+                    Path = wp_path
+                }
+            })
+```
+####Raw
+Using Raw notification you can send any kind of data (represented in string format) to a windows phone device. This type of notification will be honored by phone only when the app is running.<br>
+Raw notification is supported by all windows phone.
+
+```rest
+
+"platformoptions": {
+            "wp": {
+                   "data": "",                   
+                   "notificationtype": "raw"
+            }
+     }
+```
+
+```javascript
+
+var options = {
+  "broadcast" : true,
+  ..
+  ..
+  "platformoptions": {
+            "wp": {
+                   "data": "",                   
+                   "notificationtype": "raw"
+            }
+     }
+}
+```
+
+```csharp
+
+await PushNotification
+        .Broadcast("message")
+        ..
+        ..
+        .WithPlatformOptions(
+             new WindowsPhoneOptions
+                {
+                    Notification = new RawNotification() 
+                    { 
+                      RawData = "string data.." 
+                    }
+                })
+```
+####Tiles
+Windows Phone supports three types of Tile Notifications<br>
+
+1)Flip (supported by all WP)<br>
+2)Cyclic (supported by WP8 only)<br>
+3)Iconic (supported by WP8 only)
+
+The properties which supports clear field functionality have an appropriate comment against them. By sending clear field for a property, that property will be cleared on the device for example if "cleartitle":"true" is sent in notification, title of the tile will be cleared.
+
+To know more about Tile notification and exact meaning of the parameters you can checkout
+<a href='http://msdn.microsoft.com/en-us/library/windowsphone/develop/hh202948(v=vs.105).aspx'>Windows Tiles Page</a>
+
+
+#####Flip
+The flip Tile template flips from front to back.
+
+```rest
+"platformoptions": {
+          "wp": {
+            "notificationtype": "tile",
+            "tiletemplate": "flip",
+            "title": "", /*supports clear field*/
+            "backgroundimage": "", /*supports clear field*/
+            "count": "", /*supports clear field*/
+          /*following settings are for windows phone 7.5 and above */
+            "smallbackgroundimage": "", /*supports clear field*/
+            "widebackgroundimage": "",  /*supports clear field*/
+            "backtitle": "",  /*supports clear field*/
+            "backbackgroundimage": "",  /*supports clear field*/
+            "widebackbackgroundimage": "",/*supports clear field*/
+            "backcontent": "", /*supports clear field*/
+            "widebackcontent": ""   /*supports clear field*/
+        }
+     }
+```
+
+```csharp
+await PushNotification
+        .Broadcast("message")
+        .WithPlatformOptions(
+              new WindowsPhoneOptions
+              {
+              Notification = TileNotification.CreateNewFlipTile( 
+              new FlipTile
+                        {
+                          BackBackgroundImage = "bbimage",
+                          BackContent = "back content",
+                          BackTitle = "back title",
+                          FrontBackgroundImage = "fbi",
+                          FrontCount = "front count",
+                          FrontTitle = "front title",
+                          SmallBackgroundImage = "sbi",
+                          TileId = "tileid",
+                          WideBackBackgroundImage = "wbi",
+                          WideBackContent = "wbc",
+                          WideBackgroundImage = "wbi"
+                        })
+              })
+
+```
+
+```javascript
+var options=
+{
+  "broadcast":true,
+  ..
+  ..
+  "platformoptions": {
+          "wp": {
+            "notificationtype": "tile",
+            "tiletemplate": "flip",
+            "title": "", /*supports clear field*/
+            "backgroundimage": "", /*supports clear field*/
+            "count": "", /*supports clear field*/
+          /*following settings are for windows phone 7.5 and above */
+            "smallbackgroundimage": "", /*supports clear field*/
+            "widebackgroundimage": "",  /*supports clear field*/
+            "backtitle": "",  /*supports clear field*/
+            "backbackgroundimage": "",  /*supports clear field*/
+            "widebackbackgroundimage": "",/*supports clear field*/
+            "backcontent": "", /*supports clear field*/
+            "widebackcontent": ""   /*supports clear field*/
+        }
+     }
+}
+```
+
+#####Cyclic (only wp8)
+
+The cycle Tile template cycles through between one and nine images.
+
+```rest
+"platformoptions": {
+      "wp": {
+        "notificationtype": "tile",
+        "tiletemplate": "cycle",
+        "cycleimage1": "",  /*supports clear field*/
+        "cycleimage2": "",  /*supports clear field*/
+        "cycleimage3": "",  /*supports clear field*/
+        "cycleimage4": "",  /*supports clear field*/
+        "cycleimage5": "",  /*supports clear field*/
+        "cycleimage6": "",  /*supports clear field*/
+        "cycleimage7": "",  /*supports clear field*/
+        "cycleimage8": "",  /*supports clear field*/
+        "cycleimage9": "",  /*supports clear field*/
+                   
+        /*To send Flip Notification to WP7 and WP75 in same push message*/
+        "wp7": {
+            "tiletemplate": "flip",
+            "title": "",  /*supports clear field*/
+            "backgroundimage": "", /*supports clear field*/
+            "count": "",  /*supports clear field*/
+          },
+        "wp75" : {
+            "tiletemplate": "flip",
+            "title": "",  /*supports clear field*/
+            "backgroundimage": "", /*supports clear field*/
+            "count": "", /*supports clear field*/
+            "smallbackgroundimage": "", /*supports clear field*/
+            "widebackgroundimage": "", /*supports clear field*/
+            "backtitle": "", /*supports clear field*/
+            "backbackgroundimage": "", /*supports clear field*/
+            "widebackbackgroundimage": "", /*supports clear field*/
+            "backcontent": "",  /*supports clear field*/
+            "widebackcontent": ""  /*supports clear field*/
+          } 
+        }
+     }
+```
+
+```javascript
+var options = 
+{
+  "broadcast":true,
+  ..
+  ..
+  "platformoptions": {
+      "wp": {
+        "notificationtype": "tile",
+        "tiletemplate": "cycle",
+        "cycleimage1": "",  /*supports clear field*/
+        "cycleimage2": "",  /*supports clear field*/
+        "cycleimage3": "",  /*supports clear field*/
+        "cycleimage4": "",  /*supports clear field*/
+        "cycleimage5": "",  /*supports clear field*/
+        "cycleimage6": "",  /*supports clear field*/
+        "cycleimage7": "",  /*supports clear field*/
+        "cycleimage8": "",  /*supports clear field*/
+        "cycleimage9": "",  /*supports clear field*/               
+    /*To send Flip Notification to WP7 and WP75 in same push message*/
+        "wp7": {
+            "tiletemplate": "flip",
+            "title": "",  /*supports clear field*/
+            "backgroundimage": "", /*supports clear field*/
+            "count": "",  /*supports clear field*/
+          },
+        "wp75" : {
+            "tiletemplate": "flip",
+            "title": "",  /*supports clear field*/
+            "backgroundimage": "", /*supports clear field*/
+            "count": "", /*supports clear field*/
+            "smallbackgroundimage": "", /*supports clear field*/
+            "widebackgroundimage": "", /*supports clear field*/
+            "backtitle": "", /*supports clear field*/
+            "backbackgroundimage": "", /*supports clear field*/
+            "widebackbackgroundimage": "", /*supports clear field*/
+            "backcontent": "",  /*supports clear field*/
+            "widebackcontent": ""  /*supports clear field*/
+          } 
+        }
+     }
+
+}
+```
+
+```csharp
+await PushNotification
+        .Broadcast("message")
+        .WithPlatformOptions(
+                  new WindowsPhoneOptions
+                  {
+                    Notification = TileNotification.CreateNewCyclicTile(
+                      new CyclicTile
+                        {
+                          CycleImage1 = "image1",
+                          CycleImage2 = "image2",
+                          CycleImage3 = "image3"
+                        },
+                      new FlipTile
+                        {
+                          BackBackgroundImage = "bbimage",
+                          BackContent = "back content",
+                          BackTitle = "back title",
+                          FrontBackgroundImage = "fbi",
+                          FrontCount = "front count",
+                          FrontTitle = "front title",
+                          SmallBackgroundImage = "sbi",
+                          TileId = "tileid",
+                          WideBackBackgroundImage = "wbi",
+                          WideBackContent = "wbc",
+                          WideBackgroundImage = "wbi"
+                  })
+            })
+```
+
+#####Iconic (only wp8)
+The iconic template displays a small image in the center of the Tile, and incorporates Windows Phone design principles.
+
+```rest
+"platformoptions": {
+      "wp": {
+          "notificationtype": "tile",
+          "tiletemplate": "iconic",
+          "title": "",  /*supports clear field*/
+          "iconimage": "",  /*supports clear field*/
+          "smalliconimage": "",  /*supports clear field*/
+          "backgroundcolor": "", /*supports clear field*/
+          "widecontent1": "", /*supports clear field*/
+          "widecontent2": "", /*supports clear field*/
+          "widecontent3": "", /*supports clear field*/
+  /*To send Flip Notification to WP7 and WP75 in same push message*/
+          "wp7": {
+                "tiletemplate": "flip",
+                "title": "", /*supports clear field*/
+                "backgroundimage": "", /*supports clear field*/
+                "count": "", /*supports clear field*/
+              },
+          "wp75" : {
+                "tiletemplate": "flip",
+                "title": "",  /*supports clear field*/
+                "backgroundimage": "",  /*supports clear field*/
+                "count": "",  /*supports clear field*/
+                "smallbackgroundimage": "", /*supports clear field*/
+                "widebackgroundimage": "",  /*supports clear field*/
+                "backtitle": "",   /*supports clear field*/
+                "backbackgroundimage": "", /*supports clear field*/
+                "widebackbackgroundimage": "",/*supports clear field*/
+                "backcontent": "",  /*supports clear field*/
+                "widebackcontent": ""  /*supports clear field*/
+              } 
+        }
+     }
+```
+
+```javascript
+var options=
+{
+  "broadcast":true,
+  "platformoptions": {
+      "wp": {
+          "notificationtype": "tile",
+          "tiletemplate": "iconic",
+          "title": "",  /*supports clear field*/
+          "iconimage": "",  /*supports clear field*/
+          "smalliconimage": "",  /*supports clear field*/
+          "backgroundcolor": "", /*supports clear field*/
+          "widecontent1": "", /*supports clear field*/
+          "widecontent2": "", /*supports clear field*/
+          "widecontent3": "", /*supports clear field*/
+          /*To send Flip Notification to WP7 and WP75 in same push message*/
+          "wp7": {
+                "tiletemplate": "flip",
+                "title": "", /*supports clear field*/
+                "backgroundimage": "", /*supports clear field*/
+                "count": "", /*supports clear field*/
+              },
+          "wp75" : {
+                "tiletemplate": "flip",
+                "title": "",  /*supports clear field*/
+                "backgroundimage": "",  /*supports clear field*/
+                "count": "",  /*supports clear field*/
+                "smallbackgroundimage": "", /*supports clear field*/
+                "widebackgroundimage": "",  /*supports clear field*/
+                "backtitle": "",   /*supports clear field*/
+                "backbackgroundimage": "", /*supports clear field*/
+                "widebackbackgroundimage": "", /*supports clear field*/
+                "backcontent": "",  /*supports clear field*/
+                "widebackcontent": ""  /*supports clear field*/
+              } 
+        }
+     }
+}
+```
+
+```csharp
+await PushNotification
+        .Broadcast("message")
+        new WindowsPhoneOptions
+          {
+            Notification = TileNotification.CreateNewIconicTile(
+                new IconicTile
+                  {
+                    BackgroundColor = "bc",
+                    WideContent1 = "wc1",
+                    WideContent2 = "wc2",
+                    FrontTitle = "front title"
+                  },
+                new FlipTile
+                  {
+                    BackBackgroundImage = "bbimage",
+                    BackContent = "back content",
+                    BackTitle = "back title",
+                    FrontBackgroundImage = "fbi",
+                    FrontCount = "front count",
+                    FrontTitle = "front title",
+                    SmallBackgroundImage = "sbi",
+                    TileId = "tileid",
+                    WideBackBackgroundImage = "wbi",
+                    WideBackContent = "wbc",
+                    WideBackgroundImage = "wbi"
+                  })
+          })
 ```
