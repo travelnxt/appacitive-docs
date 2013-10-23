@@ -3788,14 +3788,15 @@ var polygonQuery = Query.Property("location").WithinPolygon(geocodes);
 ```
 
 Email
-------------
+=======
+
 Appacitive allows you to integrate your current email providers to send out emails through our APIs.
 The provider settings can be configured in the Portal, or you can send them along with each call that you make.
 
 You can send simple and templated emails with Emails. Below you can see an e.g of both.
 
-### Sending a simple email
-
+Sending a simple email
+------------
 You can use this API to send simple (non template based) emails.
 
 ** Parameter **
@@ -3938,7 +3939,8 @@ await NewEmail
 
 ```
  
-### Sending a templated email
+Sending a templated email
+------------
 
 You can send an email using a saved template.
 The template can be created and saved using the Portal.
@@ -4118,6 +4120,118 @@ Windows Phone : http://msdn.microsoft.com/en-us/library/hh221549.aspx
 
 Registering the devices
 ------------
+
+You need to give Appacitive an info about the device on which you want to send the push notfication, i.e. the device type (ios,android etc),device token etc.
+Below you can see the call to register the device
+
+** Parameter **
+
+<dl>
+  <dt>devicetype</dt>
+  <dd>required<br/><span>Specifies the platform of device (ios,android,windows)
+  <dt>devicetoken</dt>
+  <dd>required<br/><span>The device id which is given by the platform SDK and is used to identify the device
+  <dt>channels</dt>
+  <dd>optional<br/><span>List of channels (groups) to add the device to
+  <dt>timezone</dt>
+  <dd>optional<br/><span>The timezone of the device
+  <dt>isactive</dt>
+  <dd>optional<br/><span>Whether the device is active. If false then notification will not be sent to it
+  <dt>__tags</dt>
+  <dd>optional<br/><span>List of strings which can be used to tag the device
+  <dt>__attributes</dt>
+  <dd>optional<br/><span>Array of Key Value pairs to store extra info
+  <dt>location</dt>
+  <dd>optional<br/><span>The location (lat,long) of the device
+</dl>
+
+
+``` rest
+$$$Method
+PUT https://apis.appacitive.com/device/register
+```
+``` rest
+$$$Sample Request
+//  Register Device
+curl -X PUT \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d
+{
+  "__tags": [
+    "tag1"
+  ],
+  "devicetype": "ios",
+  "location": "18.534064,73.899551",
+  "channels":[
+    "channel1",
+    "channel2"
+  ],
+  "devicetoken": "c6ae0529f4752a6a0d127900f9e7c",
+  "isactive": "true",
+  "__attributes": {}
+}
+```
+
+``` rest
+$$$Sample Response
+{
+  "device": {
+    "__id": "40632379999653094",
+    "__schematype": "device",
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__schemaid": "38812996656563683",
+    "__revision": "1",
+    "__tags": [
+      "tag1"
+    ],
+    "__utcdatecreated": "2013-10-23T11:54:15.6604000Z",
+    "__utclastupdateddate": "2013-10-23T11:54:15.6604000Z",
+    "devicetype": "ios",
+    "location": "18.534064,73.899551",
+    "channels":[
+      "channel1",
+      "channel2"
+    ],
+    "devicetoken": "asda124123jhkj1h2k3h123",
+    "isactive": "true",
+    "__attributes": {}
+  },
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "264e3549-95d8-40d8-be58-c20651f284c9",
+    "additionalmessages": []
+  }
+}
+```
+
+```javascript
+var device = new Appacitive.Article({ schema: 'device' });
+device.set('devicetype', 'ios');
+device.set('devicetoken', 'c6ae0529f4752a6a0d127900f9e7c');
+device.save(function(){
+  alert('new device registered successfully!');
+}, function(status){
+  alert('error while registering!');
+});
+```
+
+```csharp
+
+Device device = new Device(DeviceType.iOS)
+            {
+                DeviceToken = "c6ae0529f4752a6a0d127900f9e7c",
+                Location = new Geocode(10,10),
+            };
+            device.Channels.Add("channel1");
+            device.Channels.Add("channel2");
+            await device.SaveAsync();
+``` 
 
 Push message anatomy
 ------------
