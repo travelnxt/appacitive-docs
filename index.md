@@ -3791,7 +3791,7 @@ Graph Search
 ------------
 
 Graph queries offer immense potential when it comes to drilling and mining for connected data. There are two kinds of graph queries, `filter` and `projection`.
-You can read about them here <blog post url>.
+You can read about them here <http://www.example.com>.
 
 ### Creating graph queries
 
@@ -3940,7 +3940,7 @@ The provider settings can be configured through the management portal, or you ca
 
 Note : The email settings in the request body overrides the email settings set through the management portal.
 
-You can send raw and templated emails using Appacitive. Below you can see an example of both. To know more about emails using Appacitive, read the blog post here <>.
+You can send raw and templated emails using Appacitive. Below you can see an example of both. To know more about emails and email templates in Appacitive, read the blog post here <http://blogs.appacitive.com/2013/08/emails-and-email-templates-in-appacitive.html>.
 
 ### Sending simple emails
 
