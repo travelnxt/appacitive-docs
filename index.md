@@ -3787,6 +3787,24 @@ var geocodes = new[] { pt1, pt2, pt3, pt4 };
 var polygonQuery = Query.Property("location").WithinPolygon(geocodes);
 ```
 
+Graph Search
+------------
+
+### Filter queries
+
+### Projection queries
+
+### Creating graph queries
+
+You can create filter and projection graph queries from the management portal and assign them a unique name.
+
+### Executing filter graph queries
+
+You can execute a saved graph query (filter or projection) by using its name you assigned to it while creating it from the management portal.
+
+### Executing projection graph queries
+
+
 Email
 ------------
 Appacitive allows you to integrate your current email providers to send out emails through our APIs.
