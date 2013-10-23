@@ -3790,51 +3790,192 @@ var polygonQuery = Query.Property("location").WithinPolygon(geocodes);
 Graph Search
 ------------
 
-### Filter queries
-
-### Projection queries
+Graph queries offer immense potential when it comes to drilling and mining for connected data. There are two kinds of graph queries, `filter` and `projection`.
+You can read about them here <blog post url>.
 
 ### Creating graph queries
 
-You can create filter and projection graph queries from the management portal and assign them a unique name.
+You can create `filter` and `projection` graph queries from the management portal. When you create such queries from the portal, you are required to assign a unique `name` with every saved search query.
+You can then use this `name` to execute the query from your app by making the appropriate api call to Appacitive. 
 
 ### Executing filter graph queries
 
-You can execute a saved graph query (filter or projection) by using its name you assigned to it while creating it from the management portal.
+You can execute a saved graph query (filter or projection) by using it's `name` that you assigned to it while creating it from the management portal.
+You will need to send any `placeholders` you might have set up while creating the query as a list of key-value pairs in the body of the request.
+Note that graph queries are HTTP POST calls.
+
+** Parameters **
+
+<dl>
+	<dt>name</dt>
+	<dd>required<br/><span>This is the unique name of the query you want to execute.
+	<dt>placeholders</dt>
+	<dd>optional<br/><span>This is an array of key-value pairs through which you supply the values to the placeholders in the query.
+</dl>
+
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/search/{filter query name}/filter
+```
+``` rest
+$$$Sample Request
+//	Execute a saved filter query
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d
+{
+	"placeholders": {
+		"key1": "value1",
+		"key2": "value2"
+	}
+}
+```
+
+``` rest
+$$$Sample Response
+{
+	"ids": [
+	"34912447775245454",
+	"34322447235528474",
+	"34943243891025029"
+	],
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "18368cc3-f0a3-4c8d-8203-668415d83308",
+		"additionalmessages": []
+	}
+}
+```
+
 
 ### Executing projection graph queries
 
+Executing saved projection queries works the same way as executing saved filter queries. The only difference is that you also need to pass the initial `ids` as an array of strings to feed the projection query.
+The response to a projection query will depend on how you design your projection query. Do test them out using the query builder from the query tab on the management portal and from the test harness.
+
+** Parameters **
+
+<dl>
+	<dt>name</dt>
+	<dd>required<br/><span>This is the unique name of the query you want to execute.
+	<dt>ids</dt>
+	<dd>required<br/><span>These are the id(s) you need to feed into the query as the starting point.
+	<dt>placeholders</dt>
+	<dd>optional<br/><span>This is an array of key-value pairs through which you supply the values to the placeholders in the query.
+</dl>
+
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/search/{projection query name}/project
+```
+``` rest
+$$$Sample Request
+//	Execute a saved projection query
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d
+{
+	"ids": [
+	"34912447775245454",
+	"34322447235528474",
+	"34943243891025029"
+	],
+	"placeholders": {
+		"key1": "value1",
+		"key2": "value2"
+	}
+}
+```
+
+``` rest
+$$$Sample Response
+{
+	"movie": {
+		"values": []
+	},
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "6c64bfeb-d495-4615-8dd5-e48b1f37f817",
+		"additionalmessages": []
+	}
+}
+```
 
 Email
 ------------
-Appacitive allows you to integrate your current email providers to send out emails through our APIs.
-The provider settings can be configured in the Portal, or you can send them along with each call that you make.
+Appacitive allows you to integrate your current email provider with Appacitive, to send out emails through Appacitive's API.
+The provider settings can be configured through the management portal, or you can send them along with each call.
 
-You can send simple and templated emails with Emails. Below you can see an e.g of both.
+Note : The email settings in the request body overrides the email settings set through the management portal.
 
-### Sending a simple email
+You can send raw and templated emails using Appacitive. Below you can see an example of both. To know more about emails using Appacitive, read the blog post here <>.
 
-You can use this API to send simple (non template based) emails.
+### Sending simple emails
 
-** Parameter **
+You can use this API to send simple (non templated) raw emails.
+
+** Parameters **
 
 <dl>
 	<dt>smtp</dt>
-	<dd>required (if not preconfigured)<br/><span>This is the SMPT settings.
+	<dd>required, if not preconfigured or else optional<br/><span>These are SMPT settings like `username`, `password`, `host`, `port` and `enablessl`.
 	<dt>to</dt>
-	<dd>required<br/><span>List of email ids to send email to
+	<dd>required<br/><span>List of email addresses to send the email to
 	<dt>cc</dt>
-	<dd>optional<br/><span>List of email ids to cc to
+	<dd>optional<br/><span>List of email addresses to cc to
 	<dt>bcc</dt>
-	<dd>optional<br/><span>List of email ids to bcc to
+	<dd>optional<br/><span>List of email addresses to bcc to
 	<dt>from</dt>
-	<dd>optional<br/><span>The email id from which email is sent
+	<dd>optional<br/><span>The email address from which email is sent
 	<dt>replyto</dt>
-	<dd>optional<br/><span>The reply to email address
+	<dd>optional<br/><span>The reply-to email address
 	<dt>subject</dt>
-	<dd>required<br/><span>The subject of the email to send
+	<dd>required<br/><span>The subject of the email
 	<dt>body</dt>
-	<dd>required<br/><span>The body of the email to send
+	<dd>required<br/><span>The body of the email
+</dl>
+
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
 </dl>
  
 ``` rest
@@ -3843,8 +3984,8 @@ POST https://apis.appacitive.com/email/send
 ```
 ``` rest
 $$$Sample Request
-//	Send an email
-curl -X DELETE \
+//	Send a simple raw email
+curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
@@ -3956,7 +4097,7 @@ await NewEmail
 
 ```
  
-### Sending a templated email
+### Sending templated emails
 
 You can send an email using a saved template.
 The template can be created and saved using the Portal.
@@ -3982,14 +4123,25 @@ The template can be created and saved using the Portal.
 	<dd>required<br/><span>The body of the email to send
 </dl>
 
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
 ``` rest
 $$$Method
 POST https://apis.appacitive.com/email/send
 ```
 ``` rest
 $$$Sample Request
-//	Send an email
-curl -X DELETE \
+//	Send a templated email
+curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
@@ -4010,8 +4162,8 @@ curl -X DELETE \
 	"body": {
 		"templatename": "{templateName}",
 		"data": {
-			"placeholder1": "PLace holder 1 value",
-			"placeholder2": "Place holder 2 value"
+			"placeholder-key1": "value1",
+			"placeholder-key2": "value2"
 		},
 		"ishtml": true
 	}
@@ -4031,8 +4183,8 @@ $$$Sample Response
 		"body": {
 			"templatename": "{templateName}",
 			"data": {
-				"placeholder1": "PLace holder 1 value",
-				"placeholder2": "Place holder 2 value"
+				"placeholder-key1": "value1",
+				"placeholder-key2": "value2"
 			},
 			"ishtml": true		
 		}
@@ -4062,8 +4214,8 @@ await NewEmail
       .WithTemplateBody( "sample", 
               new Dictionary<string, string> 
               {
-                  {"placeholder1", "Place holder 1 value"},
-                  {"placeholder2", "Place holder 2 value"}
+				  {"placeholder-key1", "value1"},
+                  {"placeholder-key2", "value2"}
               },false)
       .SendAsync();
 
@@ -4075,8 +4227,8 @@ await NewEmail
       .WithTemplateBody( "sample", 
               new Dictionary<string, string> 
               {
-                  {"placeholder1", "Place holder 1 value"},
-                  {"placeholder2", "Place holder 2 value"}
+                  {"placeholder-key1", "value1"},
+                  {"placeholder-key2", "value2"}
               },true)
       .Using("smtp.gmail.com", 465, "john@doe.com","johnsPWD")
       .SendAsync();
@@ -4108,8 +4260,8 @@ var email = {
     templateName: 'sample',
     data: 
     {
-    	'placeholder1': 'placeholder 1 value',
-    	'placeholder2' : 'placeholder 2 value'	
+    	'placeholder-key1': 'value1',
+    	'placeholder-key2': 'value2'	
     },
     ishtml: false
 };
