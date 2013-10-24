@@ -3032,21 +3032,7 @@ curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
--d '{
-        "firstname":"john",
-        "email":"johnny@appacitive.com",
-        "username":"johnny",
-        "phone": null,
-        "isenabled":"true",
-        "lastname":null,
-        "__addtags":[
-           "coffee.lover",
-           "foodie"
-        ],
-        "__removetags":[
-           "newuser"
-        ]
-     }' \
+-d '{ "email":"johnny@appacitive.com", "username":"johnny", "phone": null, "lastname":null, "__addtags":[ "coffee.lover", "foodie" ], "__removetags":[ "newuser" ] }' \
 https://apis.appacitive.com/user
 ```
 ``` rest
@@ -3068,8 +3054,12 @@ $$$Sample Response
 		"username": "john.doe",
 		"email": "johnny@appacitive.com",
 		"firstname": "John",
+		"lastname":null,
+		"birthdate": "1982-11-17",
+		"phone": null,
 		"isemailverified": "false",
 		"isenabled": "true",
+		"location": "18.534064000000000,73.899551000000000",
 		"__attributes": {}
 	},
 	"status": {
@@ -3084,7 +3074,7 @@ $$$Sample Response
 ```
 ``` csharp
 //Get the user which needs to be updated
-var user = await Users.GetByIdAsync("123456");
+var user = await Users.GetByIdAsync("65464576879867989");
 user.FirstName = "jane";
 //Updating custom field 'city'
 user.Set<string>("city", "New York"); 
@@ -3975,7 +3965,9 @@ $$$Sample Response
 ```
 
 ```csharp
-var results = await Graph.Filter("sample_filter", new Dictionary<string, string> { { "key1", "value1" }, { "key2", "value2" } });
+var filterQueryName = "sample_filter";
+var placeholderFillers = new Dictionary<string, string> { { "key1", "value1" }, { "key2", "value2" } };
+var results = await Graph.Filter(filterQueryName, placeholderFillers);
 ```
 
 ### Executing projection graph queries
@@ -4049,7 +4041,10 @@ $$$Sample Response
 ```
 
 ```csharp
-var results = await Graph.Project("sample_projection", new List<string>() { "34912447775245454", "34322447235528474", "34943243891025029" }, new Dictionary<string, string> { { "key1", "value1" }, { "key2", "value2" } });
+var projectQueryName = "sample_project";
+var rootIds = new List<string>() { "34912447775245454", "34322447235528474", "34943243891025029" };
+var placeholderFillers = new Dictionary<string, string> { { "key1", "value1" }, { "key2", "value2" } };
+var result = await Graph.Project(projectQueryName, rootIds, placeholderFillers);
 ```
 
 Email
