@@ -3952,6 +3952,7 @@ curl -X POST \
 		"key2": "value2"
 	}
 }
+https://apis.appacitive.com/search/sample_filter/filter
 ```
 
 ``` rest
@@ -3973,6 +3974,9 @@ $$$Sample Response
 }
 ```
 
+```csharp
+var results = await Graph.Filter("sample_filter", new Dictionary<string, string> { { "key1", "value1" }, { "key2", "value2" } });
+```
 
 ### Executing projection graph queries
 
@@ -4024,6 +4028,7 @@ curl -X POST \
 		"key2": "value2"
 	}
 }
+https://apis.appacitive.com/search/sample_projection/project
 ```
 
 ``` rest
@@ -4041,6 +4046,10 @@ $$$Sample Response
 		"additionalmessages": []
 	}
 }
+```
+
+```csharp
+var results = await Graph.Project("sample_projection", new List<string>() { "34912447775245454", "34322447235528474", "34943243891025029" }, new Dictionary<string, string> { { "key1", "value1" }, { "key2", "value2" } });
 ```
 
 Email
