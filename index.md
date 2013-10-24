@@ -3376,7 +3376,7 @@ $$$Sample Response
 
 #### Validate session token
 
-Once you create a session `token` for a user using one of the aunthenticating mechanisms, you may want to validate whether the token is a valid token or not.
+Once you create a session `token` for a user using one of the aunthenticating mechanisms, you may want to validate whether the token is a valid token or not in subsequent api calls.
 
 ** Parameters **
 
@@ -3404,8 +3404,8 @@ POST https://apis.appacitive.com/user/validate?userToken={user session token}
 ```
 ``` rest
 $$$Sample Request
-//	Delete user using his session token
-curl -X DELETE \
+//	Validate user's session token
+curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
@@ -3430,7 +3430,7 @@ $$$Sample Response
 
 #### Invalidate session
 
-Yoy may want to invalidate a previously generated session token for a user.
+Yoy may want to invalidate a previously generated session token for a user at some point before its expiry.
 
 ** Parameters **
 
@@ -3458,13 +3458,14 @@ POST https://apis.appacitive.com/user/invalidate?userToken={user session token}
 ```
 ``` rest
 $$$Sample Request
-//	Delete user using his session token
-curl -X DELETE \
+//	Invalidate the user's session token
+curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/user/invalidate?userToken=RlYzRlcxY3lsRDlqYUpmQlNha0IwcTJRTXJDYVd6QWZOMlVPR0JWSmNhbTgyWVZxSTVnTmkvR1N0MXJMZm1nZGZCYWNZVk40eEZ4dTB3V3NBOFNVa3FUSEdQZVBTZDBWazJFUW03R0dZQVc5MjdZZmtGRFd1Q092enpTSUpQSWI1VEpqV2xsUUU0U3dIZGcwVTdZTkdNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==```
+https://apis.appacitive.com/user/invalidate?userToken=RlYzRlcxY3lsRDlqYUpmQlNha0IwcTJRTXJDYVd6QWZOMlVPR0JWSmNhbTgyWVZxSTVnTmkvR1N0MXJMZm1nZGZCYWNZVk40eEZ4dTB3V3NBOFNVa3FUSEdQZVBTZDBWazJFUW03R0dZQVc5MjdZZmtGRFd1Q092enpTSUpQSWI1VEpqV2xsUUU0U3dIZGcwVTdZTkdNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==
+```
 
 ``` rest
 $$$Sample Response
@@ -3482,14 +3483,123 @@ $$$Sample Response
 
 ### Password Management
 
+Appacitive provides a intuitive password management and recovery protocol to app developers so that their users can recover or change their passwords safely if and when the need arises.
+
 #### Reset password
 
-#### Send forgot password email
+If a user of your app simply wants to change his/her password, it requires a simple HTTP call to Appacitive with the necessary details. This call is also available in all the SDKs.
 
-#### Validate reset password token
+** Parameters **
 
-#### Reset forgot password
+<dl>
+	<dt>userid</dt>
+	<dd>required<br/><span>The user's unique identifier
+	<dt>useridtype</dt>
+	<dd>required<br/><span>The user's unique identifier's type. Could be `id`, `username` or `token`
+	<dt>oldpassword</dt>
+	<dd>required<br/><span>The user's original password
+	<dt>newpassword</dt>
+	<dd>required<br/><span>The new password which the user wants to set for his account
+</dl>
 
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Appacitive-User-Auth</dt>
+	<dd>required<br/><span>A session token generated for the user.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/user/{userId}/changepassword?useridtype={id/username/token}
+```
+
+``` rest
+$$$Sample Request
+//	Change user's password
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Appacitive-User-Auth: {User token}" \
+-H "Content-Type: application/json" \
+-d '{ "oldpassword": "{old password}", "newpassword": "{new password}" }' \
+https://apis.appacitive.com/user/45178614534861534/changepassword?useridtype=id
+```
+
+``` rest
+$$$Sample Response
+{
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "d7cf599a-bce3-44db-b404-c9fe09d4c0f4",
+		"additionalmessages": []
+	}
+}
+```
+
+#### Forgot password
+
+In situations where a user forgets his password, Appacitive provides a secure way to allow your users to reset their password. The process is initiated by sending a api call to Appacitive to dispatch a reset password email to the user's verified email address.
+A link in the email redirects him to a page (either hosted by Appacitive or on your end), where he can enter a new password for his account. Appacitive adds a special token to the url which is valid only for a short duration. To read more about the forgot password flow and possible customizations to the email structure and the page where the user enters his new password,
+read the blog post here. <http://blogs.appacitive.com/2013/10/password-management-in-appacitive.html>
+
+** Parameters **
+
+<dl>
+	<dt>username</dt>
+	<dd>required<br/><span>The user's unique username
+	<dt>subject</dt>
+	<dd>required<br/><span>The subject for the email that goes out to the user
+</dl>
+
+** HTTP headers **
+
+<dl>
+	<dt>Appacitive-Apikey</dt>
+	<dd>required<br/><span>The api key for your app.
+	<dt>Appacitive-Environment</dt>
+	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+	<dt>Content-Type</dt>
+	<dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/user/sendresetpasswordemail
+```
+
+``` rest
+$$$Sample Request
+//	Send reset password email
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {sandbox or live}" \
+-H "Content-Type: application/json" \
+-d '{ "username": "{username of the user}", "subject": "{subject of the email}" }' \
+https://apis.appacitive.com/user/sendresetpasswordemail
+```
+``` rest
+$$$Sample Response
+{
+	"status": {
+		"code": "200",
+		"message": "Successful",
+		"faulttype": null,
+		"version": null,
+		"referenceid": "d7cf599a-bce3-44db-b404-c9fe09d4c0f4",
+		"additionalmessages": []
+	}
+}
+```
 
 Files
 ------------
