@@ -1944,18 +1944,19 @@ var visitors = await city.GetConnectedArticlesAsync("visitor");
 Users
 ------------
 
-Users represent your apps' users whose management API's are provided out of the box. 
-They are internally simply articles of an inbuilt schema called `user` with added features like authentication, location tracking, password management, session management and third-party social integration using OAuth 1.0 or OAuth 2.0.
+Users represent your apps' users. Appacitive provides API(s) to store and manage details and data about your users out of the box through an inbuilt schema called `user`.
+This inbuilt schema `user` behaves just like any other schema created by you with added features like authentication, location tracking, password management, session management and third-party social integration using OAuth 1.0 or OAuth 2.0.
 
-`Note` : While working with user API(s) you need to pass an additional http header `Appacitive-User-Auth` with its value set to a valid user session token generated for that user.
+`Note` : While working with user API(s) you need to pass an additional HTTP header called `Appacitive-User-Auth` with its value set to a valid user `session token` generated for that user.
 
 <span class="h3">The user object</span>
 
 ** System generated properties ** 
 
-The `user` object contains all the `system defined properties` present in an article of any schema. 
-It also has some additional `predefined properties` and you can add more properties to the `user` schema the same way you would add properties to any other schema through the management portal. 
-The additional predefined properties are as follows.
+The `user` object contains all the `system defined properties` that you would find in an article of any schema like `__id`, `__schematype`, `__createdby`, `__lastmodifiedby`, `__utcdatecreated`, `__utclastupdateddate`, `__revision`, `__tags` and `__attributes`.  
+It also has some additional `pre-defined` properties to provide the added user management features, and you can also add more properties to the `user` schema the same way you would add properties to any other schema using the management portal. 
+
+The additional pre-defined properties are as follows.
 
 
 <dl>
@@ -1968,7 +1969,7 @@ The additional predefined properties are as follows.
   <dt>lastname</dt>
   <dd><span>An ```optional``` ```string``` property for the lastname of the user.</span></dd>
   <dt>email</dt>
-  <dd><span>An ```optional``` ```string``` property with a email ```regex``` validation on it for storing and managing the users email address.</span></dd>
+  <dd><span>An ```mandatory``` ```string``` property with a email ```regex``` validation on it for storing and managing the users email address.</span></dd>
   <dt>location</dt>
   <dd><span>An ```optional``` ```geography``` property for checkin management and geo-based querying.</span></dd>
   <dt>password</dt>
@@ -2014,18 +2015,18 @@ $$$sample object
 
 ### Creating a new user
 
-Appacitive provides multiple ways in which new users can be added to your app.
-You may choose to use the appacitive's `user management` system alone to manage all of your app's users or additionally integrate with facebook, twitter or any other <a href="http://en.wikipedia.org/wiki/OAuth">OAuth</a> provider for identity management.
-Appacitive allows you to link as many OAuth accounts with Appacitive user objects and manage them using Appacitive's user api(s). 
-And because `user` objects are internally similar to `article` objects, you can connect a `user` object to other users or articles of other schemas by creating corresponding relations through the management portal.
+Appacitive provides multiple ways through which you can add new users to your app.
+You may choose to use Appacitive's `User Management` system alone to manage all of your apps' users, or additionally integrate with facebook, twitter or any other <a href="http://en.wikipedia.org/wiki/OAuth">OAuth</a> provider for identity management.
+Appacitive allows you to link as many OAuth accounts with Appacitive `user` objects and manage them using Appacitive's user API(s). 
+And because `user` objects are internally similar to `article` objects, you can connect a `user` object to other users or articles of other schemas by creating corresponding relations from the management portal.
 
 #### Creating a simple user
 
-Creates a new user in the appacitive system. This user is an independent user in the sppacitive system for your app, in the environment you specify through the `Appacitive-Environment` header, without any linked identites. 
+Creates a new user in Appacitive. This user is an independent user in the Appacitive system for your app, in the environment you specify through the `Appacitive-Environment` header, without any linked identites. 
 You can link it to a OAuth account later on.
-Some basic system properties are mandatory, namely `username`, `firstname` and `password`. The `username` should be unique for every user. 
-Every user is assigned a unique `__id` by the system.
-All other predefined properties are optional and you may wish to use them according to your app's requirements or add more if required through the management portal.
+Some basic system properties are mandatory, namely `username`, `firstname`, `email` and `password`. The `username` should be unique for every user. 
+Every user is assigned a unique monotonically increasing `__id` by the system.
+All other pre-defined properties are optional and you may wish to use them or add more according to your app's requirements using the management portal.
 
 ** Parameters ** 
 
@@ -2108,14 +2109,14 @@ var user = new User
 await user.SaveAsync();
 ```
 
-The `__createdby` and `__lastmodifiedby` properties are set to `System`. They will be set to a user id if you use another user's session token to perform actions on this user.
-The `__revision` is initially set to 1 when a new user is created. This number gets incremented by 1 everytime you perform a successful update operation on the user object.
+The `__createdby` and `__lastmodifiedby` properties are set to `System`. They will be set to a user id if you use another user's `session token` to perform actions on this user.
+The `__revision` is initially set to 1 when the user is created. This number gets incremented by 1 everytime you perform a successful update operation on the user object.
 `__attributes` are simple string key-value pairs which you can assign to every `user`, `article` and `connection` object. 
-The `__tags` object is a list of string tags. You can perform search queries on `__attributes` and `__tags`. 
+The `__tags` object is an array of string tags. You can perform search queries on `__attributes` and `__tags`. 
 
 #### Creating a user with a link to a OAuth 2.0 provider
 
-Creates a new user in the Appacitive system and links it to a facebook account.
+Creates a new user in the Appacitive system and links it to a facebook account. Each linked identity is assigned a `name` like 'facebook' or 'twitter' or some custom name you provide.
 Here onwards, the linked identity can be accessed using the `name` of the identity.
 
 ** Parameters ** 
@@ -2260,13 +2261,13 @@ $$$Sample Response
 
 #### Create a user with just the OAuth access token
 
-You can optionally create a new user in the appacitive system with just the OAth access token of the user. 
+You can optionally create a new user in Appacitive with just the OAth access token for the user. 
 You can use this option to integrate facebook login in your app.
 You need to add an extra property in the request object called `createnew` with its value set to `true`. 
-The system will pull the required details about the user from the OAth provider and create a new appacitive user with it.
+The system will pull the required details about the user from the OAth provider and create a new Appacitive user with it.
 Note that this is a `POST` HTTP call.
 
-In this example we will use facebook's access token.
+In this example, we will use a facebook access token.
 
 ** Parameters ** 
 
@@ -2333,9 +2334,9 @@ $$$Sample Response
 }
 ```
 
-#### Link account with existing appacitive user.
+#### Link account with existing Appacitive user.
 
-You can link an existing appacitive user to a social identity provider which works on OAuth 1.0 or OAuth 2.0.
+You can link an existing Appacitive user to a social identity provider which works on OAuth 1.0 or OAuth 2.0.
 
 ##### Link appacitive user to a OAuth 2.0 account 
 
@@ -2391,7 +2392,7 @@ $$$Sample Response
 
 ##### Link appacitive user to a OAuth 1.0 account
 
-We can link an appacitive user to a twitter account after the user has already been created in appacitive.
+We can link an appacitive user to a twitter account after the user has already been created in Appacitive.
 
 ** Parameters ** 
 
@@ -2445,7 +2446,7 @@ $$$Sample Response
 
 #### Delink account with existing appacitive user.
 
-If you no longer want to associate an appacitive user to a OAuth provider, you can delink the account using the linked identity's `name`.
+If you no longer want to associate an Appacitive user to a OAuth provider, you can delink the account using the linked identity's `name`.
 
 ** Parameters ** 
 
@@ -2496,8 +2497,8 @@ $$$Sample Response
 
 ### Authenticating a user
 
-You need to authenticate the user to the Appacitive API and create a session `token` for the user every time he logs into your app, to make user specefic API calls.
-You will pass this session token as a HTTP header called `Appacitive-User-Auth`. The user object is also returned on a successful authentication call.
+To make user specific API calls to Appacitive, you need to authenticate the user to the Appacitive API and create a `session token` for the user every time he logs into your app.
+You will pass this `session token` as a HTTP header called `Appacitive-User-Auth`. The `user` object is also returned on a successful authentication call.
 
 #### Authenticating user by username and password
 
@@ -2605,7 +2606,7 @@ $$$Sample Response
 
 #### Authenticate with OAuth 2.0 access token
 
-You can authenticate a user and generate a session token using a access token from one of his linked identities like facebook.
+You can authenticate a user and generate a session token using a access token using one of his linked identities like facebook.
 
 ** Parameter **
 
@@ -2681,7 +2682,7 @@ $$$Sample Response
 #### Authenticate with a OAuth 1.0 access token
 
 The `consumerkey` and `consumersecret` are optional here. 
-You can set them up once using the management portal in the social network settings tab.
+You can set them up once in the management portal in the social network settings tab.
 
 ``` rest
 $$$Method
@@ -2735,14 +2736,15 @@ $$$Sample Response
 
 ### Retrieving users
 
-Once a user is created in appacitive, a unique long `__id` is assigned to it and a unique string `username` which you provide is associated with it.
-You can access the a specific user for retrieving, updating, deleting etc. using one of three ways, by his `id`, by his `username` or by a session `token` generated for that user.
-You can specify what type of user accessing way you are using by passing a query string parameter called `useridtype`. 
+Once a user is created in Appacitive, a unique long `__id` is assigned to it and a unique string `username`, which you provided, is associated with it.
+You can access the specific user for retrieving, updating, deleting etc. using one of three ways, by his `id`, by his `username` or by a session `token` generated for that user.
+You can specify what type of user accessing mechanism you are using by passing a query string parameter called `useridtype`. 
 The values for `useridtype` can be `id`, `username` and `token` for accessing the user using his unique system generated `__id`, a unique string `username` assigned by you or a generated token using his credentials respectively.
 In the absense of the parameter `useridtype`, the system assumes it to be `id`.
 
 This call takes an additional `Appacitive-User-Auth` header with its value set as a valid user token.
-The following three example illustrate retrieving the user in the three possible ways. The same pattern applies for other calls like deleting the user or updating the user as well.
+The following three example illustrate retrieving the user in the three possible ways. 
+The same pattern applies for other calls like deleting the user or updating the user as well.
 
 #### Get User by Id
 
@@ -2989,14 +2991,14 @@ $$$Sample Response
 
 ### Updating a user
 
-The update user call is similar to the update article call. 
+The update user call is similar to the update article call. The update user calls expects a json object with only the user properties that you want updated.
 The property keys which you send with non-null values will get updated if they aren't marked as immutable.
 The property keys you don't send in the body of the POST call stay unchanged.
-The property keys you send with values set as `null` are deleted from the user object.
+The property keys you send with values set as `null` are deleted from the user object (set to null).
 The same convention is followed with `__attributes` as with the properties.
-Use the `__addtags` and `__removetags` array of strings properties to update tags.
+The `__addtags` and `__removetags` properties which are arrays of strings are used to update tags.
 
-You can specify which user you are updating by using either his `id`, `username` or `token`. You will use the `useridtype` parameter to specify which option you are using.
+You can specify which user you want to update by using either his `id`, `username` or `token`. You will use the `useridtype` parameter to specify which option you are using.
  
 ** Parameters ** 
 
@@ -3083,7 +3085,7 @@ await user.SaveAsync();
 
 ### Searching for users
 
-Searching for users follows all the same principles as searching for articles of any other schema.
+Searching for users follows all the same filtering principles as searching for articles of any other schema.
 
 ``` javascript
 //TODO
@@ -3100,8 +3102,9 @@ var users = await Users.FindAllAsync(query.ToString());
 
 ### Deleting a user
 
-Delete requests follow the same practise as get request for user, the only difference being that you send a DELETE HTTP request instead of a GET request.
-There are three ways you could delete the user, the same as retrieving a user, by his `id`, by his `username` or by his `token` generated for him.
+Delete requests follow the same practice as get requests for user, the only difference being that the HTTP method type is DELETE, instead of GET.
+Make sure there are no connections with the user you are deleting, otherwise the API will return an error. You can use the `deleteconnections` query string parameter if you want to also delete all connections associated with the user.
+There are three ways you could delete the user (the same as retrieving a user), by his `id`, by his `username` or by his `token` generated for him.
 
 ** Parameters **
 
@@ -3159,7 +3162,7 @@ $$$Sample Response
 ```
 #### Delete user by username
 
-An additional query string parameter called `useridtype` is sent to specify the kind of user identifier you are using.
+An additional query string parameter called `useridtype` is sent to specify the kind of user identifier you are using, which in this case is `username`.
 
 ** HTTP headers **
 
@@ -3205,7 +3208,7 @@ $$$Sample Response
 
 #### Delete user by user token
 
-Here you can get a user by his session token. 
+Here you can delete a user by his session token. 
 A valid session token still needs to be passed in the `Appacitive-User-Auth` header, but the user that is deleted is the user whose token you pass as the query string parameter `token`.
 
 ** HTTP headers **
@@ -3538,9 +3541,9 @@ $$$Sample Response
 
 #### Forgot password
 
-In situations where a user forgets his password, Appacitive provides a secure way to allow your users to reset their password. The process is initiated by sending a api call to Appacitive to dispatch a reset password email to the user's verified email address.
-A link in the email redirects him to a page (either hosted by Appacitive or on your end), where he can enter a new password for his account. Appacitive adds a special token to the url which is valid only for a short duration. To read more about the forgot password flow and possible customizations to the email structure and the page where the user enters his new password,
-read the blog post here. <http://blogs.appacitive.com/2013/10/password-management-in-appacitive.html>
+In situations where a user forgets his password, Appacitive provides a secure way to allow your users to reset their password. The process is initiated by your app sending an API call to Appacitive, asking the system to dispatch a reset password email to the user's verified email address.
+A link in this email redirects the user to a page (either hosted by Appacitive or by you on your end), where he can enter a new password for his account. Appacitive adds a special token to the url so that the link is valid only for a short duration. To read more about the forgot password flow and possible customizations to the email structure and the page (where the user enters his new password),
+read the blog post <a href="http://blogs.appacitive.com/2013/10/password-management-in-appacitive.html">here</a>.
 
 ** Parameters **
 
@@ -4053,11 +4056,11 @@ Email
 Appacitive allows you to integrate your current email providers to send out emails through our APIs.
 The provider settings can be configured in the Portal, or you can send them along with each call that you make.
 
-Note : The email settings in the request body overrides the email settings set through the management portal.
+`Note` : The email settings in the request body overrides the email settings set using the management portal.
 
 Sending a simple email
 ------------
-You can use this API to send simple (non template based) emails.
+You can use this API to send simple (non templated) emails.
 
 ** Parameters **
 
@@ -4214,7 +4217,8 @@ Sending a templated email
 ------------
 
 You can send an email using a saved template.
-The template can be created and saved using the Portal.
+The template can be created and saved using the management portal. 
+To know about creating email templates, read the blog post <a href="http://blogs.appacitive.com/2013/08/emails-and-email-templates-in-appacitive.html">here</a>.
 
 ** Parameter **
 
