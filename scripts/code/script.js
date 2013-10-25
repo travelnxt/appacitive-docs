@@ -252,6 +252,12 @@ isDev = false;
                 window.location = "https://portal.appacitive.com/" + that.account + "/accounts.html?accounts=myaccount";
             });
 
+            //To raise an event for leadsquare for tracking user visits on docs page
+            if (split.length > 4) {
+                var email = split[4];
+                window.Help.event.raise('docs.visited', { email: email }, 'CustomEvent');
+            }
+
         } else $("#aLogin").parent().show();
         $("#aLogin").attr("href", $("#aLogin").attr("href") + "&ru=" + window.location.href);
 

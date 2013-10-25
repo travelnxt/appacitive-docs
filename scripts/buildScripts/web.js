@@ -27,6 +27,7 @@ setTimeout(function() {
 		    	$('[role~="flatdoc-content"]', root).html(el['content']);
 		    	$('[role~="flatdoc-menu"]', root).html(el['menu']);	
 		    	$('script[id~="scriptFlatdocReady"]').html('$(function(){ $(document).trigger("flatdoc:ready") });');
+		    	$('script[id~="scriptBundle"]').attr('src', 'scripts/prod.js.bundle');
 
 		    	require('fs').writeFile(path.resolve(htmlFile), $.html(), function(err, data) {
 		    		if (err) throw err;
