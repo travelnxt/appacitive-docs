@@ -171,6 +171,7 @@ Also includes:
         this.addIDs($content);
         this.buttonize($content);
         this.smartquotes($content);
+        this.addPermaLinks($content);
     };
 
     /**
@@ -178,7 +179,7 @@ Also includes:
      */
 
     Transformer.addIDs = function ($content) {
-        $content.find('h1, h2, h3').each(function () {
+        $content.find('h1, h2, h3, h4').each(function () {
             var $el = $(this);
             var text = $el.text();
 
@@ -187,6 +188,10 @@ Also includes:
 
             if ($el.is('h3'))
                 text = $el.prevAll("h1:first").html() + "_" + $el.prevAll("h2:first").html() + "_" + text;
+
+            if ($el.is('h4'))
+                text = $el.prevAll("h1:first").html() + "_" + $el.prevAll("h2:first").html() + "_" + $el.prevAll("h3:first").html() + "_" + text;
+
             var id = slugify(text);
             $el.attr('id', id);
         });
@@ -219,7 +224,7 @@ Also includes:
             return cache[level];
         }
 
-        $content.find('h1, h2, h3').each(function () {
+        $content.find('h1, h2, h3, h4').each(function () {
             var $el = $(this);
             var level = +(this.nodeName.substr(1));
 
@@ -257,6 +262,18 @@ Also includes:
             var node = nodes[i];
             node.nodeValue = quotify(node.nodeValue);
         }
+    };
+
+
+    /**
+     * Adds permalinks for all heading tags
+     */
+    Transformer.addPermaLinks = function ($content) {
+        $content.find('h1, h2, h3, h4').each(function () {
+            var $el = $(this);
+            var id = $el.attr('id');
+            $el.prepend('<a name="' + id + '" class="anchor" href="#' + id + '"><span class="hash hash-link"></span></a>')
+        });
     };
 
     /**
