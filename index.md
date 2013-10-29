@@ -105,7 +105,7 @@ In order to pass the api key and environment information for the application use
 Appacitive.initialize({ 
     apikey: '{Your api key}' /* required */, 
     env: 'live' /* environment live or sandbox, default is live */,
-    appId: '{Application Id}' /* can be found on app list page of portal*/
+    appId: '{Application Id}' /* can be found on applist page*/
 });
 ```
 ``` csharp
@@ -140,6 +140,8 @@ The article api allows you to store, retrieve and manage all the data that you s
 <span class="h3">The article object</span>
 
 ** System generated properties ** 
+
+System generated properties are fields used for housekeeping and storing meta-information about the object. All system generated properties start with '__' , avoid changing their values.
 
 <dl>
   <dt>\__id</dt>
@@ -263,7 +265,7 @@ await post.SaveAsync();
 ```
 ``` javascript
 $$$Sample Request
-var post = new Appacitive.Article({ schema: 'post' });
+var post = new Appacitive.Article('post');
 post.set('title', 'sample post');
 post.set('text', 'This is a sample post.');
 post.save(function(){
@@ -305,7 +307,8 @@ $$$Sample Response
 // All system properties (including id) will be populated.
 ```
 ``` javascript
-// The response callback method would be invoked with the article updated with system properties.
+//The response callback would be invoked with the article updated with system properties.
+//A unique identifier called __id is generated and is stored in the post object. You can access it directly using id().
 ```
 
 ### Retrieve an existing article
@@ -329,7 +332,7 @@ type and its system defined id.
   <dt>id</dt>
   <dd>required<br/><span>The system generated id for the article</span></dd>
   <dt>fields</dt>
-  <dd>optional<br/><span>Comma separated list of properties to be returned.</span></dd>
+  <dd>optional<br/><span>List of properties to be returned.</span></dd>
 </dl>
 
 ** Response **
@@ -409,10 +412,10 @@ Appacitive.Article.get({
     schema: 'post',
     id: '33017891581461312',
     fields: ['title']
-}, function(obj) {
+}, function(post) {
     // article obj is returned as argument to onsuccess
-    alert('Fetched post with title: ' + obj.get('title')); 
-}, function(err, obj) {
+    alert('Fetched post with title: ' + post.get('title')); 
+}, function(status) {
     alert('Could not fetch, probably because of an incorrect id');
 });
 
@@ -424,7 +427,7 @@ post.fields(['title','text']);
 
 post.fetch(function(obj) {
     alert('Fetched post with title: ' + post.get('title'));
-}, function(err, obj) {
+}, function(status, obj) {
     alert('Could not fetch, probably because of an incorrect id');
 });
 ```
@@ -443,7 +446,7 @@ the list of ids must correspond to articles of the same type.
   <dt>id list</dt>
   <dd>required<br/><span>Comma separated list of article ids to retrieve.</span></dd>
   <dt>fields</dt>
-  <dd>optional<br/><span>Comma separated list of properties to be returned.</span></dd>
+  <dd>optional<br/><span>List of properties to be returned.</span></dd>
 </dl>
 
 ** Response **
@@ -550,8 +553,8 @@ Appacitive.Article.multiGet({
     fields: ["title"]
 }, function(posts) { 
     // posts is an array of article objects
-}, function(err) {
-    alert("code:" + err.code + "\nmessage:" + err.message);
+}, function(status) {
+    alert("code:" + status.code + "\nmessage:" + status.message);
 });
 ```
 
@@ -629,7 +632,7 @@ Appacitive.Article.get({
 }, function(obj) {
     // article obj is returned as argument to onsuccess
     alert('Fetched post with title: ' + obj.get('title')); 
-}, function(err, obj) {
+}, function(status, obj) {
     alert('Could not fetch, probably because of an incorrect id');
 });
 ```
@@ -760,15 +763,17 @@ var post = new Appacitive.Article({ schema: 'post', __id: '33017891581461312' })
 // Update properties
 post.set('title', 'updated title');
 post.set('text', 'This is updated text for the post.');
+//delete property
+post.unset('type');
 // Add a new attribute
 post.attr('topic', 'testing');
 // Add/remove tags
 post.addTag('tagA');
 post.removeTag('tagC');
 
-post.save(function(){
+post.save(function(obj) {
   alert('updated successfully!');
-}, function(status){
+}, function(status, obj){
   alert('error while updating!');
 });
 ```
@@ -821,10 +826,15 @@ $$$Sample Response
 ```
 
 ``` javascript
+$$$Method
+Appacitive.Article:del(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
 /* Delete a single article */
-player.del(function(obj) {
+player.del(function() {
     alert('Deleted successfully');
-}, function(err, obj) {
+}, function(status, obj) {
     alert('Delete failed')
 });
 
@@ -880,13 +890,21 @@ $$$Sample Response
 }
 ```
 ``` javascript
+$$$Method
+Appacitive.Article.multiDelete({
+  schema: 'type', //mandatory
+  ids: [], //mandatory
+},successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
 /*  Delete multiple articles. */
 Appacitive.Article.multiDelete({    
     schema: 'player', //mandatory
     ids: ["14696753262625025", "14696753262625026"], //mandatory
 }, function() { 
     //successfully deleted all articles
-}, function(err) {
+}, function(status) {
     alert("code:" + err.code + "\nmessage:" + err.message);
 });
 ```
@@ -941,10 +959,14 @@ $$$Sample Response
 }
 ```
 ``` javascript
+$$$Method
+Appacitive.Article:del(successHandler, errorHandler, true);
+
+$$$Sample Request
 //Setting the third argument to true will delete its connections if they exist
-player.del(function(obj) {
+player.del(function() {
     alert('Deleted successfully');
-}, function(err, obj) {
+}, function(status, obj) {
     alert('Delete failed')
 }, true); 
 ```
@@ -1126,6 +1148,11 @@ $$$Sample Response
 }
 ```
 ``` javascript
+$$$Method
+Appacitive.Connection:save(successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
 //`review` is relation name, 
 //`reviewer` and `hotel` are the endpoint labels
 var connection = new Appacitive.Connection({
@@ -1138,9 +1165,9 @@ var connection = new Appacitive.Connection({
                       label: 'hotel'
                   }]                
               });
-connection.save(function () {
+connection.save(function (obj) {
     alert('saved successfully!');
-}, function (status) {
+}, function (status, obj) {
     alert('error while saving!');
 });
 
@@ -1156,9 +1183,9 @@ var connection = new Appacitive.Connection({
                       label: 'hotel'
                   }]                
               });
-connection.save(function () {
+connection.save(function (obj) {
     alert('saved successfully!');
-}, function (status) {
+}, function (status, obj) {
     alert('error while saving!');
 });
 ```
@@ -1253,14 +1280,19 @@ $$$Sample Response
 }
 ```
 ``` javascript
+$$$Method
+Appacitive.Connection:save(successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
 // Will create a new my_score connection between 
 //    * existing player article with id 123445678 and 
 //    * new score article which will also be created when the connection is created.
 // The my_score relation defines two endpoints "player" and "score" for this information.
 
 //Create an instance of an article of type score. 
-var score = new Appacitive.Article({ schema: 'score' });
-score.set('points', '150');
+var score = new Appacitive.Article('score');
+score.set('points', 150);
 
 // existing player article.
 var playerId = '123445678';
@@ -1275,9 +1307,11 @@ var connection = new Appacitive.Connection({
                       label: 'score'
                   }]                
               });
-connection.save(function () {
+connection.save(function (obj) {
+    console.log(connection.id());
+    console.log(score.id());
     alert('saved successfully!');
-}, function (status) {
+}, function (status, obj) {
     alert('error while saving!');
 });
 ```
@@ -1383,17 +1417,22 @@ $$$Sample Response
 }
 ```
 ``` javascript
+$$$Method
+Appacitive.Connection:save(successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
 // Will create a new my_score connection between 
 //    * new player article
 //    * new score article 
 // The my_score relation defines two endpoints "player" and "score" for this information.
 
 //Create an instance of an article of type score. 
-var score = new Appacitive.Article({ schema: 'score' });
-score.set('points', '150');
+var score = new Appacitive.Article('score');
+score.set('points', 150);
 
-// existing player article.
-var player = new Appacitive.Article({ schema: 'player' });
+//Create an instance of an article of type player. 
+var player = new Appacitive.Article('player');
 player.set('name', 'sirius');
 
 var connection = new Appacitive.Connection({
@@ -1406,9 +1445,12 @@ var connection = new Appacitive.Connection({
                       label: 'score'
                   }]                
               });
-connection.save(function () {
+connection.save(function (obj) {
+    console.log(connection.id());
+    console.log(score.id());
+    console.log(player.id());
     alert('saved successfully!');
-}, function (status) {
+}, function (status, obj) {
     alert('error while saving!');
 });
 ```
@@ -1509,6 +1551,15 @@ $$$Sample Response
 }
 ```
 ``` javascript
+$$$Method
+Appacitive.Connection.get({
+  relation: 'type', //mandatory
+  id: 'connectionId', //mandatory
+  fields: [] //optional
+}, successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
 //Get the connection object and update the description
 Appacitive.Connection.get({ 
     relation: 'reviewed',       //mandatory
@@ -1516,7 +1567,7 @@ Appacitive.Connection.get({
 }, function(obj) {
     // connection obj is returned as argument to onsuccess
     alert('review connection fetched successfully.');
-}, function(err, obj) {
+}, function(status, obj) {
     alert('Could not fetch, probably because of an incorrect id');
 });
 ```
@@ -1527,6 +1578,139 @@ var conn = await Connections.GetAsync("review", "33017891581461312");
 
 #### Retrieve multiple connections by id
 
+Returns a list of multiple existing connections from the system. To get a list of connections you 
+must provide the type of the relation and a list of ids to retrieve. Given that only one type is allowed,
+the list of ids must correspond to connections of the same type.
+
+** Parameters ** 
+
+<dl>
+  <dt>type</dt>
+  <dd>required<br/><span>The type of the connection to be retrieved.</span></dd>
+  <dt>id list</dt>
+  <dd>required<br/><span>Comma separated list of connection ids to retrieve.</span></dd>
+  <dt>fields</dt>
+  <dd>optional<br/><span>List of properties to be returned.</span></dd>
+</dl>
+
+** Response **
+
+Returns an array of connection corresponding to the given id list. 
+In case of an error, the `status` object contains details for the failure.
+
+`NOTE` : Please note that providing the same id multiple times will not return duplicates.
+
+``` rest
+$$$Method
+GET https://apis.appacitive.com/connection/{type}/multiget/{comma separated ids}?fields={comma separated list of fields}
+```
+``` rest
+$$$Sample Request
+//Get connection of type reviewed with id 33017891581461312 and 33017891581461313
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+https://apis.appacitive.com/connection/reviewed/multiget/33017891581461312,33017891581461313
+```
+``` rest
+$$$Sample Response
+{
+  "connections": [
+    {
+      "__id": "33017891581461312",
+      "__relationtype": "reviewed",
+      "__endpointa": {
+        "label": "hotel",
+        "type": "hotel",
+        "articleid": "37266379552981902"
+      },
+      "__endpointb": {
+        "label": "reviewer",
+        "type": "user",
+        "articleid": "37266380289082256"
+      },
+      "__createdby": "System",
+      "__lastmodifiedby": "System",
+      "__relationid": "25394030771831308",
+      "__revision": "2",
+      "__utcdatecreated": "2013-09-16T08:13:10.0000000Z",
+      "__utclastupdateddate": "2013-09-23T01:09:12.6510000Z",
+      "__attributes": {}
+    },
+    {
+      "__id": "33017891581461313",
+      "__relationtype": "reviewed",
+      "__endpointa": {
+        "label": "hotel",
+        "type": "hotel",
+        "articleid": "37266379552981902"
+      },
+      "__endpointb": {
+        "label": "reviewer",
+        "type": "user",
+        "articleid": "37266380289082266"
+      },
+      "__createdby": "System",
+      "__lastmodifiedby": "System",
+      "__relationid": "25394030771831308",
+      "__revision": "2",
+      "__utcdatecreated": "2013-09-16T08:13:10.0000000Z",
+      "__utclastupdateddate": "2013-09-23T01:09:12.6510000Z",
+      "__attributes": {}
+    }
+  ],
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "1febaadd-f889-4b47-b1f9-cdeb63b6f937",
+    "additionalmessages": []
+  }
+}
+```
+
+``` csharp
+$$$Method
+public static async Task<IEnumerable<Connection>> Appacitive.SDK.Connections.MultiGetAsync(
+  string type, 
+  IEnumerable<string> idList, 
+  IEnumerable<string> fields = null
+)
+```
+``` csharp
+$$$Sample Request
+var ids = new [] {"33017891581461312", "33017891581461313" };
+var reviewed = await Connections.MultiGetAsync("reviewed", ids);
+foreach( var review in reviewed )
+{
+  Console.WriteLine("Fetched reviewed with id {0}.",
+    post.Get<long>("id")
+    );
+}
+```
+
+``` javascript
+$$$Method
+Appacitive.Connection.multiGet({
+  relation: 'type',   //mandatory
+  ids: [],          //mandatory
+  fields: []        //optional
+}, successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+Appacitive.Connection.multiGet({ 
+    relation: 'reviewed',
+    ids: ["33017891581461312", "33017891581461313"],
+    fields: ["__id"]
+}, function(reviewed) { 
+    // reviewed is an array of connection objects
+}, function(status) {
+    alert("code:" + status.code + "\nmessage:" + status.message);
+});
+```
+
 #### Retrieve a single connection via its endpoints
 
 Only a single instance of a connection of a specific type can be created between two article instances.
@@ -1534,16 +1718,67 @@ As a result, a connection can also be uniquely identified by its type and the id
 As an example, say you have two users and you want to see if they are friends (by virtue of a "friend" connection between them),
 the you can simply try and retrieve that connection by specifying the type as "friend" and providing the ids of the two users.
 
+``` rest
+$$$Method
+GET https://apis.appacitive.com/connection/{type}/find/{articleAid}/{articleBid}?label={label}
+```
+``` rest
+$$$Sample Request
+// Try and get an existing friend connection between two users John(22322) and Jane(33422) with endpoint label as 'freind' for jane
+
+curl -X GET \
+-H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Session: P7IM2L8/EIC6kpzkC3wzQYFoDtIZZXhpUDZ2wf13FWfVki7flNEepVks8SlnLtgUyyjaZGTUVInQqvHJ8kwnNnHEdsZAGDU9+XNV107ZC/PkFEAs1RIpN43J69vPNvsN80shAG7eM+9YbheFH5eWHw==" \
+https://apis.appacitive.com/connection/friend/find/22322/33422?label=freind
+
+```
+``` rest
+$$$Sample Response
+{
+  "connection": {
+    "__id": "33017891581461312",
+    "__relationtype": "friend",
+    "__endpointa": {
+      "label": "me",
+      "type": "user",
+      "articleid": "22322"
+    },
+    "__endpointb": {
+      "label": "freind",
+      "type": "user",
+      "articleid": "33422"
+    }
+  },
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "6382c031-65a1-4188-a107-c119da41496d",
+    "additionalmessages": []
+  }
+}
+```
 ``` javascript
+$$$Method
+Appacitive.Connection.getBetweenArticlesForRelation({
+  relation: 'type', //mandatory
+  articleAId : 'articleAId', //mandatory
+  articleBId : 'articleBId', //mandatory
+  label: 'label' //optional
+}, successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
 // Try and get an existing friend connection between two users John and Jane
 
 var idForJohn = "22322";
-var idForJane = "22322";
+var idForJane = "33422";
 
 Appacitive.Connection.getBetweenArticlesForRelation({ 
-    relation: "review", 
+    relation: "freind", 
     articleAId : idForJohn, 
-    articleBId : "idForJane"
+    articleBId : idForJane
 }, function(obj){
     // connection obj is returned as argument to onsuccess
     if( obj !== null && obj !== undefined ) {
@@ -1551,15 +1786,16 @@ Appacitive.Connection.getBetweenArticlesForRelation({
     } else {
       alert('John and Jane are not friends.');
     }
-}, function(err, obj) {
+}, function(status, obj) {
     alert('Could not fetch, probably because of an incorrect id');
 });
 
-//For a relation between same schema type and differenct endpoint labels
+//For a relation between same schema and differenet endpoint labels
 //'label' parameter becomes mandatory for the get call
 
 //'friend' is the relation between user schema
 //and 'me' and 'you' are the endpoint labels
+
 Appacitive.Connection.getBetweenArticlesForRelation({ 
     relation: "friend", 
     articleAId : "22322", 
@@ -1568,7 +1804,7 @@ Appacitive.Connection.getBetweenArticlesForRelation({
 }, function(obj){
     // connection obj is returned as argument to onsuccess
     alert('Connection fetched successfully');
-}, function(err, obj) {
+}, function(status, obj) {
     alert('Could not fetch, probably because of an incorrect id');
 });
 
@@ -1674,19 +1910,25 @@ $$$Sample Response
 ```
 
 ``` javascript
+$$$Method
+Appacitive.Connection:save(successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
 //Get the connection object and update the description
-Appacitive.Article.get({ 
+Appacitive.Connection.get({ 
     relation: 'review',    //mandatory
-    id: '1234345'          //mandatory
-}, function(obj) {
+    id: '1234345',         //mandatory
+    fields: ["description"]
+}, function(review) {
     // connection obj is returned as argument to onsuccess
-    obj.set('description','good hotel')
-    obj.save(function(){
+    review.set('description','good hotel')
+    review.save(function(){
       alert('review connection saved successfully.');
-    }, function(err, obj){
+    }, function(status, obj){
       alert('Save failed for review connection');
     });
-}, function(err, obj) {
+}, function(status) {
     alert('Could not fetch, probably because of an incorrect id');
 });
 ```
@@ -1742,12 +1984,18 @@ $$$Sample Response
 ```
 
 ``` javascript
+$$$Method
+Appacitive.Connection:del(successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
 /* delete review connection with id 123123 */
 var review = new Appacitive
   .Connection({relation: 'review', __id : '123123'});
-review.del(function(obj) {
+
+review.del(function() {
     alert('Deleted successfully');
-}, function(err, obj) {
+}, function(status, obj) {
     alert('Delete failed')
 });
 
@@ -1805,15 +2053,23 @@ $$$Sample Response
 ```
 
 ``` javascript
+$$$Method
+Appacitive.Connection.multiDelete({
+  relation: 'type', //mandatory
+  ids: []           //mandatory  
+}, successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
 /* delete review connections with ids 40438996554377032, 40440007982449139 & 40440007982449139 */
 
 Appacitive.Connection.multiDelete({    
     relation: 'reivew', //mandatory
-    ids: ["40438996554377032", "40440007982449139", "40440007982449139"], //mandatory
+    ids: ["40438996554377032", "40440007982449139", "40440007982449139"] //mandatory
 }, function() { 
     //successfully deleted all connections
-}, function(err) {
-    alert("code:" + err.code + "\nmessage:" + err.message);
+}, function(status) {
+    alert("code:" + status.code + "\nmessage:" + status.message);
 });
 ```
 ``` csharp
@@ -1922,16 +2178,43 @@ $$$Sample Response
 ```
 
 ``` javascript
+$$$Method
+Appacitive.Article:fetchConnectedArticles({
+  relation: 'type', //mandatory
+  label: 'label',   //optional
+  returnEdge: true,  //optional: default is true
+  fields: [],                //optional
+  query: {Appacitive.Filter obj}, //optional  
+  pageNumber: 1 ,           //optional: default is 1
+  pageSize: 50,             //optional: default is 50
+  orderBy: '__utclastupdateddate', //optional: default is __utclastupdateddate
+  isAscending: false        //optional: default is false
+}, successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
 // Get all users who have visited San Francisco (city article with id 636523636) 
 var city = new Appacitive.Article({ __id : '636523636', schema : 'city');
-var connectionCollection = city.getConnectedArticles({ relation : 'visitor' });
-connectionCollection.fetch(function(){
-  //iterating on the collection
-  connectionCollection.forEach(function (connection) {
+
+city.fetchConnectedArticles({ 
+  relation : 'visitor', //mandatory
+  label: 'visitor', // optional
+  returnEdge: true, // set to false to stop returning connection
+  fields: ["__id"]
+}, function(obj, pi) {
+  // list of all connected articles to jane
+  var users = city.children["visitor"];
+
+  //iterating on the users array
+  users.forEach(function (u) {
+    //connection connecting city to each user
+    console.log(u.connection.id());
   }
-}, function(err) {
-    alert("code:" + err.code + "\nmessage:" + err.message);
+}, function(status) {
+    alert("code:" + status.code + "\nmessage:" + status.message);
 });
+
+/* On success, city object is populated with a visitor property in its children. So, city.children.visitor will give you a list of all visitors of Appacitive.Article type. These articles also contain a connection property which consists of its link properties with jane.*/
 ```
 
 ``` csharp
@@ -1940,6 +2223,127 @@ var city = new Article("city", "636523636");
 var visitors = await city.GetConnectedArticlesAsync("visitor");
 ```
 
+#### Retrieve all connections between two endpoints
+
+Many instances of connections of diferent types can be created between two article instances.
+Allowing us, to retrieve all connections between two article ids of same or different schemas.
+As an example, say you have two users and you want to see if they are friends (by virtue of a "friend" connection between them), and are they also married (by virtue of a "marriage" connection between them), then you can simply try and retrieve those connections providing the ids of the two users.
+
+``` rest
+$$$Method
+GET https://apis.appacitive.com/connection/find/{articleAid}/{articleBid}
+```
+``` rest
+$$$Sample Request
+// Try and get all connections between two users John(22322) and Jane(33422)
+
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/connection/find/22322/33422
+
+```
+``` rest
+$$$Sample Response
+{
+  "paginginfo": {
+    "pagenumber": 1,
+    "pagesize": 20,
+    "totalrecords": 3
+  },
+  "connections": [
+    {
+      "__id": "41156992433261401",
+      "__relationtype": "marriage",
+      "__endpointa": {
+        "label": "husband",
+        "type": "user",
+        "articleid": "22322"
+      },
+      "__endpointb": {
+        "label": "wife",
+        "type": "user",
+        "articleid": "33422"
+      }
+    },
+    {
+      "__id": "41157044188875634",
+      "__relationtype": "friend",
+      "__endpointa": {
+        "label": "me",
+        "type": "user",
+        "articleid": "33422"
+      },
+      "__endpointb": {
+        "label": "freind",
+        "type": "user",
+        "articleid": "22322"
+      }
+    },
+    {
+      "__id": "41157051534150519",
+      "__relationtype": "friend",
+      "__endpointa": {
+        "label": "me",
+        "type": "user",
+        "articleid": "22322"
+      },
+      "__endpointb": {
+        "label": "freind",
+        "type": "user",
+        "articleid": "33422"
+      }
+    }
+  ],
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "ce871063-5443-4524-9443-d14860949c59",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+$$$Method
+Appacitive.Connection.getBetweenArticles({
+  relation: 'type', //mandatory
+  articleAId : 'articleAId', //mandatory
+  articleBId : 'articleBId', //mandatory
+  fields: [],                //optional
+  query: {Appacitive.Filter obj}, //optional  
+  pageNumber: 1 ,           //optional: default is 1
+  pageSize: 50,             //optional: default is 50
+  orderBy: '__utclastupdateddate', //optional: default is __utclastupdateddate
+  isAscending: false        //optional: default is false
+}, successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
+// Try and get all connections between two users John(22322) and Jane(33422)
+
+var idForJohn = "22322";
+var idForJane = "33422";
+
+Appacitive.Connection.getBetweenArticlesForRelation({ 
+    relation: "freind", 
+    articleAId : idForJohn, 
+    articleBId : idForJane,
+	fields: ["__id"]
+}, function(connections, pi){
+    // connections is an array of all connections netween two ids which is returned as argument to onsuccess
+    connections.forEach(function(con) {
+      if (conn.relation == 'marriage') {
+        console.log("John and Jane are married");
+      }
+    });
+}, function(status, obj) {
+    alert('Could not fetch, probably because of an incorrect id');
+});
+
+```
 
 Users
 ------------
@@ -3299,7 +3703,7 @@ $$$Sample Response
 //Setting the third argument to true will delete its connections if they exist
 player.del(function(obj) {
     alert('Deleted successfully');
-}, function(err, obj) {
+}, function(status, obj) {
     alert('Delete failed')
 }, true); 
 ```
@@ -4180,7 +4584,7 @@ var email = {
 
 Appacitive.Email.sendRawEmail(email, function (email) {
     alert('Successfully sent.');
-}, function(err) {
+}, function(status) {
     alert('Email sending failed.')
 });
 ```
@@ -4386,7 +4790,7 @@ var email = {
 
 Appacitive.Email.sendTemplatedEmail(email, function (email) {
     alert('Successfully sent.');
-}, function(err) {
+}, function(status) {
     alert('Email sending failed.')
 });
 ```
@@ -4497,12 +4901,12 @@ $$$Sample Response
 ```
 
 ```javascript
-var device = new Appacitive.Article({ schema: 'device' });
+var device = new Appacitive.Article('device');
 device.set('devicetype', 'ios');
 device.set('devicetoken', 'c6ae0529f4752a6a0d127900f9e7c');
-device.save(function(){
+device.save(function(obj) {
   alert('new device registered successfully!');
-}, function(status){
+}, function(status, obj){
   alert('error while registering!');
 });
 ```
@@ -4641,7 +5045,6 @@ Appacitive.Push.send(options, successHandler, errorHandler);
 ``` javascript
 $$$Sample Request
 
-//This is supposed to be called just once as an initial setup
 var options = {
     "broadcast": true, // set this to true for broadcast
     "platformoptions": {
@@ -4667,7 +5070,7 @@ var options = {
 
 Appacitive.Push.send(options, function(notification) {
     alert('Push notification sent successfully');
-}, function(err) {
+}, function(status) {
     alert('Sending Push Notification failed.');
 });
 ```
@@ -4763,9 +5166,8 @@ Appacitive.Push.send(options, successHandler, errorHandler);
 ``` javascript
 $$$Sample Request
 
-//This is supposed to be called just once as an initial setup
 var options = {
-    "query": "*devicetype == 'ios'",
+    "query": Appacitive,.Filter.Property('devicetype').equalTo('ios'),
     "broadcast": false,
     "platformoptions": {
         // platform specific options
@@ -4790,7 +5192,7 @@ var options = {
 
 Appacitive.Push.send(options, function(notification) {
     alert('Push notification sent successfully');
-}, function(err) {
+}, function(status) {
     alert('Sending Push Notification failed.');
 });
 ```
@@ -4948,7 +5350,7 @@ var options = {
 
 Appacitive.Push.send(options, function(notification) {
     alert('Push notification sent successfully');
-}, function(err) {
+}, function(status) {
     alert('Sending Push Notification failed.');
 });
 ```
@@ -5076,7 +5478,7 @@ var options = {
 
 Appacitive.Push.send(options, function(notification) {
     alert('Push notification sent successfully');
-}, function(err) {
+}, function(status) {
     alert('Sending Push Notification failed.');
 });
 ```
