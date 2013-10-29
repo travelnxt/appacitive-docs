@@ -1718,6 +1718,23 @@ As a result, a connection can also be uniquely identified by its type and the id
 As an example, say you have two users and you want to see if they are friends (by virtue of a "friend" connection between them),
 the you can simply try and retrieve that connection by specifying the type as "friend" and providing the ids of the two users.
 
+** Parameters ** 
+
+<dl>
+  <dt>type</dt>
+  <dd>required<br/><span>The type of the connection to be retrieved.</span></dd>
+  <dt>articleAId</dt>
+  <dd>required<br/><span>Id of articleA</span></dd>
+  <dt>articleBid</dt>
+  <dd>required<br/><span>Id of articleB</span></dd>
+  <dt>label</dt>
+  <dd>optional<br/><span>For a relation between same schema and different endpoint labels this becomes mandatory</span></dd>
+</dl>
+
+** Response **
+
+Returns a connection of specified type if exists between articleAid and articleBid
+
 ``` rest
 $$$Method
 GET https://apis.appacitive.com/connection/{type}/find/{articleAid}/{articleBid}?label={label}
@@ -1790,7 +1807,7 @@ Appacitive.Connection.getBetweenArticlesForRelation({
     alert('Could not fetch, probably because of an incorrect id');
 });
 
-//For a relation between same schema and differenet endpoint labels
+//For a relation between same schema and different endpoint labels
 //'label' parameter becomes mandatory for the get call
 
 //'friend' is the relation between user schema
@@ -2090,7 +2107,7 @@ connected data inside the platform.
 In a relational database, you can query for related data by querying over a table's foreign key. Similarly, on the Appacitive platform,
 related data can be retreived by querying connections. You can query for all articles connected to a specific article via a given connection type. 
 
-For example<br>
+**For example**<br>
 Querying for all users who have visited San Franciso can be represented as <br>
 `Get all user articles connected to the city article (San Francisco) via the visited connection`.
 
@@ -2227,11 +2244,27 @@ var visitors = await city.GetConnectedArticlesAsync("visitor");
 
 Many instances of connections of diferent types can be created between two article instances.
 Allowing us, to retrieve all connections between two article ids of same or different schemas.
-As an example, say you have two users and you want to see if they are friends (by virtue of a "friend" connection between them), and are they also married (by virtue of a "marriage" connection between them), then you can simply try and retrieve those connections providing the ids of the two users.
+
+**For example**<br>
+
+Say you have two users and you want to see if they are friends (by virtue of a "friend" connection between them), and are they also married (by virtue of a "marriage" connection between them), then you can simply try and retrieve those connections providing the ids of the two users.
+
+** Parameters ** 
+
+<dl>
+  <dt>articleAId</dt>
+  <dd>required<br/><span>Id of articleA</span></dd>
+  <dt>articleBId</dt>
+  <dd>required<br/><span>Id of articleB</span></dd>
+</dl>
+
+** Response **
+
+Returns a list of all connections that exists between articleAId and articleBId of any relation type
 
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/connection/find/{articleAid}/{articleBid}
+GET https://apis.appacitive.com/connection/find/{articleAId}/{articleBId}
 ```
 ``` rest
 $$$Sample Request
@@ -2246,6 +2279,9 @@ https://apis.appacitive.com/connection/find/22322/33422
 ```
 ``` rest
 $$$Sample Response
+//Returns all connections present between articleAId and articleBId of any relation type.
+
+// System attributes have been removed for readability
 {
   "paginginfo": {
     "pagenumber": 1,
@@ -2309,7 +2345,6 @@ $$$Sample Response
 ``` javascript
 $$$Method
 Appacitive.Connection.getBetweenArticles({
-  relation: 'type', //mandatory
   articleAId : 'articleAId', //mandatory
   articleBId : 'articleBId', //mandatory
   fields: [],                //optional
@@ -2327,11 +2362,10 @@ $$$Sample Request
 var idForJohn = "22322";
 var idForJane = "33422";
 
-Appacitive.Connection.getBetweenArticlesForRelation({ 
-    relation: "freind", 
+Appacitive.Connection.getBetweenArticles({ 
     articleAId : idForJohn, 
     articleBId : idForJane,
-	fields: ["__id"]
+	  fields: ["__id"]
 }, function(connections, pi){
     // connections is an array of all connections netween two ids which is returned as argument to onsuccess
     connections.forEach(function(con) {
@@ -2340,7 +2374,163 @@ Appacitive.Connection.getBetweenArticlesForRelation({
       }
     });
 }, function(status, obj) {
-    alert('Could not fetch, probably because of an incorrect id');
+    alert('Could not fetch, probably because of incorrect id's');
+});
+
+```
+
+#### Retrieve all inter-connections between one and many endpoints
+
+Scenarios where you may need to determine all type of connections between one article and a set of articles, this query comes to rescue.
+
+**For example**<br>
+
+Say you have many `users` and `houses`( articles of schema type house) and you want to determine if they are connected to `jane` by either a `freind` or by `marriage` or by `owns` connection, then you can simply try and retrieve those connections providing jane's id as root and ids of the users and house as target.
+
+** Parameters ** 
+
+<dl>
+  <dt>articleAId</dt>
+  <dd>required<br/><span>Id of rrot article</span></dd>
+  <dt>articleBids</dt>
+  <dd>required<br/><span>Ids of target articles</span></dd>
+</dl>
+
+** Response **
+
+Returns a list of all connections that exists between articleAid and articleBids of any relation type
+
+**Note** that this is a `POST` HTTP call.
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/connection/interconnects
+```
+``` rest
+$$$Sample Request
+// Try and get all connections between Jane(33422) and users John(22322), Tarzan(44522) and house (55622, 665722)
+
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d '{"article1id":"33422","article2ids":["22322","44522","55622","665722"]}' \
+https://apis.appacitive.com/connection/interconnects
+```
+``` rest
+$$$Sample Response
+//Returns all connections present between articleAId and articleBIdS of any relation type.
+
+// System attributes have been removed for readability
+{
+  "paginginfo": {
+    "pagenumber": 1,
+    "pagesize": 20,
+    "totalrecords": 3
+  },
+  "connections": [
+    {
+      "__id": "41156992433261401",
+      "__relationtype": "marriage",
+      "__endpointa": {
+        "label": "husband",
+        "type": "user",
+        "articleid": "22322"
+      },
+      "__endpointb": {
+        "label": "wife",
+        "type": "user",
+        "articleid": "33422"
+      }
+    },
+    {
+      "__id": "41157051534150519",
+      "__relationtype": "friend",
+      "__endpointa": {
+        "label": "me",
+        "type": "user",
+        "articleid": "22322"
+      },
+      "__endpointb": {
+        "label": "freind",
+        "type": "user",
+        "articleid": "33422"
+      }
+    },
+    {
+      "__id": "41164995348794263",
+      "__relationtype": "friend",
+      "__endpointa": {
+        "label": "me",
+        "type": "user",
+        "articleid": "22322"
+      },
+      "__endpointb": {
+        "label": "freind",
+        "type": "user",
+        "articleid": "44522"
+      }
+    },
+    {
+      "__id": "41164995348794263",
+      "__relationtype": "owns",
+      "__endpointa": {
+        "label": "user",
+        "type": "user",
+        "articleid": "22322"
+      },
+      "__endpointb": {
+        "label": "house",
+        "type": "house",
+        "articleid": "665722"
+      },
+    },
+  ],
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "ce871063-5443-4524-9443-d14860949c59",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+$$$Method
+Appacitive.Connection.getInterconnects({
+  articleAId : 'articleAId', //mandatory
+  articleBIds : 'articleBId', //mandatory
+  fields: [],                //optional
+  pageNumber: 1 ,           //optional: default is 1
+  pageSize: 50,             //optional: default is 50
+  orderBy: '__utclastupdateddate', //optional: default is __utclastupdateddate
+  isAscending: false        //optional: default is false
+}, successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
+// Try and get all connections between two users John(22322) and Jane(33422)
+
+var idForJohn = "22322", idForJane = "33422", idForTarzan = "44522";
+var idForHouse1 = "55622", idForHouse2 = "66722";
+
+Appacitive.Connection.getInterconnects({ 
+    articleAId : idForJohn, 
+    articleBIds : [idForJane, idForTarzan, idForHouse1, idForHouse2]
+    fields: ["__id"]
+}, function(connections, pi){
+    // connections is an array of all connections netween articleAId  and articleBIds which is returned as argument to onsuccess
+    connections.forEach(function(con) {
+      if (conn.relation == 'marriage') {
+        console.log("John and Jane are married");
+      }
+      if (conn.relation == 'owns') {
+        console.log("Jane owns this house with id" + conn.id());
+      }
+    });
+}, function(status, obj) {
+    alert('Could not fetch, probably because of incorrect id's);
 });
 
 ```
