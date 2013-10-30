@@ -2201,7 +2201,7 @@ Appacitive.Article::fetchConnectedArticles({
   label: 'label',   //optional
   returnEdge: true,  //optional: default is true
   fields: [],                //optional
-  query: {Appacitive.Filter obj}, //optional  
+  filter: {Appacitive.Filter obj}, //optional  
   pageNumber: 1 ,           //optional: default is 1
   pageSize: 50,             //optional: default is 50
   orderBy: '__utclastupdateddate', //optional: default is __utclastupdateddate
@@ -2348,7 +2348,7 @@ Appacitive.Connection.getBetweenArticles({
   articleAId : 'articleAId', //mandatory
   articleBId : 'articleBId', //mandatory
   fields: [],                //optional
-  query: {Appacitive.Filter obj}, //optional  
+  filter: {Appacitive.Filter obj}, //optional  
   pageNumber: 1 ,           //optional: default is 1
   pageSize: 50,             //optional: default is 50
   orderBy: '__utclastupdateddate', //optional: default is __utclastupdateddate
@@ -4019,7 +4019,7 @@ $$$Method
 Appacitive.Article.findAll({
   schema: 'user', //mandatory
   fields: [],       //optional
-  query: {Appacitive.Filter obj}, //optional  
+  filter: {Appacitive.Filter obj}, //optional  
   pageNumber: 1 ,   //optional: default is 1
   pageSize: 50,     //optional: default is 50
   orderBy: '__id',  //optional: default is __utclastupdateddate
@@ -4921,7 +4921,91 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus q
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce 
 
 ``` javascript
-//Todo
+$$$Method
+Appacitive.Queries.FindAllQuery(options).fetch(successHandler, errorHandler);
+```
+```javascript
+$$$Sample Request
+
+var filter = Appacitive.Filter.Property("firstname").equalTo("John");
+
+var query = new Appacitive.Queries.FindAllQuery(
+  schema: 'player', //mandatory 
+  //or relation: 'freinds'
+  fields: [*],      //optional: returns all user fields only
+  filter: filter,   //optional  
+  pageNumber: 1 ,   //optional: default is 1
+  pageSize: 20,     //optional: default is 50
+  orderBy: '__id',  //optional: default is __utclastupdateddate
+  isAscending: false  //optional: default is false
+}); 
+
+// success callback
+var successHandler = function(players) {
+  //`players` is `PagedList` of `Article`
+
+  console.log(players.total); //total records for query
+  console.log(players.pageNumber); //pageNumber for this set of records
+  console.log(players.pageSize); //pageSize for this set of records
+  
+  // fetching other left players
+  if (!players.isLastPage) {
+    // if this is not the last page then fetch further records 
+    query.fetchNext(successHandler);
+  }
+};
+
+// make a call
+query.fetch(successHandler);
+```
+``` javascript
+$$$MORE SAMPLES
+
+//First name like "oh"
+var likeFilter = Appacitive.Filter.Property("firstname").like("oh");
+
+//First name starts with "jo"
+var startsWithFilter = Appacitive.Filter.Property("firstname").startsWith("jo");
+
+
+//First name ends with "oe"
+var endsWithFilter = Appacitive.Filter.Property("firstname").endsWith("oe");
+
+//First name matching several different values
+var containsFilter = Appacitive.Filter.Property("firstname").contains(["John", "Jane", "Tarzan"]);
+
+//Between two dates
+var start = new Date("12 Dec 1975");
+var end = new Date("12 Jun 1995");
+var betweenDatesFilter = Appacitive.Filter.Property("birthdate").betweenDate(start, end);
+
+//Between two datetime objects
+var betweenDateTimeFilter = Appacitive.Filter.Property("__utclastupdateddate").betweenDateTime(start, end);
+
+//Between some time
+var betweenTimeFilter = Appacitive.Filter.Property("birthtime").betweenTime(start, end);
+
+//Between some two numbers
+var betweenFilter = Appacitive.Filter.Property("age").between(23, 70);
+
+//Greater than a date
+var date = new Date("12 Dec 1975");
+var greaterThanDateFilter = Appacitive.Filter.Property("birthdate").greaterThanDate(date);
+
+//Greater than a datetime
+var greaterThanDateTimeFilter = Appacitive.Filter.Property("birthdate").greaterThanDateTime(date);
+
+//Greater than a time
+var greaterThanTimeFilter = Appacitive.Filter.Property("birthtime").greaterThanTime(date);
+
+//greater then some number 
+var greaterThanFilter = Appacitive.Filter.Property("age").greaterThan(25);
+
+//Same works for greaterThanEqualTo, greaterThanEqualToDate, greaterThanEqualToDateTime and greaterThanEqualToTime
+//and for lessThan, lessThanDate, lessThanDateTime and lessThanTime
+//and for lessThanEqualTo, lessThanEqualToDate, lessThanEqualToDateTime and lessThanEqualToTime
+// and for equalTo, equalToDate, equalToDateTime, equalToTime 
+
 ```
 ``` csharp
 //Build the query
@@ -4963,7 +5047,40 @@ var greaterThanQuery = Query.Property("birthdate").IsGreaterThan(date);
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce 
 
 ``` javascript
-//Todo
+//Use of `And` and `Or` operators
+var center = new Appacitive.GeoCoord(36.1749687195, -115.1372222900);
+
+//AND query
+var complexFilter = 
+      Appacitive.Filter.And(
+          //OR query
+          Appacitive.Filter.Or( 
+             Appacitive.Filter.Property("firstname").startsWith("jo"),
+             Appacitive.Filter.Property("lastname").like("oe")
+          ),
+          Appacitive.Filter.Property("location")
+              .withinCircle(center, 
+                      10, 
+                      'mi') // can be set to 'km' or 'mi'
+      );
+//create query object
+var query = new Appacitive.Queries.FindAllQuery({
+  schema: 'player'
+});
+
+//set filter in query
+query.filter(complexFilter);
+
+//add more filters
+query.filter(
+            Appacitive.Filter.And(
+              Appacitive.Filter.Property('gender').equalTo('male'),
+              query.filter()
+            )
+          );
+
+//fire the query
+query.fetch(successHandler);
 ```
 ``` csharp
 //Use of `And` and `Or` operators
@@ -4988,7 +5105,11 @@ var complexQuery = BooleanOperator.And(new[]{
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce 
 
 ``` javascript
-//Todo
+var center = new Appacitive.GeoCoord(36.1749687195, -115.1372222900);
+var radialFilter = Appacitive.Filter.Property('location')
+                                 .withinCircle(center,
+                                               10,
+                                               'km');
 ```
 ``` csharp
 //Search for hotels near Las Vegas in a radius of 10 miles
@@ -4996,7 +5117,7 @@ var center = new Geocode(36.1749687195M, -115.1372222900M);
 var radialQuery = Query.Property("location")
                           .WithinCircle(center, 
                                   10.0M, 
-                                  DistanceUnit.Miles);
+                                  DistanceUnit.Miles); 
 ```
 
 ### Polygon Search
@@ -5004,7 +5125,13 @@ var radialQuery = Query.Property("location")
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce 
 
 ``` javascript
-//Todo
+var pt1 = new Appacitive.GeoCoord(36.1749687195, -115.1372222900);
+var pt2 = new Appacitive.GeoCoord(34.1749687195, -116.1372222900);
+var pt3 = new Appacitive.GeoCoord(35.1749687195, -114.1372222900);
+var pt4 = new Appacitive.GeoCoord(36.1749687195, -114.1372222900);
+var geocodes = [ pt1, pt2, pt3, pt4 ];
+var polygonFilter = Appacitive.Filter.Property("location")
+                                         .withinPolygon(geocodes);
 ```
 ``` csharp
 //Search for hotel which is between 4 co-ordinates
@@ -5098,6 +5225,22 @@ var filterQueryName = "sample_filter";
 var placeholderFillers = new Dictionary<string, string> { { "key1", "value1" }, { "key2", "value2" } };
 var results = await Graph.Filter(filterQueryName, placeholderFillers);
 ```
+```javascript
+$$$Method
+Appacitive.Queries.GraphFilterQuery({filterQueryName}, {placeholderFillers}).fetch();
+```
+```javascript
+$$$Sample Request
+var filterQueryName = "sample_filter";
+var placeholderFillers = { key1: "value1", key2: "value2" };
+var query = new Appacitive.Queries.GraphFilterQuery(filterQueryName, placeholderFillers);
+
+query.fetch(function(ids) {
+  console.log(ids.length + " found");
+}, function(status) {
+  console.log("Error running filter query");
+});
+```
 
 ### Executing projection graph queries
 
@@ -5174,6 +5317,30 @@ var projectQueryName = "sample_project";
 var rootIds = new List<string>() { "34912447775245454", "34322447235528474", "34943243891025029" };
 var placeholderFillers = new Dictionary<string, string> { { "key1", "value1" }, { "key2", "value2" } };
 var result = await Graph.Project(projectQueryName, rootIds, placeholderFillers);
+```
+```javascript
+$$$Method
+Appacitive.Queries.GraphProjectQuery({projectQueryName}, {placeholderFillers}).fetch();
+```
+```javascript
+$$$Sample Request
+var projectQueryName = "sample_filter";
+var placeholderFillers = { key1: "value1", key2: "value2" };
+var query = new Appacitive.Queries.GraphProjectQuery(projectQueryName, placeholderFillers);
+
+query.fetch(function(results) {
+  /* results object contains list of articles for provided ids
+     Each article contains a children property
+     Children contains array of article objects 
+     of specified child elements in query
+     eg: */ 
+  console.log("This id '" + results[0].id() + "' has " 
+       + results[0].children["freinds"].length) + " freinds and owns "
+       + results[0].children["owns"].length) + " houses");
+}, function(status) {
+  console.log("Error running project query");
+});
+
 ```
 
 Email
