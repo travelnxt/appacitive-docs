@@ -814,7 +814,7 @@
                         token = $.trim(split.join('\n').replace(/!!!/g, ''));
                         if (lang) {
                             lang = $.trim(lang);
-                            var code = this.options.highlight(token, lang);
+                            var code = this.options.highlight(token);
                             if (code && code !== token)
                                 token = '<pre'
                                   + (lang

@@ -1229,9 +1229,9 @@ Also includes:
                         var split = token.split('\n');
                         var lang = split.shift(1).replace(/!!!/g, '');
                         token = $.trim(split.join('\n').replace(/!!!/g, ''));
+                        lang = $.trim(lang);
                         if (lang) {
-                            lang = $.trim(lang);
-                            var code = this.options.highlight(token, lang);
+                            var code = this.options.highlight(token);
                             if (code && code !== token)
                                 token = '<pre'
                                   + (lang

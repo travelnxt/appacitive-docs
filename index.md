@@ -827,7 +827,7 @@ $$$Sample Response
 
 ``` javascript
 $$$Method
-Appacitive.Article:del(successHandler, errorHandler);
+Appacitive.Article::del(successHandler, errorHandler);
 ```
 ``` javascript
 $$$Sample Request
@@ -960,7 +960,7 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Article:del(successHandler, errorHandler, true);
+Appacitive.Article::del(successHandler, errorHandler, true);
 
 $$$Sample Request
 //Setting the third argument to true will delete its connections if they exist
@@ -1149,7 +1149,7 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Connection:save(successHandler, errorHandler)
+Appacitive.Connection::save(successHandler, errorHandler)
 ```
 ``` javascript
 $$$Sample Request
@@ -1281,7 +1281,7 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Connection:save(successHandler, errorHandler)
+Appacitive.Connection::save(successHandler, errorHandler)
 ```
 ``` javascript
 $$$Sample Request
@@ -1418,7 +1418,7 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Connection:save(successHandler, errorHandler)
+Appacitive.Connection::save(successHandler, errorHandler)
 ```
 ``` javascript
 $$$Sample Request
@@ -1928,7 +1928,7 @@ $$$Sample Response
 
 ``` javascript
 $$$Method
-Appacitive.Connection:save(successHandler, errorHandler)
+Appacitive.Connection::save(successHandler, errorHandler)
 ```
 ``` javascript
 $$$Sample Request
@@ -2002,7 +2002,7 @@ $$$Sample Response
 
 ``` javascript
 $$$Method
-Appacitive.Connection:del(successHandler, errorHandler)
+Appacitive.Connection::del(successHandler, errorHandler)
 ```
 ``` javascript
 $$$Sample Request
@@ -2196,7 +2196,7 @@ $$$Sample Response
 
 ``` javascript
 $$$Method
-Appacitive.Article:fetchConnectedArticles({
+Appacitive.Article::fetchConnectedArticles({
   relation: 'type', //mandatory
   label: 'label',   //optional
   returnEdge: true,  //optional: default is true
@@ -2367,7 +2367,7 @@ Appacitive.Connection.getBetweenArticles({
     articleBId : idForJane,
 	  fields: ["__id"]
 }, function(connections, pi){
-    // connections is an array of all connections netween two ids which is returned as argument to onsuccess
+    // connections is an array of all connections between two ids which is returned as argument to onsuccess
     connections.forEach(function(con) {
       if (conn.relation == 'marriage') {
         console.log("John and Jane are married");
@@ -2691,6 +2691,32 @@ $$$Sample Response
 }
 ```
 
+``` javascript
+$$$Method
+Appacitive.User::save(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+
+// set the fields
+var userDetails = {
+    username: 'john.doe@appacitive.com',
+    password: /* password as string */,
+    email: 'johndoe@appacitive.com',
+    firstname: 'John',
+    lastname: 'Doe'
+};
+
+var newUser = new Appacitive.User(userDetails);
+
+//and then call save on that object
+newUser.save(function(obj) {
+    alert('Saved successfully, id: ' + newUser.get('__id'));
+}, function(status, obj) {
+    alert('An error occured while saving the user.');
+});
+```
+
 ``` csharp
 //Create a User
 var user = new User
@@ -2747,6 +2773,47 @@ curl -X PUT \
 -d '{ "username": "john.doe", "firstname": "John", "email": "john.doe@appacitive.com", "password": "p@ssw0rd", "__link": { "authtype": "facebook", "accesstoken": "{facebook access token}"	}}' \
 https://apis.appacitive.com/user
 ```
+``` javascript
+$$$Method
+Appacitive.User::save(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+//  Create a new user and link it to a facebook account
+// include this script in your page for facebook login
+window.fbAsyncInit = function() {
+    Appacitive.Facebook.initialize({
+        appId      : 'YOUR_APP_ID', // Facebook App ID
+        status     : false, // check login status
+        cookie     : true, // enable cookies to allow Appacitive to access the session
+        xfbml      : true  // parse XFBML
+    });
+    // Additional initialization code here
+};
+
+//create user object
+var user = new Appacitive.User({
+    username: 'john.doe@appacitive.com',
+    password: /* password as string */,
+    email: 'johndoe@appacitive.com',
+    firstname: 'John',
+    lastname: 'Doe' 
+});
+
+//link facebook account
+user.linkFacebookAccount();
+
+//You can access linked accounts of a user, using this field
+console.dir(user.linkedAccounts); 
+
+//create the user on server
+user.save(function(obj) {
+    console.dir(user.linkedAccounts);
+}, function(status, obj) {
+    alert('An error occured while saving the user.');
+});
+```
+
 ``` rest
 $$$Sample Response
 {
@@ -2852,6 +2919,38 @@ $$$Sample Response
 	}
 }
 ```
+``` javascript
+$$$Method
+Appacitive.User::save(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+//create user object
+var user = new Appacitive.User({
+    username: 'john.doe@appacitive.com',
+    password: /* password as string */,
+    email: 'johndoe@appacitive.com',
+    firstname: 'John',
+    lastname: 'Doe',
+    __link: {
+      authtype: "twitter", 
+      oauthtoken: "{twitter oauth token}", 
+      oauthtokensecret: "{twitter oauth token secret}",
+      consumerkey: "{twitter consumer key}", 
+      consumersecret: "{twitter consumer secret}"
+    }
+});
+
+//You can access linked accounts of a user, using this field
+console.dir(user.linkedAccounts); 
+
+//create the user on server
+user.save(function(obj) {
+    console.dir(user.linkedAccounts);
+}, function(status, obj) {
+    alert('An error occured while saving the user.');
+});
+```
 
 #### Create a user with just the OAuth access token
 
@@ -2927,6 +3026,52 @@ $$$Sample Response
 	}
 }
 ```
+``` javascript
+$$$Method
+Appacitive.Users.signupWithFacebook(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+//Create a new user using the Facebook access token
+//Include this script in your page for setting up facebook login
+window.fbAsyncInit = function() {
+    Appacitive.Facebook.initialize({
+        appId      : 'YOUR_APP_ID', // Facebook App ID
+        status     : true, // check login status
+        cookie     : true, // enable cookies to allow Appacitive to access the session
+        xfbml      : true  // parse XFBML
+    });
+    // Additional initialization code here
+};
+
+//Registering via facebook is done like so
+
+Appacitive.Users.signupWithFacebook(function (authResult) {
+    // user has been successfully signed up and set as current user
+    // authresult contains the user and Appacitive-usertoken
+}, function(status) {
+    // there was an error signing up the user
+});
+```
+``` javascript
+$$$Sample Request
+//  Create a new user using the OAuth 1.0 token
+
+var authRequest = {
+    'type': 'twitter',
+    'oauthtoken': {oauthtoken},
+    'oauthtokensecret': {oauthtokensecret},
+    'createnew': true
+}
+ 
+Appacitive.Users.authenticateUser(authRequest, function(authResult) { 
+   // user has been successfully signed up and set as current user
+   // authresult contains the user and Appacitive-usertoken
+   console.dir(authResult.user.id());
+}, function(status) {
+    alert('An error occured while saving the user.');
+});
+```
 
 #### Link account with existing Appacitive user.
 
@@ -2983,6 +3128,21 @@ $$$Sample Response
 	}
 }
 ```
+``` javascript
+$$$Method
+Appacitive.User::linkFacebookAccount(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+var user = Appacitive.User.currentUser();
+user.linkFacebookAccount(function(obj) {
+    console.dir(user.linkedAccounts);
+    //You can access linked accounts of a user, using this field
+}, function(status, obj){
+    alert("Could not link FB account");
+});
+
+```
 
 ##### Link appacitive user to a OAuth 1.0 account
 
@@ -3037,6 +3197,9 @@ $$$Sample Response
 	}
 }
 ```
+``` javascript
+Not supported
+```
 
 #### Delink account with existing appacitive user.
 
@@ -3088,11 +3251,38 @@ $$$Sample Response
 	}
 }
 ```
+``` javascript
+$$$Method
+Appacitive.User::unlinkFacebookAccount(successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
+Appacitive.Users.currentUser().unlinkFacebookAccount(function() {
+    alert("Facebook account delinked successfully");
+}, function(status){
+    alert("Could not delink facebook account");
+});
+```
 
 ### Authenticating a user
 
 To make user specific API calls to Appacitive, you need to authenticate the user to the Appacitive API and create a `session token` for the user every time he logs into your app.
 You will pass this `session token` as a HTTP header called `Appacitive-User-Auth`. The `user` object is also returned on a successful authentication call.
+
+
+``` javascript
+//Whenever you use signup or login method, the user is stored in localStorage and can be retrieved using Appacitive.Users.currentUser().
+
+//So, everytime your app opens, you just need to check this value, to be sure whether the user is logged-in or logged-out.
+
+var cUser = Appacitive.User.currentUser();
+if (cUser) {
+    // user is logged in
+} else {
+    // user is not logged in
+}
+
+```
 
 #### Authenticating user by username and password
 
@@ -3123,7 +3313,6 @@ You will pass this `session token` as a HTTP header called `Appacitive-User-Auth
 ** Response **
 
 A newly generated string session `token`, the `user` object itself and a `status` object are returned.
-
 
 ``` csharp
 //Authenticating user by `username` and `password`
@@ -3198,6 +3387,58 @@ $$$Sample Response
 }
 ```
 
+``` javascript
+//Login with username and password
+```
+```javascript
+$$$Method
+Appacitive.Users.login("username", "password", successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+Appacitive.Users.login("username", "password", function (authResult) {
+    // user has been logged in successfully
+    conole.log(authResult.token);
+    alert('Saved successfully, id: ' + authResult.user.get('__id'));
+}, function(status) {
+    // log in attempt failed
+});
+
+//The `authResult` is similar as given above.
+{
+    "token": "token",
+    "user": Appacitive.User object
+}
+```
+
+``` javascript
+//Signup and login
+```
+```javascript
+$$$Method
+Appacitive.Users.signup(userDetails, successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+// set the fields
+var userDetails = {
+    username: 'john.doe@appacitive.com',
+    password: /* password as string */,
+    email: 'johndoe@appacitive.com',
+    firstname: 'John',
+    lastname: 'Doe'
+};
+
+// now to create the user
+Appacitive.Users.signup(userDetails , function(authResult) {
+    conole.log(authResult.token);
+    alert('Saved successfully, id: ' + authResult.user.get('__id'));
+}, function(status) {
+    alert('An error occured while saving the user.');
+});
+```
+
+
 #### Authenticate with OAuth 2.0 access token
 
 You can authenticate a user and generate a session token using a access token using one of his linked identities like facebook.
@@ -3271,7 +3512,20 @@ $$$Sample Response
 	}
 }
 ```
-
+``` javascript
+$$$Method
+Appacitive.Users.loginWithFacebook(successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
+//  Authenticate user with facebook access token
+Appacitive.Users.loginWithFacebook(function (authResult) {
+    // authentication successful
+}, function(status) {
+    // authentication unsuccessful
+    // maybe incorrect credentials or maybe the user denied permissions
+});
+```
 
 #### Authenticate with a OAuth 1.0 access token
 
@@ -3326,6 +3580,27 @@ $$$Sample Response
 		"additionalmessages": []
 	}
 }
+```
+``` javascript
+$$$Method
+Appacitive.Users.authenticateUser(authRequest, successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
+//Authenticate user with twitter
+var authRequest = {
+    'type': 'twitter',
+    'oauthtoken': {oauthtoken},
+    'oauthtokensecret': {oauthtokensecret}
+}
+
+Appacitive.Users.authenticateUser(authRequest, function(authResult) { 
+   // user has been successfully signed up and set as current user
+   // authresult contains the user and Appacitive-usertoken
+   console.dir(authResult.user.id());
+}, function(status) {
+    alert('An error occured while saving the user.');
+}););
 ```
 
 ### Retrieving users
@@ -3424,6 +3699,19 @@ $$$Sample Response
 	}
 }
 ```
+``` javascript
+$$$Method
+Appacitive.User::fetch(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+var user = new Appacitive.User({ __id: '12345' });
+user.fetch(function (obj) {
+    alert('Fetched user with id 12345');
+}, function(status, obj) {
+    alert('Could not fetch user with id 12345');
+});
+```
 
 #### Get User by username
 
@@ -3504,6 +3792,20 @@ $$$Sample Response
 var user = await Users.GetByUsernameAsync("john.doe");
 ```
 
+``` javascript
+$$$Method
+Appacitive.Users.getUserByUsername('{{username}}', successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+//fetch user by username
+Appacitive.Users.getUserByUsername("john.doe", function(user) {
+    alert('Fetched user with username ' + user.get('username'));
+}, function(status) {
+    alert('Could not fetch user with username  john.doe');
+});
+```
+
 #### Get user by user token
 
 Here you can get a user by a session token generated for that user using his credentials. 
@@ -3581,6 +3883,24 @@ $$$Sample Response
 		"additionalmessages": []
 	}
 }
+```
+``` javascript
+$$$Method
+Appacitive.Users.getUserByToken("{{usertoken}}", successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+
+
+//fetch user by token
+Appacitive.Users.getUserByToken("asfa21sadas", function(user) {
+    alert('Fetched user with username ' + user.get('username'));
+}, function(status) {
+    alert('Could not fetch user with usertoken');
+});
+
+
+
 ```
 
 ### Updating a user
@@ -3676,13 +3996,49 @@ user.FirstName = "jane";
 user.Set<string>("city", "New York"); 
 await user.SaveAsync();
 ```
+``` javascript
+$$$Method
+Appacitive.User::save(successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
+//Update logged-in user
+var user = Appacitive.Users.currentUser();
+
+user.save(function(obj) {
+  alert('User updated successfully!');
+}, function(status, obj) {
+  alert('error while updating user!');
+});
+```
 
 ### Searching for users
 
 Searching for users follows all the same filtering principles as searching for articles of any other schema.
 
 ``` javascript
-//TODO
+$$$Method
+Appacitive.Article.findAll({
+  schema: 'user', //mandatory
+  fields: [],       //optional
+  query: {Appacitive.Filter obj}, //optional  
+  pageNumber: 1 ,   //optional: default is 1
+  pageSize: 50,     //optional: default is 50
+  orderBy: '__id',  //optional: default is __utclastupdateddate
+  isAscending: false  //optional: default is false
+}, successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
+Appacitive.Article.FindAll({
+  schema: 'user',
+  fields: ["username", "firstname", "email"]
+}, function(users) {
+  //users is an array of Appacitive.User objects
+  console.log("Users fetched");
+}, function(status) {
+  console.log("Error fetching users");
+});
 ```
 ``` csharp
 //Search user by building `Query`
@@ -3754,6 +4110,20 @@ $$$Sample Response
 	}
 }
 ```
+``` javascript
+$$$Method
+Appacitive.Users.deleteUser('{{id}}', successHandler, ErrorHandler);
+```
+``` javascript
+$$$Sample Request
+//To delete a user with an `__id` of, say, 1000.
+Appacitive.Users.deleteUser('1000', function() {
+    // deleted successfully
+}, function(status) {
+    // delete failed
+});
+```
+
 #### Delete user by username
 
 An additional query string parameter called `useridtype` is sent to specify the kind of user identifier you are using, which in this case is `username`.
@@ -3798,6 +4168,9 @@ $$$Sample Response
 		"additionalmessages": []
 	}
 }
+```
+``` javascript
+$$$NOT SUPPORTED
 ```
 
 #### Delete user by user token
@@ -3845,61 +4218,18 @@ $$$Sample Response
 	}
 }
 ```
-#### Deleting a user along with all connections to it
-
-You can pass an optional query string parameter in the delete call called `deleteconnections` with its value set to `true` to also delete all connections associated with the user object you want to delete.
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Appacitive-User-Auth</dt>
-	<dd>required<br/><span>A session token generated for a user.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-``` rest
+``` javascript
 $$$Method
-DELETE https://apis.appacitive.com/user/{userid}?deleteconnections=true
-```
-``` rest
-$$$Sample Request
-//	Delete user using his session token
-curl -X DELETE \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Appacitive-User-Auth: {User token}" \
--H "Content-Type: application/json" \
-https://apis.appacitive.com/user/416176845248641548?deleteconnections=true
-```
-``` rest
-$$$Sample Response
-{
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
-		"additionalmessages": []
-	}
-}
+Appacitive.Users.deleteCurrentUser(successHandler, ErrorHandler);
 ```
 ``` javascript
-//Setting the third argument to true will delete its connections if they exist
-player.del(function(obj) {
-    alert('Deleted successfully');
-}, function(status, obj) {
-    alert('Delete failed')
-}, true); 
-```
-``` csharp
-//Delete user with connected articles
-await Users.DeleteUserAsync("1234567", true);
+$$$Sample Request
+//You can delete the currently logged in user via a helper method.
+Appacitive.Users.deleteCurrentUser(function() {
+    // delete successful
+}, function(status) {
+    // delete failed
+});
 ```
 
 ### Location Tracking
@@ -3958,8 +4288,62 @@ $$$Sample Response
 	}
 }
 ```
+``` javascript
+$$$Method
+Appacitive.User::checkin({
+  lat: {{latitude}},
+  lng: {{longitude}}
+}, successHandler, ErrorHandler);
+```
+``` javascript
+$$$Sample Request
+//Change current users location
+Appacitive.Users.currentUser().checkin({
+    lat:18.57, lng: 75.55
+}, function() {
+    alert("Checked in successfully");
+}, function(status) {
+    alert("There was an error checking in");
+});
+```
 
 ### Session Management
+
+
+!!! javascript
+Once the user is authenticated successfully, you will be provided with the user details and an access token. This access token identifies the currently logged in user and will be used to implement access control. Each instance of an app can have one logged in user at any given time. By default the SDK takes care of setting and unsetting this token. However, you can explicitly tell the SDK to start using another access token.
+!!!
+
+``` javascript
+// the access token
+var token = {{token}};
+
+// setting it in the SDK
+Appacitive.session.setUserAuthHeader(token);
+// now the sdk will send this token with all requests to the server
+// Access control has started
+
+// removing the auth token
+Appacitive.session.removeUserAuthHeader();
+// Access control has been disabled
+```
+```javascript
+$$$Note 
+//Setting accessToken doesn't takes care of setting user associated for it. For that you will need to set current user too.
+
+var user = new Appacitive.User({
+    __id : '2121312'
+    username: 'john.doe@appacitive.com'
+    email: 'johndoe@appacitive.com',
+    firstname: 'John',
+    lastname: 'Doe'
+});
+
+Appacitive.Users.setCurrentUser(user, token);
+
+//Now current user points to `john.doe`
+console.log(Appacitive.Users.currentUser().get('__id'));
+```
 
 #### Validate session token
 
@@ -4012,6 +4396,23 @@ $$$Sample Response
 		"additionalmessages": []
 	}
 }
+```
+``` javascript
+$$$Method
+Appacitive.Users.validateCurrentUser(successHandler, validateAPI);
+```
+``` javascript
+$$$Sample Request
+// to check whether user is loggedin locally. This won't make any explicit apicall to validate user
+Appacitive.Users.validateCurrentUser(function(isValid) {
+    if (isValid) //user is logged in
+});
+
+// to check whether user is loggedin, explicitly making an apicall to validate usertoken
+Appacitive.Users.validateCurrentUser(function(isValid) {
+    if (isValid)  //user is logged in
+    // This method also sets the current user for that token
+}, true); // set to true to validate usertoken making an apicall
 ```
 
 
@@ -4067,10 +4468,22 @@ $$$Sample Response
 	}
 }
 ```
+``` javascript
+$$$Method
+Appacitive.User::logout(callback);
+```
+```javascript
+$$4Sample Request
+Appacitive.Users.currentUser().logout(function() {
+    // user is logged out   
+    // this will now be null
+    var cUser = Appacitive.Users.currentUser();  
+});
+```
 
 ### Password Management
 
-Appacitive provides a intuitive password management and recovery protocol to app developers so that their users can recover or change their passwords safely if and when the need arises.
+Appacitive provides an intuitive password management and recovery protocol to app developers so that their users can recover or change their passwords safely if and when the need arises.
 
 #### Reset password
 
@@ -4132,6 +4545,20 @@ $$$Sample Response
 	}
 }
 ```
+``` javascript
+$$$Method
+Appacitive.User::updatePassword('{oldPassword}','{newPassword}', successHandler, ErrorHandler);
+```
+``` javascript
+$$$Sample Request
+//You can make this call only for a loggedin user
+Appacitive.Users.currentUser().updatePassword('dfd4f43','456dfabc', function() {
+    console.log("Password updated successfully"); 
+}, function(status) {
+    console.log("Failed to updated password for user");
+});
+```
+
 
 #### Forgot password
 
@@ -4186,6 +4613,20 @@ $$$Sample Response
 		"additionalmessages": []
 	}
 }
+```
+
+``` javascript
+$$$Method
+Appacitive.Users.sendResetPasswordEmail("{username}", "{subject for the mail}", successHandler, ErrorHandler);
+```
+``` javascript
+$$$Sample Request
+//You can make this call only for a loggedin user
+Appacitive.Users.sendResetPasswordEmail("{username}", "{subject for the mail}", function() {
+    alert("Password reset mail sent successfully"); 
+}, function(status) {
+    alert("Failed to reset password for user");
+});
 ```
 
 Files
