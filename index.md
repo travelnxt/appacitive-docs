@@ -2803,7 +2803,7 @@ var user = new Appacitive.User({
 //link facebook account
 user.linkFacebookAccount();
 
-//You can access linked accounts of a user, using this field
+/You can access linked accounts of a user, using this field
 console.dir(user.linkedAccounts); 
 
 //create the user on server
@@ -3032,7 +3032,7 @@ Appacitive.Users.signupWithFacebook(successHandler, errorHandler);
 ```
 ``` javascript
 $$$Sample Request
-//Create a new user using the Facebook access token
+//  Create a new user using the Facebook access token
 //Include this script in your page for setting up facebook login
 window.fbAsyncInit = function() {
     Appacitive.Facebook.initialize({
@@ -3045,7 +3045,6 @@ window.fbAsyncInit = function() {
 };
 
 //Registering via facebook is done like so
-
 Appacitive.Users.signupWithFacebook(function (authResult) {
     // user has been successfully signed up and set as current user
     // authresult contains the user and Appacitive-usertoken
@@ -3136,8 +3135,7 @@ Appacitive.User::linkFacebookAccount(successHandler, errorHandler);
 $$$Sample Request
 var user = Appacitive.User.currentUser();
 user.linkFacebookAccount(function(obj) {
-    console.dir(user.linkedAccounts);
-    //You can access linked accounts of a user, using this field
+    console.dir(user.linkedAccounts);//You can access linked accounts of a user, using this field
 }, function(status, obj){
     alert("Could not link FB account");
 });
@@ -3253,7 +3251,7 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.User::unlinkFacebookAccount(successHandler, errorHandler)
+Appacitive.User::unlinkFacebookAccount(successHandler, errorHandler);
 ```
 ``` javascript
 $$$Sample Request
@@ -3514,7 +3512,7 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Users.loginWithFacebook(successHandler, errorHandler)
+Appacitive.Users.loginWithFacebook(successHandler, errorHandler);
 ```
 ``` javascript
 $$$Sample Request
@@ -3583,7 +3581,7 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Users.authenticateUser(authRequest, successHandler, errorHandler)
+Appacitive.Users.authenticateUser(authRequest, successHandler, errorHandler);
 ```
 ``` javascript
 $$$Sample Request
@@ -4636,6 +4634,22 @@ Appacitive allows you to upload, download and ditribute media files like images,
 The appacitive files api works by providing you `pre-signed` urls to a third-party cloud storage service (<a href="http://aws.amazon.com/s3/">Amazon S3</a>), where the files can be uploaded to or downloaded from.
 You can upload and download files of any size and most filetypes are supported. 
 
+``` javascript
+//To upload or download files, the SDK provides `Appacitive.File` class
+//You can instantiate it to perform operations on file.
+//You must know the content type (mimeType) of the file because this is a required parameter. 
+//Optionally you can provide name/id of the file by which it will be saved on the server.
+
+These are the options you need to initialize a file object
+var options = {
+    fileId: //  a unique string representing the filename on server,
+    contentType: // Mimetype of file,
+    fileData: // data to be uploaded, this could be bytes or HTML5 fileupload instance data
+};
+
+//If you don't provide contentType, then the SDK will try to get the MimeType from the HTML5 fileData object or it'll set it as 'text/plain'.
+```
+
 ### Upload
 
 To upload a file on appacitive for your app, you need to get a pre-signed Amazon S3 url to which you will be uploading your file. 
@@ -4694,6 +4708,38 @@ $$$Sample Response
 	}
 }
 ```
+``` javascript
+$$$Method
+Appacitive.File::save(successHandler, ErrorHandler);
+```
+``` javascript
+$$$Sample File Objects
+
+//If you have a byte stream, you can use the following interface to build file object.
+var bytes = [ 0xAB, 0xDE, 0xCA, 0xAC, 0XAE ];
+
+//create file object
+var file = new Appacitive.File({
+    fileId: 'serverFile.png',
+    fileData: bytes,
+    contentType: 'image/png'
+});
+
+
+//If you've a fileupload control in your HTML5 app which allows the user to pick a file from their local drive to upload, you can simply create the object as
+
+//consider this as your fileupload control
+<input type="file" id="imgUpload">
+
+//in a handler or in a function you could get a reference to it, if you've selected a file
+var fileData = $('#imgUpload')[0].files[0];
+
+//create file object
+var file = new Appacitive.File({
+    fileId: fileData.name,
+    fileData: fileData
+});
+```
 
 When the above request is successful, the HTTP response is a `200` OK and the response body is a json object containing the third party cloud storage providers upload `url` and the file `id`, which is the parameter `filename`'s value provided by you or a unique system generated identifier for the file.
 Now upload the file by making a PUT request to the `url` in the response above. The necessary authorization information is already embedded in the URI. For more details, refer to <a href="http://aws.amazon.com/documentation/s3/">Amazon S3 documentation</a>. 
@@ -4718,7 +4764,32 @@ var upload = new FileUpload("image/jpeg");
 string uploadUrl = await upload.GetUploadUrlAsync(30);
 //Custom logic to upload file
 ```
+``` javascript
+$$$Sample Request
+// save it on server
+file.save(function(url) {
+  alert('Download url is ' + url);
+}, function(err) {
+  //alert("Error uploading file");
+});
 
+//After save, the successHandler callback gets a url in response which can be saved in your object and is also reflected in the file object. 
+//This url is basically a download url which you could be used to render it in your DOM.
+
+//file object after upload
+{
+  fileId: 'serverFile.png',
+  contentType: 'image/png',
+  url: '{{some url}}'
+}
+
+//if you don't provide fileId while upload, then you'll get a unique fileId set in you file object
+{
+  fileId: '3212jgfjs93798',
+  contentType: 'image/png',
+  url: '{{some url}}'
+}
+```
 ### Download
 
 To download a file from Appacitive for your app, you need to get a `pre-signed` download url for the file using its file `id`, from where you will be able to download the file.
@@ -4773,6 +4844,26 @@ await download.DownloadFileAsync(localFileName);
 var downloadUrl = await download.GetDownloadUrl(30);
 //Custom logic to download file
 ```
+```javascript
+$$$Method
+Appacitive.File::getDownloadUrl(successHandler, errorHandler)
+```
+```javascript
+$$$Sample Request
+//create file object
+var file = new Appacitive.File({
+    fileId: "test.png"
+});
+
+// call to get download url
+file.getDownloadUrl(function(url) {
+    alert("Download url:" + url);
+    $("#imgUpload").attr('src',file.url);
+}, function(err) {
+    alert("Downloading file");
+});
+```
+
 You can now download the file by making a GET request to the `pre-signed` download `url` in the response object. 
 No additional headers are required. For more details, refer to <a href="http://aws.amazon.com/documentation/s3/">Amazon S3 documentation</a>. 
 Url is valid for 1 minute by default, but if you want to increase the expiry time set the `expires` query string parameter while retreiving the download url. 
