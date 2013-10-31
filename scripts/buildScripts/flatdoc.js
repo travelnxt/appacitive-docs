@@ -183,7 +183,7 @@ var path = require('path');
      */
 
     Transformer.addIDs = function ($content) {
-        $content.find('h1, h2, h3, h4').each(function () {
+        $content.find('h1, h2, h3, h4, h5').each(function () {
             var $el = $(this);
             var text = $el.text();
 
@@ -196,6 +196,9 @@ var path = require('path');
 
             if ($el.is('h4'))
                 text = $el.prevAll("h1:first").html() + "_" + $el.prevAll("h2:first").html() + "_" + $el.prevAll("h3:first").html() + "_" + text;
+
+            if ($el.is('h5'))
+                text = $el.prevAll("h1:first").html() + "_" + $el.prevAll("h2:first").html() + "_" + $el.prevAll("h3:first").html() + "_" + $el.prevAll("h4:first").html() + '_' + text;
 
             var id = slugify(text);
             $el.attr('id', id);
@@ -229,7 +232,7 @@ var path = require('path');
             return cache[level];
         }
 
-        $content.find('h1, h2, h3, h4').each(function () {
+        $content.find('h1, h2, h3, h4, h5').each(function () {
             var $el = $(this);
             var level = +(this.nodeName.substr(1));
 
@@ -273,7 +276,7 @@ var path = require('path');
      * Adds permalinks for all heading tags
      */
     Transformer.addPermaLinks = function ($content) {
-        $content.find('h1, h2, h3, h4').each(function () {
+        $content.find('h1, h2, h3, h4, h5').each(function () {
             var $el = $(this);
             var id = $el.attr('id');
             $el.prepend('<a name="' + id + '" class="anchor" href="#' + id + '"><span class="hash hash-link"></span></a>')

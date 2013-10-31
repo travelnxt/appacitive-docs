@@ -4627,290 +4627,6 @@ Appacitive.Users.sendResetPasswordEmail("{username}", "{subject for the mail}", 
 });
 ```
 
-Files
-------------
-
-Appacitive allows you to upload, download and ditribute media files like images, videos etc. on the appacitive platform so you can build rich applications and deliver media using an extensive CDN. 
-The appacitive files api works by providing you `pre-signed` urls to a third-party cloud storage service (<a href="http://aws.amazon.com/s3/">Amazon S3</a>), where the files can be uploaded to or downloaded from.
-You can upload and download files of any size and most filetypes are supported. 
-
-``` javascript
-//To upload or download files, the SDK provides `Appacitive.File` class
-//You can instantiate it to perform operations on file.
-//You must know the content type (mimeType) of the file because this is a required parameter. 
-//Optionally you can provide name/id of the file by which it will be saved on the server.
-
-These are the options you need to initialize a file object
-var options = {
-    fileId: //  a unique string representing the filename on server,
-    contentType: // Mimetype of file,
-    fileData: // data to be uploaded, this could be bytes or HTML5 fileupload instance data
-};
-
-//If you don't provide contentType, then the SDK will try to get the MimeType from the HTML5 fileData object or it'll set it as 'text/plain'.
-```
-
-### Upload
-
-To upload a file on appacitive for your app, you need to get a pre-signed Amazon S3 url to which you will be uploading your file. 
-You can get this url by making a HTTP GET request to the appacitive file `getupload` url. 
-The `contenttype` query string parameter you send here should match the `content-type` http header value when uploading the file onto amazon s3 in the subsequent call.
-A unique string `id` is associated with every file you store on the appacitive platform. This string `id` is either the optional `filename` query string parameter you pass while generating the upload url or appacitive assigns it a unique system generated value.
-You can use this unique string file `id` to access, update or delete that file. Uploading multiple files using the same `filename` will lead to overwriting the file.
-
-In the request, the optional query string paramertes you can provide are.
-
-** Query string parameters **
-
-<dl>
-	<dt>contenttype</dt>
-	<dd>required<br/><span>Mime-type of the file you are uploading.	
-	<dt>filename</dt>
-	<dd>optional<br/><span>Unique name for the file.
-	<dt>expires</dt>
-	<dd>optional<br/><span>Duration (in minutes) for which the upload url will be valid, default value is 5.	
-</dl>
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.	
-</dl>
-
-``` rest
-$$$Method
-GET https://apis.appacitive.com/file/uploadurl?contenttype={content-type}
-```
-``` rest
-$$$Sample Request
-//	Generate upload url
-curl -X GET \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Content-Type: application/json" \
-https://apis.appacitive.com/file/uploadurl?filename=mypicture&contenttype=image/jpeg&expires=10
-```
-``` rest
-$$$Sample Response
-{
-	"url": "https://stageblobstorage.s3.amazonaws.com/35003686659949394/_applications/35003695411364691/_deployments/35003749377377197/mypicture?AWSAccessKeyId=AKIAI5YIAGHRQS6VJETQ&Expires=1377164142&Signature=CELV5LBQs7d%2FJ%2FukBEnQJc%2Fb%2BBc%3D",
-	"id": "mypicture",
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "4f5a30f7-6b27-4d2b-92b5-c449d3083328",
-		"additionalmessages": []
-	}
-}
-```
-``` javascript
-$$$Method
-Appacitive.File::save(successHandler, ErrorHandler);
-```
-``` javascript
-$$$Sample File Objects
-
-//If you have a byte stream, you can use the following interface to build file object.
-var bytes = [ 0xAB, 0xDE, 0xCA, 0xAC, 0XAE ];
-
-//create file object
-var file = new Appacitive.File({
-    fileId: 'serverFile.png',
-    fileData: bytes,
-    contentType: 'image/png'
-});
-
-
-//If you've a fileupload control in your HTML5 app which allows the user to pick a file from their local drive to upload, you can simply create the object as
-
-//consider this as your fileupload control
-<input type="file" id="imgUpload">
-
-//in a handler or in a function you could get a reference to it, if you've selected a file
-var fileData = $('#imgUpload')[0].files[0];
-
-//create file object
-var file = new Appacitive.File({
-    fileId: fileData.name,
-    fileData: fileData
-});
-```
-
-When the above request is successful, the HTTP response is a `200` OK and the response body is a json object containing the third party cloud storage providers upload `url` and the file `id`, which is the parameter `filename`'s value provided by you or a unique system generated identifier for the file.
-Now upload the file by making a PUT request to the `url` in the response above. The necessary authorization information is already embedded in the URI. For more details, refer to <a href="http://aws.amazon.com/documentation/s3/">Amazon S3 documentation</a>. 
-This url is valid for 5 minutes if `expires` was not specified while retreiving the url and only allows you to perform a PUT on the url. 
-You need to provied the same value for the `Content-Type` http header, which you provided while retreiving the url and if not provided, use 'application/octet-stream' or 'binary/octet-stream'. 
-You send the media file in the payload object of the PUT call.
-
-``` csharp
-//Upload via Byte Stream
-var fileName = "serverFileName.jpg";
-var bytes = memoryStream.ToArray();
-var upload = new FileUpload("image/jpeg", fileName, 30);
-string uploadedFileName = await upload.UploadAsync(bytes);
-
-//Upload via File Path
-var upload = new FileUpload("image/jpeg", fileName, 30);
-string uploadedFileName = await upload.UploadFileAsync(filePath);
-
-//Custom Upload
-//Get the upload url and upload the file
-var upload = new FileUpload("image/jpeg");
-string uploadUrl = await upload.GetUploadUrlAsync(30);
-//Custom logic to upload file
-```
-``` javascript
-$$$Sample Request
-// save it on server
-file.save(function(url) {
-  alert('Download url is ' + url);
-}, function(err) {
-  //alert("Error uploading file");
-});
-
-//After save, the successHandler callback gets a url in response which can be saved in your object and is also reflected in the file object. 
-//This url is basically a download url which you could be used to render it in your DOM.
-
-//file object after upload
-{
-  fileId: 'serverFile.png',
-  contentType: 'image/png',
-  url: '{{some url}}'
-}
-
-//if you don't provide fileId while upload, then you'll get a unique fileId set in you file object
-{
-  fileId: '3212jgfjs93798',
-  contentType: 'image/png',
-  url: '{{some url}}'
-}
-```
-### Download
-
-To download a file from Appacitive for your app, you need to get a `pre-signed` download url for the file using its file `id`, from where you will be able to download the file.
-
-** Parameters **
-
-<dl>
-	<dt>filename</dt>
-	<dd>required<br/><span>The filename used when generating the uploadurl.
-	<dt>expires</dt>
-	<dd>optional<br/><span>Time in minutes for which the url will be valid, default value 5 mins.	
-</dl>
- 
-``` rest
-$$$Method
-GET https://apis.appacitive.com/file/download/{file id}
-```
-``` rest
-$$$Sample Request
-//	Generate download url
-curl -X GET \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Content-Type: application/json" \
-https://apis.appacitive.com/file/download/mypicture
-```
-``` rest
-$$$Sample Response
-{
-	"uri": "https://stageblobstorage.s3.amazonaws.com/35003686659949394/_applications/35003695411364691/_deployments/35003749377377197/mypicture?AWSAccessKeyId=AKIAI5YIAGHRQS6VJETQ&Expires=1377171161&Signature=%2FGpFSIMTVMdq%2FKf%2F8jvdPbvoGgs%3D",
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "0514cae7-2f8a-4232-8712-ed14e2a0c6ef",
-		"additionalmessages": []
-	}
-}
-```
-``` csharp
-//Three ways to download file
-var download = new FileDownload(fileName);
-
-//1: Get the byte stream
-var bytes = await download.DownloadAsync();
-
-//2: Download the data and write to a local file
-await download.DownloadFileAsync(localFileName);
-
-//3: Get the download URL
-var downloadUrl = await download.GetDownloadUrl(30);
-//Custom logic to download file
-```
-```javascript
-$$$Method
-Appacitive.File::getDownloadUrl(successHandler, errorHandler)
-```
-```javascript
-$$$Sample Request
-//create file object
-var file = new Appacitive.File({
-    fileId: "test.png"
-});
-
-// call to get download url
-file.getDownloadUrl(function(url) {
-    alert("Download url:" + url);
-    $("#imgUpload").attr('src',file.url);
-}, function(err) {
-    alert("Downloading file");
-});
-```
-
-You can now download the file by making a GET request to the `pre-signed` download `url` in the response object. 
-No additional headers are required. For more details, refer to <a href="http://aws.amazon.com/documentation/s3/">Amazon S3 documentation</a>. 
-Url is valid for 1 minute by default, but if you want to increase the expiry time set the `expires` query string parameter while retreiving the download url. 
-This url only allows you to perform a GET on the file.
-
-### Delete a file
-
-This deletes a previously uploaded file from appacitive.
-
-** Parameters **
-
-<dl>
-	<dt>filename</dt>
-	<dd>required<br/><span>The unique filename associated with the file in the app.	
-</dl>
- 
-``` rest
-$$$Method
-DELETE https://apis.appacitive.com/file/delete/{file id}
-```
-``` rest
-$$$Sample Request
-//	Delete file
-curl -X DELETE \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Content-Type: application/json" \
-https://apis.appacitive.com/file/delete/mypicture
-```
-``` rest
-$$$Sample Response
-{
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "0514cae7-2f8a-4232-8712-ed14e2a0c6ef",
-		"additionalmessages": []
-	}
-}
-```
-### Update a file
-
-You can update a previously uploaded file for your app by using it's unique file name and re-uploading another file in its place.
-
-
 Querying Data
 ------------
 
@@ -6911,3 +6627,292 @@ await PushNotification
                   })
           })
 ```
+
+
+Files
+=======
+
+Appacitive allows you to upload, download and ditribute media files like images, videos etc. on the appacitive platform so you can build rich applications and deliver media using an extensive CDN. 
+The appacitive files api works by providing you `pre-signed` urls to a third-party cloud storage service (<a href="http://aws.amazon.com/s3/">Amazon S3</a>), where the files can be uploaded to or downloaded from.
+You can upload and download files of any size and most filetypes are supported. 
+
+``` javascript
+//To upload or download files, the SDK provides `Appacitive.File` class
+//You can instantiate it to perform operations on file.
+//You must know the content type (mimeType) of the file because this is a required parameter. 
+//Optionally you can provide name/id of the file by which it will be saved on the server.
+
+These are the options you need to initialize a file object
+var options = {
+    fileId: //  a unique string representing the filename on server,
+    contentType: // Mimetype of file,
+    fileData: // data to be uploaded, this could be bytes or HTML5 fileupload instance data
+};
+
+//If you don't provide contentType, then the SDK will try to get the MimeType from the HTML5 fileData object or it'll set it as 'text/plain'.
+```
+
+Upload
+----------------
+
+To upload a file on appacitive for your app, you need to get a pre-signed Amazon S3 url to which you will be uploading your file. 
+You can get this url by making a HTTP GET request to the appacitive file `getupload` url. 
+The `contenttype` query string parameter you send here should match the `content-type` http header value when uploading the file onto amazon s3 in the subsequent call.
+A unique string `id` is associated with every file you store on the appacitive platform. This string `id` is either the optional `filename` query string parameter you pass while generating the upload url or appacitive assigns it a unique system generated value.
+You can use this unique string file `id` to access, update or delete that file. Uploading multiple files using the same `filename` will lead to overwriting the file.
+
+In the request, the optional query string paramertes you can provide are.
+
+** Query string parameters **
+
+<dl>
+  <dt>contenttype</dt>
+  <dd>required<br/><span>Mime-type of the file you are uploading. 
+  <dt>filename</dt>
+  <dd>optional<br/><span>Unique name for the file.
+  <dt>expires</dt>
+  <dd>optional<br/><span>Duration (in minutes) for which the upload url will be valid, default value is 5.  
+</dl>
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`. 
+</dl>
+
+``` rest
+$$$Method
+GET https://apis.appacitive.com/file/uploadurl?contenttype={content-type}
+```
+``` rest
+$$$Sample Request
+//  Generate upload url
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/file/uploadurl?filename=mypicture&contenttype=image/jpeg&expires=10
+```
+``` rest
+$$$Sample Response
+{
+  "url": "https://stageblobstorage.s3.amazonaws.com/35003686659949394/_applications/35003695411364691/_deployments/35003749377377197/mypicture?AWSAccessKeyId=AKIAI5YIAGHRQS6VJETQ&Expires=1377164142&Signature=CELV5LBQs7d%2FJ%2FukBEnQJc%2Fb%2BBc%3D",
+  "id": "mypicture",
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "4f5a30f7-6b27-4d2b-92b5-c449d3083328",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+$$$Method
+Appacitive.File::save(successHandler, ErrorHandler);
+```
+``` javascript
+$$$Sample File Objects
+
+//If you have a byte stream, you can use the following interface to build file object.
+var bytes = [ 0xAB, 0xDE, 0xCA, 0xAC, 0XAE ];
+
+//create file object
+var file = new Appacitive.File({
+    fileId: 'serverFile.png',
+    fileData: bytes,
+    contentType: 'image/png'
+});
+
+
+//If you've a fileupload control in your HTML5 app which allows the user to pick a file from their local drive to upload, you can simply create the object as
+
+//consider this as your fileupload control
+<input type="file" id="imgUpload">
+
+//in a handler or in a function you could get a reference to it, if you've selected a file
+var fileData = $('#imgUpload')[0].files[0];
+
+//create file object
+var file = new Appacitive.File({
+    fileId: fileData.name,
+    fileData: fileData
+});
+```
+
+When the above request is successful, the HTTP response is a `200` OK and the response body is a json object containing the third party cloud storage providers upload `url` and the file `id`, which is the parameter `filename`'s value provided by you or a unique system generated identifier for the file.
+Now upload the file by making a PUT request to the `url` in the response above. The necessary authorization information is already embedded in the URI. For more details, refer to <a href="http://aws.amazon.com/documentation/s3/">Amazon S3 documentation</a>. 
+This url is valid for 5 minutes if `expires` was not specified while retreiving the url and only allows you to perform a PUT on the url. 
+You need to provied the same value for the `Content-Type` http header, which you provided while retreiving the url and if not provided, use 'application/octet-stream' or 'binary/octet-stream'. 
+You send the media file in the payload object of the PUT call.
+
+``` csharp
+//Upload via Byte Stream
+var fileName = "serverFileName.jpg";
+var bytes = memoryStream.ToArray();
+var upload = new FileUpload("image/jpeg", fileName, 30);
+string uploadedFileName = await upload.UploadAsync(bytes);
+
+//Upload via File Path
+var upload = new FileUpload("image/jpeg", fileName, 30);
+string uploadedFileName = await upload.UploadFileAsync(filePath);
+
+//Custom Upload
+//Get the upload url and upload the file
+var upload = new FileUpload("image/jpeg");
+string uploadUrl = await upload.GetUploadUrlAsync(30);
+//Custom logic to upload file
+```
+``` javascript
+$$$Sample Request
+// save it on server
+file.save(function(url) {
+  alert('Download url is ' + url);
+}, function(err) {
+  //alert("Error uploading file");
+});
+
+//After save, the successHandler callback gets a url in response which can be saved in your object and is also reflected in the file object. 
+//This url is basically a download url which you could be used to render it in your DOM.
+
+//file object after upload
+{
+  fileId: 'serverFile.png',
+  contentType: 'image/png',
+  url: '{{some url}}'
+}
+
+//if you don't provide fileId while upload, then you'll get a unique fileId set in you file object
+{
+  fileId: '3212jgfjs93798',
+  contentType: 'image/png',
+  url: '{{some url}}'
+}
+```
+
+Download
+----------------
+
+To download a file from Appacitive for your app, you need to get a `pre-signed` download url for the file using its file `id`, from where you will be able to download the file.
+
+** Parameters **
+
+<dl>
+  <dt>filename</dt>
+  <dd>required<br/><span>The filename used when generating the uploadurl.
+  <dt>expires</dt>
+  <dd>optional<br/><span>Time in minutes for which the url will be valid, default value 5 mins. 
+</dl>
+ 
+``` rest
+$$$Method
+GET https://apis.appacitive.com/file/download/{file id}
+```
+``` rest
+$$$Sample Request
+//  Generate download url
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/file/download/mypicture
+```
+``` rest
+$$$Sample Response
+{
+  "uri": "https://stageblobstorage.s3.amazonaws.com/35003686659949394/_applications/35003695411364691/_deployments/35003749377377197/mypicture?AWSAccessKeyId=AKIAI5YIAGHRQS6VJETQ&Expires=1377171161&Signature=%2FGpFSIMTVMdq%2FKf%2F8jvdPbvoGgs%3D",
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "0514cae7-2f8a-4232-8712-ed14e2a0c6ef",
+    "additionalmessages": []
+  }
+}
+```
+``` csharp
+//Three ways to download file
+var download = new FileDownload(fileName);
+
+//1: Get the byte stream
+var bytes = await download.DownloadAsync();
+
+//2: Download the data and write to a local file
+await download.DownloadFileAsync(localFileName);
+
+//3: Get the download URL
+var downloadUrl = await download.GetDownloadUrl(30);
+//Custom logic to download file
+```
+```javascript
+$$$Method
+Appacitive.File::getDownloadUrl(successHandler, errorHandler)
+```
+```javascript
+$$$Sample Request
+//create file object
+var file = new Appacitive.File({
+    fileId: "test.png"
+});
+
+// call to get download url
+file.getDownloadUrl(function(url) {
+    alert("Download url:" + url);
+    $("#imgUpload").attr('src',file.url);
+}, function(err) {
+    alert("Downloading file");
+});
+```
+
+You can now download the file by making a GET request to the `pre-signed` download `url` in the response object. 
+No additional headers are required. For more details, refer to <a href="http://aws.amazon.com/documentation/s3/">Amazon S3 documentation</a>. 
+Url is valid for 1 minute by default, but if you want to increase the expiry time set the `expires` query string parameter while retreiving the download url. 
+This url only allows you to perform a GET on the file.
+
+Delete a file
+------------------
+
+This deletes a previously uploaded file from appacitive.
+
+** Parameters **
+
+<dl>
+  <dt>filename</dt>
+  <dd>required<br/><span>The unique filename associated with the file in the app. 
+</dl>
+ 
+``` rest
+$$$Method
+DELETE https://apis.appacitive.com/file/delete/{file id}
+```
+``` rest
+$$$Sample Request
+//  Delete file
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/file/delete/mypicture
+```
+``` rest
+$$$Sample Response
+{
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "0514cae7-2f8a-4232-8712-ed14e2a0c6ef",
+    "additionalmessages": []
+  }
+}
+```
+
+Update a file
+--------------
+You can update a previously uploaded file for your app by using it's unique file name and re-uploading another file in its place.

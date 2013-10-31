@@ -16,7 +16,7 @@ isDev = false;
             $("[href='#" + currentId + "']").trigger("click");
         }
         var preId = null;
-        $("h1,h2,h3,h4").scrollagent({ offset: 0, reCal: reCal }, function (cid, pid, currentElement, previousElement) {
+        $("h1,h2,h3,h4,h5").scrollagent({ offset: 0, reCal: reCal }, function (cid, pid, currentElement, previousElement) {
 
             var isLevel4 = false;
             if ($("[href='#" + cid + "']").hasClass("level-4")) {
@@ -30,10 +30,25 @@ isDev = false;
                     window.history.replaceState({ href: href }, "", href);
                 }
 
-                cid = $($("[href='#" + cid + "']")[0]).parent().parent().siblings().attr('href').replace("#", "");
+                cid = $($("[href='#" + cid + "']")[0]).parents('li.level-3').children('a').attr('href').replace("#", "");
             }
 
-            if ($("[href='#" + pid + "']").hasClass("level-4")) {
+            var isLevel5 = false;
+            if ($("[href='#" + cid + "']").hasClass("level-5")) {
+
+                // Add the location hash via replaceState for level4 only.
+                isLevel5 = true;
+                currentId = cid;
+
+                if (reCal == false && window.history.replaceState) {
+                    var href = window.location.href.replace(window.location.hash, "") + "#" + window.lang + "/" + cid;
+                    window.history.replaceState({ href: href }, "", href);
+                }
+
+                cid = $($("[href='#" + cid + "']")[0]).parents('li.level-3').children('a').attr('href').replace("#", "");
+            }
+
+            if ($("[href='#" + pid + "']").hasClass("level-4") || $("[href='#" + pid + "']").hasClass("level-5")) {
                 $('a', '.menubar').removeClass('active');
             }
 
@@ -47,21 +62,32 @@ isDev = false;
                 $("[href='#" + cid + "']").addClass('active');
             }
 
-            if ($(".menu .active").hasClass("level-3") || isLevel4) {
+
+
+            if ($(".menu .active").hasClass("level-3") || isLevel4 || isLevel5) {
                 preId = $(".menu .active").parent().parent().siblings().attr("href").replace("#", "");
                 $("[href='#" + preId + "']").siblings().show();
                 $("li.level-2 ul.level-3").not($("[href='#" + preId + "']").siblings()).hide();
-            } else if ($(".menu .active").hasClass("level-2")
-                && $(".menu .active").siblings("ul").length == 1) {
+                $('ul.level-2').children().not($(".menu .active").parents('ul.level-2').children()).hide();
+                $(".menu .active").parents('ul.level-2').show().children().show();
+            } else if ($(".menu .active").hasClass("level-2")) {
+                //if ($(".menu .active").siblings("ul").length == 1) {
                 preId = $(".menu .active").attr("href").replace("#", "");
                 $("[href='#" + preId + "']").siblings().show();
                 $("li.level-2 ul.level-3").not($("[href='#" + preId + "']").siblings()).hide();
+                $('ul.level-2').children().not($(".menu .active").parents('ul.level-2').children().show()).hide();
+                $(".menu .active").parents('ul.level-2').show();
+                //}
             } else {
-                $("li.level-2 ul.level-3").hide();
+                //$('ul.level-2').children().not($(".menu .active").siblings('ul.level-2').children()).hide();
+                var res = $(".menu .active").siblings('ul.level-2');
+                res.show();
+                res.children('.level-2').show();
+                $('ul.level-2').not(res).hide();
             }
 
 
-            if (isLevel4) return;
+            if (isLevel4 || isLevel5) return;
 
             currentId = cid;
             // Add the location hash via replaceState.

@@ -108,3 +108,4 @@ table { width: 100%; border: 1px solid #dddddd; border-collapse: separate; *bord
 /*-------------table css ends----------------*/
 
 dl dd, dl dt { padding-bottom: 5px; }
+ul.level-2 { display: none;}
