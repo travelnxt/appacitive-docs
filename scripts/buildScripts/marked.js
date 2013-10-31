@@ -6,6 +6,10 @@
 
 ; (function () {
 
+    String.prototype.trim = function () {
+        return this.replace(/^\s+/, '').replace(/\s+$/, '');
+    };
+
     /**
      * Block-Level Grammar
      */
@@ -811,9 +815,9 @@
                         token = this.token.text;
                         var split = token.split('\n');
                         var lang = split.shift(1).replace(/!!!/g, '');
-                        token = $.trim(split.join('\n').replace(/!!!/g, ''));
+                        token = split.join('\n').replace(/!!!/g, '').trim();
                         if (lang) {
-                            lang = $.trim(lang);
+                            lang = lang.trim();
                             var code = this.options.highlight(token);
                             if (code && code !== token)
                                 token = '<pre'
