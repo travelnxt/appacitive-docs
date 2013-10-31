@@ -438,4 +438,4 @@ code .comment { color: gray; }
     .title-area > div { position: relative; z-index: 1; }
 
 .menubar .level-4 { display: none; }
-h1, h2, h3, h4, h5 { font-family: Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif !important; font-weight: normal !important;}
+h1, h2, h3, h4, h5 { font-family: Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif !important; }

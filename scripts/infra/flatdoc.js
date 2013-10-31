@@ -179,7 +179,7 @@ Also includes:
      */
 
     Transformer.addIDs = function ($content) {
-        $content.find('h1, h2, h3, h4').each(function () {
+        $content.find('h1, h2, h3, h4, h5').each(function () {
             var $el = $(this);
             var text = $el.text();
 
@@ -191,6 +191,9 @@ Also includes:
 
             if ($el.is('h4'))
                 text = $el.prevAll("h1:first").html() + "_" + $el.prevAll("h2:first").html() + "_" + $el.prevAll("h3:first").html() + "_" + text;
+
+            if ($el.is('h5'))
+                text = $el.prevAll("h1:first").html() + "_" + $el.prevAll("h2:first").html() + "_" + $el.prevAll("h3:first").html() + "_" + $el.prevAll("h4:first").html() + '_' + text;
 
             var id = slugify(text);
             $el.attr('id', id);
@@ -224,7 +227,7 @@ Also includes:
             return cache[level];
         }
 
-        $content.find('h1, h2, h3, h4').each(function () {
+        $content.find('h1, h2, h3, h4, h5').each(function () {
             var $el = $(this);
             var level = +(this.nodeName.substr(1));
 
@@ -269,7 +272,7 @@ Also includes:
      * Adds permalinks for all heading tags
      */
     Transformer.addPermaLinks = function ($content) {
-        $content.find('h1, h2, h3, h4').each(function () {
+        $content.find('h1, h2, h3, h4, h5').each(function () {
             var $el = $(this);
             var id = $el.attr('id');
             $el.prepend('<a name="' + id + '" class="anchor" href="#' + id + '"><span class="hash hash-link"></span></a>')
@@ -1229,9 +1232,9 @@ Also includes:
                         var split = token.split('\n');
                         var lang = split.shift(1).replace(/!!!/g, '');
                         token = $.trim(split.join('\n').replace(/!!!/g, ''));
+                        lang = $.trim(lang);
                         if (lang) {
-                            lang = $.trim(lang);
-                            var code = this.options.highlight(token, lang);
+                            var code = this.options.highlight(token);
                             if (code && code !== token)
                                 token = '<pre'
                                   + (lang

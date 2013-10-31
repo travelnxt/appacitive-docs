@@ -105,7 +105,7 @@ In order to pass the api key and environment information for the application use
 Appacitive.initialize({ 
     apikey: '{Your api key}' /* required */, 
     env: 'live' /* environment live or sandbox, default is live */,
-    appId: '{Application Id}' /* can be found on app list page of portal*/
+    appId: '{Application Id}' /* can be found on applist page*/
 });
 ```
 ``` csharp
@@ -140,6 +140,8 @@ The article api allows you to store, retrieve and manage all the data that you s
 <span class="h3">The article object</span>
 
 ** System generated properties ** 
+
+System generated properties are fields used for housekeeping and storing meta-information about the object. All system generated properties start with '__' , avoid changing their values.
 
 <dl>
   <dt>\__id</dt>
@@ -263,7 +265,7 @@ await post.SaveAsync();
 ```
 ``` javascript
 $$$Sample Request
-var post = new Appacitive.Article({ schema: 'post' });
+var post = new Appacitive.Article('post');
 post.set('title', 'sample post');
 post.set('text', 'This is a sample post.');
 post.save(function(){
@@ -305,7 +307,8 @@ $$$Sample Response
 // All system properties (including id) will be populated.
 ```
 ``` javascript
-// The response callback method would be invoked with the article updated with system properties.
+//The response callback would be invoked with the article updated with system properties.
+//A unique identifier called __id is generated and is stored in the post object. You can access it directly using id().
 ```
 
 ### Retrieve an existing article
@@ -329,7 +332,7 @@ type and its system defined id.
   <dt>id</dt>
   <dd>required<br/><span>The system generated id for the article</span></dd>
   <dt>fields</dt>
-  <dd>optional<br/><span>Comma separated list of properties to be returned.</span></dd>
+  <dd>optional<br/><span>List of properties to be returned.</span></dd>
 </dl>
 
 ** Response **
@@ -409,10 +412,10 @@ Appacitive.Article.get({
     schema: 'post',
     id: '33017891581461312',
     fields: ['title']
-}, function(obj) {
+}, function(post) {
     // article obj is returned as argument to onsuccess
-    alert('Fetched post with title: ' + obj.get('title')); 
-}, function(err, obj) {
+    alert('Fetched post with title: ' + post.get('title')); 
+}, function(status) {
     alert('Could not fetch, probably because of an incorrect id');
 });
 
@@ -424,7 +427,7 @@ post.fields(['title','text']);
 
 post.fetch(function(obj) {
     alert('Fetched post with title: ' + post.get('title'));
-}, function(err, obj) {
+}, function(status, obj) {
     alert('Could not fetch, probably because of an incorrect id');
 });
 ```
@@ -443,7 +446,7 @@ the list of ids must correspond to articles of the same type.
   <dt>id list</dt>
   <dd>required<br/><span>Comma separated list of article ids to retrieve.</span></dd>
   <dt>fields</dt>
-  <dd>optional<br/><span>Comma separated list of properties to be returned.</span></dd>
+  <dd>optional<br/><span>List of properties to be returned.</span></dd>
 </dl>
 
 ** Response **
@@ -550,8 +553,8 @@ Appacitive.Article.multiGet({
     fields: ["title"]
 }, function(posts) { 
     // posts is an array of article objects
-}, function(err) {
-    alert("code:" + err.code + "\nmessage:" + err.message);
+}, function(status) {
+    alert("code:" + status.code + "\nmessage:" + status.message);
 });
 ```
 
@@ -629,7 +632,7 @@ Appacitive.Article.get({
 }, function(obj) {
     // article obj is returned as argument to onsuccess
     alert('Fetched post with title: ' + obj.get('title')); 
-}, function(err, obj) {
+}, function(status, obj) {
     alert('Could not fetch, probably because of an incorrect id');
 });
 ```
@@ -760,15 +763,17 @@ var post = new Appacitive.Article({ schema: 'post', __id: '33017891581461312' })
 // Update properties
 post.set('title', 'updated title');
 post.set('text', 'This is updated text for the post.');
+//delete property
+post.unset('type');
 // Add a new attribute
 post.attr('topic', 'testing');
 // Add/remove tags
 post.addTag('tagA');
 post.removeTag('tagC');
 
-post.save(function(){
+post.save(function(obj) {
   alert('updated successfully!');
-}, function(status){
+}, function(status, obj){
   alert('error while updating!');
 });
 ```
@@ -821,10 +826,15 @@ $$$Sample Response
 ```
 
 ``` javascript
+$$$Method
+Appacitive.Article::del(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
 /* Delete a single article */
-player.del(function(obj) {
+player.del(function() {
     alert('Deleted successfully');
-}, function(err, obj) {
+}, function(status, obj) {
     alert('Delete failed')
 });
 
@@ -880,13 +890,21 @@ $$$Sample Response
 }
 ```
 ``` javascript
+$$$Method
+Appacitive.Article.multiDelete({
+  schema: 'type', //mandatory
+  ids: [], //mandatory
+},successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
 /*  Delete multiple articles. */
 Appacitive.Article.multiDelete({    
     schema: 'player', //mandatory
     ids: ["14696753262625025", "14696753262625026"], //mandatory
 }, function() { 
     //successfully deleted all articles
-}, function(err) {
+}, function(status) {
     alert("code:" + err.code + "\nmessage:" + err.message);
 });
 ```
@@ -941,10 +959,14 @@ $$$Sample Response
 }
 ```
 ``` javascript
+$$$Method
+Appacitive.Article::del(successHandler, errorHandler, true);
+
+$$$Sample Request
 //Setting the third argument to true will delete its connections if they exist
-player.del(function(obj) {
+player.del(function() {
     alert('Deleted successfully');
-}, function(err, obj) {
+}, function(status, obj) {
     alert('Delete failed')
 }, true); 
 ```
@@ -1126,6 +1148,11 @@ $$$Sample Response
 }
 ```
 ``` javascript
+$$$Method
+Appacitive.Connection::save(successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
 //`review` is relation name, 
 //`reviewer` and `hotel` are the endpoint labels
 var connection = new Appacitive.Connection({
@@ -1138,9 +1165,9 @@ var connection = new Appacitive.Connection({
                       label: 'hotel'
                   }]                
               });
-connection.save(function () {
+connection.save(function (obj) {
     alert('saved successfully!');
-}, function (status) {
+}, function (status, obj) {
     alert('error while saving!');
 });
 
@@ -1156,9 +1183,9 @@ var connection = new Appacitive.Connection({
                       label: 'hotel'
                   }]                
               });
-connection.save(function () {
+connection.save(function (obj) {
     alert('saved successfully!');
-}, function (status) {
+}, function (status, obj) {
     alert('error while saving!');
 });
 ```
@@ -1253,14 +1280,19 @@ $$$Sample Response
 }
 ```
 ``` javascript
+$$$Method
+Appacitive.Connection::save(successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
 // Will create a new my_score connection between 
 //    * existing player article with id 123445678 and 
 //    * new score article which will also be created when the connection is created.
 // The my_score relation defines two endpoints "player" and "score" for this information.
 
 //Create an instance of an article of type score. 
-var score = new Appacitive.Article({ schema: 'score' });
-score.set('points', '150');
+var score = new Appacitive.Article('score');
+score.set('points', 150);
 
 // existing player article.
 var playerId = '123445678';
@@ -1275,9 +1307,11 @@ var connection = new Appacitive.Connection({
                       label: 'score'
                   }]                
               });
-connection.save(function () {
+connection.save(function (obj) {
+    console.log(connection.id());
+    console.log(score.id());
     alert('saved successfully!');
-}, function (status) {
+}, function (status, obj) {
     alert('error while saving!');
 });
 ```
@@ -1383,17 +1417,22 @@ $$$Sample Response
 }
 ```
 ``` javascript
+$$$Method
+Appacitive.Connection::save(successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
 // Will create a new my_score connection between 
 //    * new player article
 //    * new score article 
 // The my_score relation defines two endpoints "player" and "score" for this information.
 
 //Create an instance of an article of type score. 
-var score = new Appacitive.Article({ schema: 'score' });
-score.set('points', '150');
+var score = new Appacitive.Article('score');
+score.set('points', 150);
 
-// existing player article.
-var player = new Appacitive.Article({ schema: 'player' });
+//Create an instance of an article of type player. 
+var player = new Appacitive.Article('player');
 player.set('name', 'sirius');
 
 var connection = new Appacitive.Connection({
@@ -1406,9 +1445,12 @@ var connection = new Appacitive.Connection({
                       label: 'score'
                   }]                
               });
-connection.save(function () {
+connection.save(function (obj) {
+    console.log(connection.id());
+    console.log(score.id());
+    console.log(player.id());
     alert('saved successfully!');
-}, function (status) {
+}, function (status, obj) {
     alert('error while saving!');
 });
 ```
@@ -1509,6 +1551,15 @@ $$$Sample Response
 }
 ```
 ``` javascript
+$$$Method
+Appacitive.Connection.get({
+  relation: 'type', //mandatory
+  id: 'connectionId', //mandatory
+  fields: [] //optional
+}, successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
 //Get the connection object and update the description
 Appacitive.Connection.get({ 
     relation: 'reviewed',       //mandatory
@@ -1516,7 +1567,7 @@ Appacitive.Connection.get({
 }, function(obj) {
     // connection obj is returned as argument to onsuccess
     alert('review connection fetched successfully.');
-}, function(err, obj) {
+}, function(status, obj) {
     alert('Could not fetch, probably because of an incorrect id');
 });
 ```
@@ -1527,6 +1578,139 @@ var conn = await Connections.GetAsync("review", "33017891581461312");
 
 #### Retrieve multiple connections by id
 
+Returns a list of multiple existing connections from the system. To get a list of connections you 
+must provide the type of the relation and a list of ids to retrieve. Given that only one type is allowed,
+the list of ids must correspond to connections of the same type.
+
+** Parameters ** 
+
+<dl>
+  <dt>type</dt>
+  <dd>required<br/><span>The type of the connection to be retrieved.</span></dd>
+  <dt>id list</dt>
+  <dd>required<br/><span>Comma separated list of connection ids to retrieve.</span></dd>
+  <dt>fields</dt>
+  <dd>optional<br/><span>List of properties to be returned.</span></dd>
+</dl>
+
+** Response **
+
+Returns an array of connection corresponding to the given id list. 
+In case of an error, the `status` object contains details for the failure.
+
+`NOTE` : Please note that providing the same id multiple times will not return duplicates.
+
+``` rest
+$$$Method
+GET https://apis.appacitive.com/connection/{type}/multiget/{comma separated ids}?fields={comma separated list of fields}
+```
+``` rest
+$$$Sample Request
+//Get connection of type reviewed with id 33017891581461312 and 33017891581461313
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+https://apis.appacitive.com/connection/reviewed/multiget/33017891581461312,33017891581461313
+```
+``` rest
+$$$Sample Response
+{
+  "connections": [
+    {
+      "__id": "33017891581461312",
+      "__relationtype": "reviewed",
+      "__endpointa": {
+        "label": "hotel",
+        "type": "hotel",
+        "articleid": "37266379552981902"
+      },
+      "__endpointb": {
+        "label": "reviewer",
+        "type": "user",
+        "articleid": "37266380289082256"
+      },
+      "__createdby": "System",
+      "__lastmodifiedby": "System",
+      "__relationid": "25394030771831308",
+      "__revision": "2",
+      "__utcdatecreated": "2013-09-16T08:13:10.0000000Z",
+      "__utclastupdateddate": "2013-09-23T01:09:12.6510000Z",
+      "__attributes": {}
+    },
+    {
+      "__id": "33017891581461313",
+      "__relationtype": "reviewed",
+      "__endpointa": {
+        "label": "hotel",
+        "type": "hotel",
+        "articleid": "37266379552981902"
+      },
+      "__endpointb": {
+        "label": "reviewer",
+        "type": "user",
+        "articleid": "37266380289082266"
+      },
+      "__createdby": "System",
+      "__lastmodifiedby": "System",
+      "__relationid": "25394030771831308",
+      "__revision": "2",
+      "__utcdatecreated": "2013-09-16T08:13:10.0000000Z",
+      "__utclastupdateddate": "2013-09-23T01:09:12.6510000Z",
+      "__attributes": {}
+    }
+  ],
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "1febaadd-f889-4b47-b1f9-cdeb63b6f937",
+    "additionalmessages": []
+  }
+}
+```
+
+``` csharp
+$$$Method
+public static async Task<IEnumerable<Connection>> Appacitive.SDK.Connections.MultiGetAsync(
+  string type, 
+  IEnumerable<string> idList, 
+  IEnumerable<string> fields = null
+)
+```
+``` csharp
+$$$Sample Request
+var ids = new [] {"33017891581461312", "33017891581461313" };
+var reviewed = await Connections.MultiGetAsync("reviewed", ids);
+foreach( var review in reviewed )
+{
+  Console.WriteLine("Fetched reviewed with id {0}.",
+    post.Get<long>("id")
+    );
+}
+```
+
+``` javascript
+$$$Method
+Appacitive.Connection.multiGet({
+  relation: 'type',   //mandatory
+  ids: [],          //mandatory
+  fields: []        //optional
+}, successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+Appacitive.Connection.multiGet({ 
+    relation: 'reviewed',
+    ids: ["33017891581461312", "33017891581461313"],
+    fields: ["__id"]
+}, function(reviewed) { 
+    // reviewed is an array of connection objects
+}, function(status) {
+    alert("code:" + status.code + "\nmessage:" + status.message);
+});
+```
+
 #### Retrieve a single connection via its endpoints
 
 Only a single instance of a connection of a specific type can be created between two article instances.
@@ -1534,16 +1718,84 @@ As a result, a connection can also be uniquely identified by its type and the id
 As an example, say you have two users and you want to see if they are friends (by virtue of a "friend" connection between them),
 the you can simply try and retrieve that connection by specifying the type as "friend" and providing the ids of the two users.
 
+** Parameters ** 
+
+<dl>
+  <dt>type</dt>
+  <dd>required<br/><span>The type of the connection to be retrieved.</span></dd>
+  <dt>articleAId</dt>
+  <dd>required<br/><span>Id of articleA</span></dd>
+  <dt>articleBid</dt>
+  <dd>required<br/><span>Id of articleB</span></dd>
+  <dt>label</dt>
+  <dd>optional<br/><span>For a relation between same schema and different endpoint labels this becomes mandatory</span></dd>
+</dl>
+
+** Response **
+
+Returns a connection of specified type if exists between articleAid and articleBid
+
+``` rest
+$$$Method
+GET https://apis.appacitive.com/connection/{type}/find/{articleAid}/{articleBid}?label={label}
+```
+``` rest
+$$$Sample Request
+// Try and get an existing friend connection between two users John(22322) and Jane(33422) with endpoint label as 'freind' for jane
+
+curl -X GET \
+-H "Appacitive-Environment: sandbox" \
+-H "Appacitive-Session: P7IM2L8/EIC6kpzkC3wzQYFoDtIZZXhpUDZ2wf13FWfVki7flNEepVks8SlnLtgUyyjaZGTUVInQqvHJ8kwnNnHEdsZAGDU9+XNV107ZC/PkFEAs1RIpN43J69vPNvsN80shAG7eM+9YbheFH5eWHw==" \
+https://apis.appacitive.com/connection/friend/find/22322/33422?label=freind
+
+```
+``` rest
+$$$Sample Response
+{
+  "connection": {
+    "__id": "33017891581461312",
+    "__relationtype": "friend",
+    "__endpointa": {
+      "label": "me",
+      "type": "user",
+      "articleid": "22322"
+    },
+    "__endpointb": {
+      "label": "freind",
+      "type": "user",
+      "articleid": "33422"
+    }
+  },
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "6382c031-65a1-4188-a107-c119da41496d",
+    "additionalmessages": []
+  }
+}
+```
 ``` javascript
+$$$Method
+Appacitive.Connection.getBetweenArticlesForRelation({
+  relation: 'type', //mandatory
+  articleAId : 'articleAId', //mandatory
+  articleBId : 'articleBId', //mandatory
+  label: 'label' //optional
+}, successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
 // Try and get an existing friend connection between two users John and Jane
 
 var idForJohn = "22322";
-var idForJane = "22322";
+var idForJane = "33422";
 
 Appacitive.Connection.getBetweenArticlesForRelation({ 
-    relation: "review", 
+    relation: "freind", 
     articleAId : idForJohn, 
-    articleBId : "idForJane"
+    articleBId : idForJane
 }, function(obj){
     // connection obj is returned as argument to onsuccess
     if( obj !== null && obj !== undefined ) {
@@ -1551,15 +1803,16 @@ Appacitive.Connection.getBetweenArticlesForRelation({
     } else {
       alert('John and Jane are not friends.');
     }
-}, function(err, obj) {
+}, function(status, obj) {
     alert('Could not fetch, probably because of an incorrect id');
 });
 
-//For a relation between same schema type and differenct endpoint labels
+//For a relation between same schema and different endpoint labels
 //'label' parameter becomes mandatory for the get call
 
 //'friend' is the relation between user schema
 //and 'me' and 'you' are the endpoint labels
+
 Appacitive.Connection.getBetweenArticlesForRelation({ 
     relation: "friend", 
     articleAId : "22322", 
@@ -1568,7 +1821,7 @@ Appacitive.Connection.getBetweenArticlesForRelation({
 }, function(obj){
     // connection obj is returned as argument to onsuccess
     alert('Connection fetched successfully');
-}, function(err, obj) {
+}, function(status, obj) {
     alert('Could not fetch, probably because of an incorrect id');
 });
 
@@ -1674,19 +1927,25 @@ $$$Sample Response
 ```
 
 ``` javascript
+$$$Method
+Appacitive.Connection::save(successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
 //Get the connection object and update the description
-Appacitive.Article.get({ 
+Appacitive.Connection.get({ 
     relation: 'review',    //mandatory
-    id: '1234345'          //mandatory
-}, function(obj) {
+    id: '1234345',         //mandatory
+    fields: ["description"]
+}, function(review) {
     // connection obj is returned as argument to onsuccess
-    obj.set('description','good hotel')
-    obj.save(function(){
+    review.set('description','good hotel')
+    review.save(function(){
       alert('review connection saved successfully.');
-    }, function(err, obj){
+    }, function(status, obj){
       alert('Save failed for review connection');
     });
-}, function(err, obj) {
+}, function(status) {
     alert('Could not fetch, probably because of an incorrect id');
 });
 ```
@@ -1742,12 +2001,18 @@ $$$Sample Response
 ```
 
 ``` javascript
+$$$Method
+Appacitive.Connection::del(successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
 /* delete review connection with id 123123 */
 var review = new Appacitive
   .Connection({relation: 'review', __id : '123123'});
-review.del(function(obj) {
+
+review.del(function() {
     alert('Deleted successfully');
-}, function(err, obj) {
+}, function(status, obj) {
     alert('Delete failed')
 });
 
@@ -1805,15 +2070,23 @@ $$$Sample Response
 ```
 
 ``` javascript
+$$$Method
+Appacitive.Connection.multiDelete({
+  relation: 'type', //mandatory
+  ids: []           //mandatory  
+}, successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
 /* delete review connections with ids 40438996554377032, 40440007982449139 & 40440007982449139 */
 
 Appacitive.Connection.multiDelete({    
     relation: 'reivew', //mandatory
-    ids: ["40438996554377032", "40440007982449139", "40440007982449139"], //mandatory
+    ids: ["40438996554377032", "40440007982449139", "40440007982449139"] //mandatory
 }, function() { 
     //successfully deleted all connections
-}, function(err) {
-    alert("code:" + err.code + "\nmessage:" + err.message);
+}, function(status) {
+    alert("code:" + status.code + "\nmessage:" + status.message);
 });
 ```
 ``` csharp
@@ -1834,7 +2107,7 @@ connected data inside the platform.
 In a relational database, you can query for related data by querying over a table's foreign key. Similarly, on the Appacitive platform,
 related data can be retreived by querying connections. You can query for all articles connected to a specific article via a given connection type. 
 
-For example<br>
+**For example**<br>
 Querying for all users who have visited San Franciso can be represented as <br>
 `Get all user articles connected to the city article (San Francisco) via the visited connection`.
 
@@ -1922,16 +2195,43 @@ $$$Sample Response
 ```
 
 ``` javascript
+$$$Method
+Appacitive.Article::fetchConnectedArticles({
+  relation: 'type', //mandatory
+  label: 'label',   //optional
+  returnEdge: true,  //optional: default is true
+  fields: [],                //optional
+  filter: {Appacitive.Filter obj}, //optional  
+  pageNumber: 1 ,           //optional: default is 1
+  pageSize: 50,             //optional: default is 50
+  orderBy: '__utclastupdateddate', //optional: default is __utclastupdateddate
+  isAscending: false        //optional: default is false
+}, successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
 // Get all users who have visited San Francisco (city article with id 636523636) 
 var city = new Appacitive.Article({ __id : '636523636', schema : 'city');
-var connectionCollection = city.getConnectedArticles({ relation : 'visitor' });
-connectionCollection.fetch(function(){
-  //iterating on the collection
-  connectionCollection.forEach(function (connection) {
+
+city.fetchConnectedArticles({ 
+  relation : 'visitor', //mandatory
+  label: 'visitor', // optional
+  returnEdge: true, // set to false to stop returning connection
+  fields: ["__id"]
+}, function(obj, pi) {
+  // list of all connected articles to jane
+  var users = city.children["visitor"];
+
+  //iterating on the users array
+  users.forEach(function (u) {
+    //connection connecting city to each user
+    console.log(u.connection.id());
   }
-}, function(err) {
-    alert("code:" + err.code + "\nmessage:" + err.message);
+}, function(status) {
+    alert("code:" + status.code + "\nmessage:" + status.message);
 });
+
+/* On success, city object is populated with a visitor property in its children. So, city.children.visitor will give you a list of all visitors of Appacitive.Article type. These articles also contain a connection property which consists of its link properties with jane.*/
 ```
 
 ``` csharp
@@ -1940,6 +2240,300 @@ var city = new Article("city", "636523636");
 var visitors = await city.GetConnectedArticlesAsync("visitor");
 ```
 
+#### Retrieve all connections between two endpoints
+
+Many instances of connections of diferent types can be created between two article instances.
+Allowing us, to retrieve all connections between two article ids of same or different schemas.
+
+**For example**<br>
+
+Say you have two users and you want to see if they are friends (by virtue of a "friend" connection between them), and are they also married (by virtue of a "marriage" connection between them), then you can simply try and retrieve those connections providing the ids of the two users.
+
+** Parameters ** 
+
+<dl>
+  <dt>articleAId</dt>
+  <dd>required<br/><span>Id of articleA</span></dd>
+  <dt>articleBId</dt>
+  <dd>required<br/><span>Id of articleB</span></dd>
+</dl>
+
+** Response **
+
+Returns a list of all connections that exists between articleAId and articleBId of any relation type
+
+``` rest
+$$$Method
+GET https://apis.appacitive.com/connection/find/{articleAId}/{articleBId}
+```
+``` rest
+$$$Sample Request
+// Try and get all connections between two users John(22322) and Jane(33422)
+
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/connection/find/22322/33422
+
+```
+``` rest
+$$$Sample Response
+//Returns all connections present between articleAId and articleBId of any relation type.
+
+// System attributes have been removed for readability
+{
+  "paginginfo": {
+    "pagenumber": 1,
+    "pagesize": 20,
+    "totalrecords": 3
+  },
+  "connections": [
+    {
+      "__id": "41156992433261401",
+      "__relationtype": "marriage",
+      "__endpointa": {
+        "label": "husband",
+        "type": "user",
+        "articleid": "22322"
+      },
+      "__endpointb": {
+        "label": "wife",
+        "type": "user",
+        "articleid": "33422"
+      }
+    },
+    {
+      "__id": "41157044188875634",
+      "__relationtype": "friend",
+      "__endpointa": {
+        "label": "me",
+        "type": "user",
+        "articleid": "33422"
+      },
+      "__endpointb": {
+        "label": "freind",
+        "type": "user",
+        "articleid": "22322"
+      }
+    },
+    {
+      "__id": "41157051534150519",
+      "__relationtype": "friend",
+      "__endpointa": {
+        "label": "me",
+        "type": "user",
+        "articleid": "22322"
+      },
+      "__endpointb": {
+        "label": "freind",
+        "type": "user",
+        "articleid": "33422"
+      }
+    }
+  ],
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "ce871063-5443-4524-9443-d14860949c59",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+$$$Method
+Appacitive.Connection.getBetweenArticles({
+  articleAId : 'articleAId', //mandatory
+  articleBId : 'articleBId', //mandatory
+  fields: [],                //optional
+  filter: {Appacitive.Filter obj}, //optional  
+  pageNumber: 1 ,           //optional: default is 1
+  pageSize: 50,             //optional: default is 50
+  orderBy: '__utclastupdateddate', //optional: default is __utclastupdateddate
+  isAscending: false        //optional: default is false
+}, successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
+// Try and get all connections between two users John(22322) and Jane(33422)
+
+var idForJohn = "22322";
+var idForJane = "33422";
+
+Appacitive.Connection.getBetweenArticles({ 
+    articleAId : idForJohn, 
+    articleBId : idForJane,
+	  fields: ["__id"]
+}, function(connections, pi){
+    // connections is an array of all connections between two ids which is returned as argument to onsuccess
+    connections.forEach(function(con) {
+      if (conn.relation == 'marriage') {
+        console.log("John and Jane are married");
+      }
+    });
+}, function(status, obj) {
+    alert('Could not fetch, probably because of incorrect id's');
+});
+
+```
+
+#### Retrieve all inter-connections between one and many endpoints
+
+Scenarios where you may need to determine all type of connections between one article and a set of articles, this query comes to rescue.
+
+**For example**<br>
+
+Say you have many `users` and `houses`( articles of schema type house) and you want to determine if they are connected to `jane` by either a `freind` or by `marriage` or by `owns` connection, then you can simply try and retrieve those connections providing jane's id as root and ids of the users and house as target.
+
+** Parameters ** 
+
+<dl>
+  <dt>articleAId</dt>
+  <dd>required<br/><span>Id of rrot article</span></dd>
+  <dt>articleBids</dt>
+  <dd>required<br/><span>Ids of target articles</span></dd>
+</dl>
+
+** Response **
+
+Returns a list of all connections that exists between articleAid and articleBids of any relation type
+
+**Note** that this is a `POST` HTTP call.
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/connection/interconnects
+```
+``` rest
+$$$Sample Request
+// Try and get all connections between Jane(33422) and users John(22322), Tarzan(44522) and house (55622, 665722)
+
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d '{"article1id":"33422","article2ids":["22322","44522","55622","665722"]}' \
+https://apis.appacitive.com/connection/interconnects
+```
+``` rest
+$$$Sample Response
+//Returns all connections present between articleAId and articleBIdS of any relation type.
+
+// System attributes have been removed for readability
+{
+  "paginginfo": {
+    "pagenumber": 1,
+    "pagesize": 20,
+    "totalrecords": 3
+  },
+  "connections": [
+    {
+      "__id": "41156992433261401",
+      "__relationtype": "marriage",
+      "__endpointa": {
+        "label": "husband",
+        "type": "user",
+        "articleid": "22322"
+      },
+      "__endpointb": {
+        "label": "wife",
+        "type": "user",
+        "articleid": "33422"
+      }
+    },
+    {
+      "__id": "41157051534150519",
+      "__relationtype": "friend",
+      "__endpointa": {
+        "label": "me",
+        "type": "user",
+        "articleid": "22322"
+      },
+      "__endpointb": {
+        "label": "freind",
+        "type": "user",
+        "articleid": "33422"
+      }
+    },
+    {
+      "__id": "41164995348794263",
+      "__relationtype": "friend",
+      "__endpointa": {
+        "label": "me",
+        "type": "user",
+        "articleid": "22322"
+      },
+      "__endpointb": {
+        "label": "freind",
+        "type": "user",
+        "articleid": "44522"
+      }
+    },
+    {
+      "__id": "41164995348794263",
+      "__relationtype": "owns",
+      "__endpointa": {
+        "label": "user",
+        "type": "user",
+        "articleid": "22322"
+      },
+      "__endpointb": {
+        "label": "house",
+        "type": "house",
+        "articleid": "665722"
+      },
+    },
+  ],
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "ce871063-5443-4524-9443-d14860949c59",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+$$$Method
+Appacitive.Connection.getInterconnects({
+  articleAId : 'articleAId', //mandatory
+  articleBIds : 'articleBId', //mandatory
+  fields: [],                //optional
+  pageNumber: 1 ,           //optional: default is 1
+  pageSize: 50,             //optional: default is 50
+  orderBy: '__utclastupdateddate', //optional: default is __utclastupdateddate
+  isAscending: false        //optional: default is false
+}, successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
+// Try and get all connections between two users John(22322) and Jane(33422)
+
+var idForJohn = "22322", idForJane = "33422", idForTarzan = "44522";
+var idForHouse1 = "55622", idForHouse2 = "66722";
+
+Appacitive.Connection.getInterconnects({ 
+    articleAId : idForJohn, 
+    articleBIds : [idForJane, idForTarzan, idForHouse1, idForHouse2]
+    fields: ["__id"]
+}, function(connections, pi){
+    // connections is an array of all connections netween articleAId  and articleBIds which is returned as argument to onsuccess
+    connections.forEach(function(con) {
+      if (conn.relation == 'marriage') {
+        console.log("John and Jane are married");
+      }
+      if (conn.relation == 'owns') {
+        console.log("Jane owns this house with id" + conn.id());
+      }
+    });
+}, function(status, obj) {
+    alert('Could not fetch, probably because of incorrect id's);
+});
+
+```
 
 Users
 ------------
@@ -2097,6 +2691,32 @@ $$$Sample Response
 }
 ```
 
+``` javascript
+$$$Method
+Appacitive.User::save(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+
+// set the fields
+var userDetails = {
+    username: 'john.doe@appacitive.com',
+    password: /* password as string */,
+    email: 'johndoe@appacitive.com',
+    firstname: 'John',
+    lastname: 'Doe'
+};
+
+var newUser = new Appacitive.User(userDetails);
+
+//and then call save on that object
+newUser.save(function(obj) {
+    alert('Saved successfully, id: ' + newUser.get('__id'));
+}, function(status, obj) {
+    alert('An error occured while saving the user.');
+});
+```
+
 ``` csharp
 //Create a User
 var user = new User
@@ -2153,6 +2773,47 @@ curl -X PUT \
 -d '{ "username": "john.doe", "firstname": "John", "email": "john.doe@appacitive.com", "password": "p@ssw0rd", "__link": { "authtype": "facebook", "accesstoken": "{facebook access token}"	}}' \
 https://apis.appacitive.com/user
 ```
+``` javascript
+$$$Method
+Appacitive.User::save(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+//  Create a new user and link it to a facebook account
+// include this script in your page for facebook login
+window.fbAsyncInit = function() {
+    Appacitive.Facebook.initialize({
+        appId      : 'YOUR_APP_ID', // Facebook App ID
+        status     : false, // check login status
+        cookie     : true, // enable cookies to allow Appacitive to access the session
+        xfbml      : true  // parse XFBML
+    });
+    // Additional initialization code here
+};
+
+//create user object
+var user = new Appacitive.User({
+    username: 'john.doe@appacitive.com',
+    password: /* password as string */,
+    email: 'johndoe@appacitive.com',
+    firstname: 'John',
+    lastname: 'Doe' 
+});
+
+//link facebook account
+user.linkFacebookAccount();
+
+/You can access linked accounts of a user, using this field
+console.dir(user.linkedAccounts); 
+
+//create the user on server
+user.save(function(obj) {
+    console.dir(user.linkedAccounts);
+}, function(status, obj) {
+    alert('An error occured while saving the user.');
+});
+```
+
 ``` rest
 $$$Sample Response
 {
@@ -2258,6 +2919,38 @@ $$$Sample Response
 	}
 }
 ```
+``` javascript
+$$$Method
+Appacitive.User::save(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+//create user object
+var user = new Appacitive.User({
+    username: 'john.doe@appacitive.com',
+    password: /* password as string */,
+    email: 'johndoe@appacitive.com',
+    firstname: 'John',
+    lastname: 'Doe',
+    __link: {
+      authtype: "twitter", 
+      oauthtoken: "{twitter oauth token}", 
+      oauthtokensecret: "{twitter oauth token secret}",
+      consumerkey: "{twitter consumer key}", 
+      consumersecret: "{twitter consumer secret}"
+    }
+});
+
+//You can access linked accounts of a user, using this field
+console.dir(user.linkedAccounts); 
+
+//create the user on server
+user.save(function(obj) {
+    console.dir(user.linkedAccounts);
+}, function(status, obj) {
+    alert('An error occured while saving the user.');
+});
+```
 
 #### Create a user with just the OAuth access token
 
@@ -2333,6 +3026,51 @@ $$$Sample Response
 	}
 }
 ```
+``` javascript
+$$$Method
+Appacitive.Users.signupWithFacebook(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+//  Create a new user using the Facebook access token
+//Include this script in your page for setting up facebook login
+window.fbAsyncInit = function() {
+    Appacitive.Facebook.initialize({
+        appId      : 'YOUR_APP_ID', // Facebook App ID
+        status     : true, // check login status
+        cookie     : true, // enable cookies to allow Appacitive to access the session
+        xfbml      : true  // parse XFBML
+    });
+    // Additional initialization code here
+};
+
+//Registering via facebook is done like so
+Appacitive.Users.signupWithFacebook(function (authResult) {
+    // user has been successfully signed up and set as current user
+    // authresult contains the user and Appacitive-usertoken
+}, function(status) {
+    // there was an error signing up the user
+});
+```
+``` javascript
+$$$Sample Request
+//  Create a new user using the OAuth 1.0 token
+
+var authRequest = {
+    'type': 'twitter',
+    'oauthtoken': {oauthtoken},
+    'oauthtokensecret': {oauthtokensecret},
+    'createnew': true
+}
+ 
+Appacitive.Users.authenticateUser(authRequest, function(authResult) { 
+   // user has been successfully signed up and set as current user
+   // authresult contains the user and Appacitive-usertoken
+   console.dir(authResult.user.id());
+}, function(status) {
+    alert('An error occured while saving the user.');
+});
+```
 
 #### Link account with existing Appacitive user.
 
@@ -2389,6 +3127,20 @@ $$$Sample Response
 	}
 }
 ```
+``` javascript
+$$$Method
+Appacitive.User::linkFacebookAccount(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+var user = Appacitive.User.currentUser();
+user.linkFacebookAccount(function(obj) {
+    console.dir(user.linkedAccounts);//You can access linked accounts of a user, using this field
+}, function(status, obj){
+    alert("Could not link FB account");
+});
+
+```
 
 ##### Link appacitive user to a OAuth 1.0 account
 
@@ -2443,6 +3195,9 @@ $$$Sample Response
 	}
 }
 ```
+``` javascript
+Not supported
+```
 
 #### Delink account with existing appacitive user.
 
@@ -2494,11 +3249,38 @@ $$$Sample Response
 	}
 }
 ```
+``` javascript
+$$$Method
+Appacitive.User::unlinkFacebookAccount(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+Appacitive.Users.currentUser().unlinkFacebookAccount(function() {
+    alert("Facebook account delinked successfully");
+}, function(status){
+    alert("Could not delink facebook account");
+});
+```
 
 ### Authenticating a user
 
 To make user specific API calls to Appacitive, you need to authenticate the user to the Appacitive API and create a `session token` for the user every time he logs into your app.
 You will pass this `session token` as a HTTP header called `Appacitive-User-Auth`. The `user` object is also returned on a successful authentication call.
+
+
+``` javascript
+//Whenever you use signup or login method, the user is stored in localStorage and can be retrieved using Appacitive.Users.currentUser().
+
+//So, everytime your app opens, you just need to check this value, to be sure whether the user is logged-in or logged-out.
+
+var cUser = Appacitive.User.currentUser();
+if (cUser) {
+    // user is logged in
+} else {
+    // user is not logged in
+}
+
+```
 
 #### Authenticating user by username and password
 
@@ -2529,7 +3311,6 @@ You will pass this `session token` as a HTTP header called `Appacitive-User-Auth
 ** Response **
 
 A newly generated string session `token`, the `user` object itself and a `status` object are returned.
-
 
 ``` csharp
 //Authenticating user by `username` and `password`
@@ -2604,6 +3385,58 @@ $$$Sample Response
 }
 ```
 
+``` javascript
+//Login with username and password
+```
+```javascript
+$$$Method
+Appacitive.Users.login("username", "password", successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+Appacitive.Users.login("username", "password", function (authResult) {
+    // user has been logged in successfully
+    conole.log(authResult.token);
+    alert('Saved successfully, id: ' + authResult.user.get('__id'));
+}, function(status) {
+    // log in attempt failed
+});
+
+//The `authResult` is similar as given above.
+{
+    "token": "token",
+    "user": Appacitive.User object
+}
+```
+
+``` javascript
+//Signup and login
+```
+```javascript
+$$$Method
+Appacitive.Users.signup(userDetails, successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+// set the fields
+var userDetails = {
+    username: 'john.doe@appacitive.com',
+    password: /* password as string */,
+    email: 'johndoe@appacitive.com',
+    firstname: 'John',
+    lastname: 'Doe'
+};
+
+// now to create the user
+Appacitive.Users.signup(userDetails , function(authResult) {
+    conole.log(authResult.token);
+    alert('Saved successfully, id: ' + authResult.user.get('__id'));
+}, function(status) {
+    alert('An error occured while saving the user.');
+});
+```
+
+
 #### Authenticate with OAuth 2.0 access token
 
 You can authenticate a user and generate a session token using a access token using one of his linked identities like facebook.
@@ -2677,7 +3510,20 @@ $$$Sample Response
 	}
 }
 ```
-
+``` javascript
+$$$Method
+Appacitive.Users.loginWithFacebook(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+//  Authenticate user with facebook access token
+Appacitive.Users.loginWithFacebook(function (authResult) {
+    // authentication successful
+}, function(status) {
+    // authentication unsuccessful
+    // maybe incorrect credentials or maybe the user denied permissions
+});
+```
 
 #### Authenticate with a OAuth 1.0 access token
 
@@ -2732,6 +3578,27 @@ $$$Sample Response
 		"additionalmessages": []
 	}
 }
+```
+``` javascript
+$$$Method
+Appacitive.Users.authenticateUser(authRequest, successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+//Authenticate user with twitter
+var authRequest = {
+    'type': 'twitter',
+    'oauthtoken': {oauthtoken},
+    'oauthtokensecret': {oauthtokensecret}
+}
+
+Appacitive.Users.authenticateUser(authRequest, function(authResult) { 
+   // user has been successfully signed up and set as current user
+   // authresult contains the user and Appacitive-usertoken
+   console.dir(authResult.user.id());
+}, function(status) {
+    alert('An error occured while saving the user.');
+}););
 ```
 
 ### Retrieving users
@@ -2830,6 +3697,19 @@ $$$Sample Response
 	}
 }
 ```
+``` javascript
+$$$Method
+Appacitive.User::fetch(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+var user = new Appacitive.User({ __id: '12345' });
+user.fetch(function (obj) {
+    alert('Fetched user with id 12345');
+}, function(status, obj) {
+    alert('Could not fetch user with id 12345');
+});
+```
 
 #### Get User by username
 
@@ -2910,6 +3790,20 @@ $$$Sample Response
 var user = await Users.GetByUsernameAsync("john.doe");
 ```
 
+``` javascript
+$$$Method
+Appacitive.Users.getUserByUsername('{{username}}', successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+//fetch user by username
+Appacitive.Users.getUserByUsername("john.doe", function(user) {
+    alert('Fetched user with username ' + user.get('username'));
+}, function(status) {
+    alert('Could not fetch user with username  john.doe');
+});
+```
+
 #### Get user by user token
 
 Here you can get a user by a session token generated for that user using his credentials. 
@@ -2987,6 +3881,24 @@ $$$Sample Response
 		"additionalmessages": []
 	}
 }
+```
+``` javascript
+$$$Method
+Appacitive.Users.getUserByToken("{{usertoken}}", successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+
+
+//fetch user by token
+Appacitive.Users.getUserByToken("asfa21sadas", function(user) {
+    alert('Fetched user with username ' + user.get('username'));
+}, function(status) {
+    alert('Could not fetch user with usertoken');
+});
+
+
+
 ```
 
 ### Updating a user
@@ -3082,13 +3994,49 @@ user.FirstName = "jane";
 user.Set<string>("city", "New York"); 
 await user.SaveAsync();
 ```
+``` javascript
+$$$Method
+Appacitive.User::save(successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
+//Update logged-in user
+var user = Appacitive.Users.currentUser();
+
+user.save(function(obj) {
+  alert('User updated successfully!');
+}, function(status, obj) {
+  alert('error while updating user!');
+});
+```
 
 ### Searching for users
 
 Searching for users follows all the same filtering principles as searching for articles of any other schema.
 
 ``` javascript
-//TODO
+$$$Method
+Appacitive.Article.findAll({
+  schema: 'user', //mandatory
+  fields: [],       //optional
+  filter: {Appacitive.Filter obj}, //optional  
+  pageNumber: 1 ,   //optional: default is 1
+  pageSize: 50,     //optional: default is 50
+  orderBy: '__id',  //optional: default is __utclastupdateddate
+  isAscending: false  //optional: default is false
+}, successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
+Appacitive.Article.FindAll({
+  schema: 'user',
+  fields: ["username", "firstname", "email"]
+}, function(users) {
+  //users is an array of Appacitive.User objects
+  console.log("Users fetched");
+}, function(status) {
+  console.log("Error fetching users");
+});
 ```
 ``` csharp
 //Search user by building `Query`
@@ -3160,6 +4108,20 @@ $$$Sample Response
 	}
 }
 ```
+``` javascript
+$$$Method
+Appacitive.Users.deleteUser('{{id}}', successHandler, ErrorHandler);
+```
+``` javascript
+$$$Sample Request
+//To delete a user with an `__id` of, say, 1000.
+Appacitive.Users.deleteUser('1000', function() {
+    // deleted successfully
+}, function(status) {
+    // delete failed
+});
+```
+
 #### Delete user by username
 
 An additional query string parameter called `useridtype` is sent to specify the kind of user identifier you are using, which in this case is `username`.
@@ -3204,6 +4166,9 @@ $$$Sample Response
 		"additionalmessages": []
 	}
 }
+```
+``` javascript
+$$$NOT SUPPORTED
 ```
 
 #### Delete user by user token
@@ -3251,61 +4216,18 @@ $$$Sample Response
 	}
 }
 ```
-#### Deleting a user along with all connections to it
-
-You can pass an optional query string parameter in the delete call called `deleteconnections` with its value set to `true` to also delete all connections associated with the user object you want to delete.
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Appacitive-User-Auth</dt>
-	<dd>required<br/><span>A session token generated for a user.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-``` rest
+``` javascript
 $$$Method
-DELETE https://apis.appacitive.com/user/{userid}?deleteconnections=true
-```
-``` rest
-$$$Sample Request
-//	Delete user using his session token
-curl -X DELETE \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Appacitive-User-Auth: {User token}" \
--H "Content-Type: application/json" \
-https://apis.appacitive.com/user/416176845248641548?deleteconnections=true
-```
-``` rest
-$$$Sample Response
-{
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
-		"additionalmessages": []
-	}
-}
+Appacitive.Users.deleteCurrentUser(successHandler, ErrorHandler);
 ```
 ``` javascript
-//Setting the third argument to true will delete its connections if they exist
-player.del(function(obj) {
-    alert('Deleted successfully');
-}, function(err, obj) {
-    alert('Delete failed')
-}, true); 
-```
-``` csharp
-//Delete user with connected articles
-await Users.DeleteUserAsync("1234567", true);
+$$$Sample Request
+//You can delete the currently logged in user via a helper method.
+Appacitive.Users.deleteCurrentUser(function() {
+    // delete successful
+}, function(status) {
+    // delete failed
+});
 ```
 
 ### Location Tracking
@@ -3364,8 +4286,62 @@ $$$Sample Response
 	}
 }
 ```
+``` javascript
+$$$Method
+Appacitive.User::checkin({
+  lat: {{latitude}},
+  lng: {{longitude}}
+}, successHandler, ErrorHandler);
+```
+``` javascript
+$$$Sample Request
+//Change current users location
+Appacitive.Users.currentUser().checkin({
+    lat:18.57, lng: 75.55
+}, function() {
+    alert("Checked in successfully");
+}, function(status) {
+    alert("There was an error checking in");
+});
+```
 
 ### Session Management
+
+
+!!! javascript
+Once the user is authenticated successfully, you will be provided with the user details and an access token. This access token identifies the currently logged in user and will be used to implement access control. Each instance of an app can have one logged in user at any given time. By default the SDK takes care of setting and unsetting this token. However, you can explicitly tell the SDK to start using another access token.
+!!!
+
+``` javascript
+// the access token
+var token = {{token}};
+
+// setting it in the SDK
+Appacitive.session.setUserAuthHeader(token);
+// now the sdk will send this token with all requests to the server
+// Access control has started
+
+// removing the auth token
+Appacitive.session.removeUserAuthHeader();
+// Access control has been disabled
+```
+```javascript
+$$$Note 
+//Setting accessToken doesn't takes care of setting user associated for it. For that you will need to set current user too.
+
+var user = new Appacitive.User({
+    __id : '2121312'
+    username: 'john.doe@appacitive.com'
+    email: 'johndoe@appacitive.com',
+    firstname: 'John',
+    lastname: 'Doe'
+});
+
+Appacitive.Users.setCurrentUser(user, token);
+
+//Now current user points to `john.doe`
+console.log(Appacitive.Users.currentUser().get('__id'));
+```
 
 #### Validate session token
 
@@ -3418,6 +4394,23 @@ $$$Sample Response
 		"additionalmessages": []
 	}
 }
+```
+``` javascript
+$$$Method
+Appacitive.Users.validateCurrentUser(successHandler, validateAPI);
+```
+``` javascript
+$$$Sample Request
+// to check whether user is loggedin locally. This won't make any explicit apicall to validate user
+Appacitive.Users.validateCurrentUser(function(isValid) {
+    if (isValid) //user is logged in
+});
+
+// to check whether user is loggedin, explicitly making an apicall to validate usertoken
+Appacitive.Users.validateCurrentUser(function(isValid) {
+    if (isValid)  //user is logged in
+    // This method also sets the current user for that token
+}, true); // set to true to validate usertoken making an apicall
 ```
 
 
@@ -3473,10 +4466,22 @@ $$$Sample Response
 	}
 }
 ```
+``` javascript
+$$$Method
+Appacitive.User::logout(callback);
+```
+```javascript
+$$4Sample Request
+Appacitive.Users.currentUser().logout(function() {
+    // user is logged out   
+    // this will now be null
+    var cUser = Appacitive.Users.currentUser();  
+});
+```
 
 ### Password Management
 
-Appacitive provides a intuitive password management and recovery protocol to app developers so that their users can recover or change their passwords safely if and when the need arises.
+Appacitive provides an intuitive password management and recovery protocol to app developers so that their users can recover or change their passwords safely if and when the need arises.
 
 #### Reset password
 
@@ -3538,6 +4543,20 @@ $$$Sample Response
 	}
 }
 ```
+``` javascript
+$$$Method
+Appacitive.User::updatePassword('{oldPassword}','{newPassword}', successHandler, ErrorHandler);
+```
+``` javascript
+$$$Sample Request
+//You can make this call only for a loggedin user
+Appacitive.Users.currentUser().updatePassword('dfd4f43','456dfabc', function() {
+    console.log("Password updated successfully"); 
+}, function(status) {
+    console.log("Failed to updated password for user");
+});
+```
+
 
 #### Forgot password
 
@@ -3594,196 +4613,19 @@ $$$Sample Response
 }
 ```
 
-Files
-------------
-
-Appacitive allows you to upload, download and ditribute media files like images, videos etc. on the appacitive platform so you can build rich applications and deliver media using an extensive CDN. 
-The appacitive files api works by providing you `pre-signed` urls to a third-party cloud storage service (<a href="http://aws.amazon.com/s3/">Amazon S3</a>), where the files can be uploaded to or downloaded from.
-You can upload and download files of any size and most filetypes are supported. 
-
-### Upload
-
-To upload a file on appacitive for your app, you need to get a pre-signed Amazon S3 url to which you will be uploading your file. 
-You can get this url by making a HTTP GET request to the appacitive file `getupload` url. 
-The `contenttype` query string parameter you send here should match the `content-type` http header value when uploading the file onto amazon s3 in the subsequent call.
-A unique string `id` is associated with every file you store on the appacitive platform. This string `id` is either the optional `filename` query string parameter you pass while generating the upload url or appacitive assigns it a unique system generated value.
-You can use this unique string file `id` to access, update or delete that file. Uploading multiple files using the same `filename` will lead to overwriting the file.
-
-In the request, the optional query string paramertes you can provide are.
-
-** Query string parameters **
-
-<dl>
-	<dt>contenttype</dt>
-	<dd>required<br/><span>Mime-type of the file you are uploading.	
-	<dt>filename</dt>
-	<dd>optional<br/><span>Unique name for the file.
-	<dt>expires</dt>
-	<dd>optional<br/><span>Duration (in minutes) for which the upload url will be valid, default value is 5.	
-</dl>
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.	
-</dl>
-
-``` rest
+``` javascript
 $$$Method
-GET https://apis.appacitive.com/file/uploadurl?contenttype={content-type}
+Appacitive.Users.sendResetPasswordEmail("{username}", "{subject for the mail}", successHandler, ErrorHandler);
 ```
-``` rest
+``` javascript
 $$$Sample Request
-//	Generate upload url
-curl -X GET \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Content-Type: application/json" \
-https://apis.appacitive.com/file/uploadurl?filename=mypicture&contenttype=image/jpeg&expires=10
+//You can make this call only for a loggedin user
+Appacitive.Users.sendResetPasswordEmail("{username}", "{subject for the mail}", function() {
+    alert("Password reset mail sent successfully"); 
+}, function(status) {
+    alert("Failed to reset password for user");
+});
 ```
-``` rest
-$$$Sample Response
-{
-	"url": "https://stageblobstorage.s3.amazonaws.com/35003686659949394/_applications/35003695411364691/_deployments/35003749377377197/mypicture?AWSAccessKeyId=AKIAI5YIAGHRQS6VJETQ&Expires=1377164142&Signature=CELV5LBQs7d%2FJ%2FukBEnQJc%2Fb%2BBc%3D",
-	"id": "mypicture",
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "4f5a30f7-6b27-4d2b-92b5-c449d3083328",
-		"additionalmessages": []
-	}
-}
-```
-
-When the above request is successful, the HTTP response is a `200` OK and the response body is a json object containing the third party cloud storage providers upload `url` and the file `id`, which is the parameter `filename`'s value provided by you or a unique system generated identifier for the file.
-Now upload the file by making a PUT request to the `url` in the response above. The necessary authorization information is already embedded in the URI. For more details, refer to <a href="http://aws.amazon.com/documentation/s3/">Amazon S3 documentation</a>. 
-This url is valid for 5 minutes if `expires` was not specified while retreiving the url and only allows you to perform a PUT on the url. 
-You need to provied the same value for the `Content-Type` http header, which you provided while retreiving the url and if not provided, use 'application/octet-stream' or 'binary/octet-stream'. 
-You send the media file in the payload object of the PUT call.
-
-``` csharp
-//Upload via Byte Stream
-var fileName = "serverFileName.jpg";
-var bytes = memoryStream.ToArray();
-var upload = new FileUpload("image/jpeg", fileName, 30);
-string uploadedFileName = await upload.UploadAsync(bytes);
-
-//Upload via File Path
-var upload = new FileUpload("image/jpeg", fileName, 30);
-string uploadedFileName = await upload.UploadFileAsync(filePath);
-
-//Custom Upload
-//Get the upload url and upload the file
-var upload = new FileUpload("image/jpeg");
-string uploadUrl = await upload.GetUploadUrlAsync(30);
-//Custom logic to upload file
-```
-
-### Download
-
-To download a file from Appacitive for your app, you need to get a `pre-signed` download url for the file using its file `id`, from where you will be able to download the file.
-
-** Parameters **
-
-<dl>
-	<dt>filename</dt>
-	<dd>required<br/><span>The filename used when generating the uploadurl.
-	<dt>expires</dt>
-	<dd>optional<br/><span>Time in minutes for which the url will be valid, default value 5 mins.	
-</dl>
- 
-``` rest
-$$$Method
-GET https://apis.appacitive.com/file/download/{file id}
-```
-``` rest
-$$$Sample Request
-//	Generate download url
-curl -X GET \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Content-Type: application/json" \
-https://apis.appacitive.com/file/download/mypicture
-```
-``` rest
-$$$Sample Response
-{
-	"uri": "https://stageblobstorage.s3.amazonaws.com/35003686659949394/_applications/35003695411364691/_deployments/35003749377377197/mypicture?AWSAccessKeyId=AKIAI5YIAGHRQS6VJETQ&Expires=1377171161&Signature=%2FGpFSIMTVMdq%2FKf%2F8jvdPbvoGgs%3D",
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "0514cae7-2f8a-4232-8712-ed14e2a0c6ef",
-		"additionalmessages": []
-	}
-}
-```
-``` csharp
-//Three ways to download file
-var download = new FileDownload(fileName);
-
-//1: Get the byte stream
-var bytes = await download.DownloadAsync();
-
-//2: Download the data and write to a local file
-await download.DownloadFileAsync(localFileName);
-
-//3: Get the download URL
-var downloadUrl = await download.GetDownloadUrl(30);
-//Custom logic to download file
-```
-You can now download the file by making a GET request to the `pre-signed` download `url` in the response object. 
-No additional headers are required. For more details, refer to <a href="http://aws.amazon.com/documentation/s3/">Amazon S3 documentation</a>. 
-Url is valid for 1 minute by default, but if you want to increase the expiry time set the `expires` query string parameter while retreiving the download url. 
-This url only allows you to perform a GET on the file.
-
-### Delete a file
-
-This deletes a previously uploaded file from appacitive.
-
-** Parameters **
-
-<dl>
-	<dt>filename</dt>
-	<dd>required<br/><span>The unique filename associated with the file in the app.	
-</dl>
- 
-``` rest
-$$$Method
-DELETE https://apis.appacitive.com/file/delete/{file id}
-```
-``` rest
-$$$Sample Request
-//	Delete file
-curl -X DELETE \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Content-Type: application/json" \
-https://apis.appacitive.com/file/delete/mypicture
-```
-``` rest
-$$$Sample Response
-{
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "0514cae7-2f8a-4232-8712-ed14e2a0c6ef",
-		"additionalmessages": []
-	}
-}
-```
-### Update a file
-
-You can update a previously uploaded file for your app by using it's unique file name and re-uploading another file in its place.
-
 
 Querying Data
 ------------
@@ -3795,7 +4637,91 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus q
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce 
 
 ``` javascript
-//Todo
+$$$Method
+Appacitive.Queries.FindAllQuery(options).fetch(successHandler, errorHandler);
+```
+```javascript
+$$$Sample Request
+
+var filter = Appacitive.Filter.Property("firstname").equalTo("John");
+
+var query = new Appacitive.Queries.FindAllQuery(
+  schema: 'player', //mandatory 
+  //or relation: 'freinds'
+  fields: [*],      //optional: returns all user fields only
+  filter: filter,   //optional  
+  pageNumber: 1 ,   //optional: default is 1
+  pageSize: 20,     //optional: default is 50
+  orderBy: '__id',  //optional: default is __utclastupdateddate
+  isAscending: false  //optional: default is false
+}); 
+
+// success callback
+var successHandler = function(players) {
+  //`players` is `PagedList` of `Article`
+
+  console.log(players.total); //total records for query
+  console.log(players.pageNumber); //pageNumber for this set of records
+  console.log(players.pageSize); //pageSize for this set of records
+  
+  // fetching other left players
+  if (!players.isLastPage) {
+    // if this is not the last page then fetch further records 
+    query.fetchNext(successHandler);
+  }
+};
+
+// make a call
+query.fetch(successHandler);
+```
+``` javascript
+$$$MORE SAMPLES
+
+//First name like "oh"
+var likeFilter = Appacitive.Filter.Property("firstname").like("oh");
+
+//First name starts with "jo"
+var startsWithFilter = Appacitive.Filter.Property("firstname").startsWith("jo");
+
+
+//First name ends with "oe"
+var endsWithFilter = Appacitive.Filter.Property("firstname").endsWith("oe");
+
+//First name matching several different values
+var containsFilter = Appacitive.Filter.Property("firstname").contains(["John", "Jane", "Tarzan"]);
+
+//Between two dates
+var start = new Date("12 Dec 1975");
+var end = new Date("12 Jun 1995");
+var betweenDatesFilter = Appacitive.Filter.Property("birthdate").betweenDate(start, end);
+
+//Between two datetime objects
+var betweenDateTimeFilter = Appacitive.Filter.Property("__utclastupdateddate").betweenDateTime(start, end);
+
+//Between some time
+var betweenTimeFilter = Appacitive.Filter.Property("birthtime").betweenTime(start, end);
+
+//Between some two numbers
+var betweenFilter = Appacitive.Filter.Property("age").between(23, 70);
+
+//Greater than a date
+var date = new Date("12 Dec 1975");
+var greaterThanDateFilter = Appacitive.Filter.Property("birthdate").greaterThanDate(date);
+
+//Greater than a datetime
+var greaterThanDateTimeFilter = Appacitive.Filter.Property("birthdate").greaterThanDateTime(date);
+
+//Greater than a time
+var greaterThanTimeFilter = Appacitive.Filter.Property("birthtime").greaterThanTime(date);
+
+//greater then some number 
+var greaterThanFilter = Appacitive.Filter.Property("age").greaterThan(25);
+
+//Same works for greaterThanEqualTo, greaterThanEqualToDate, greaterThanEqualToDateTime and greaterThanEqualToTime
+//and for lessThan, lessThanDate, lessThanDateTime and lessThanTime
+//and for lessThanEqualTo, lessThanEqualToDate, lessThanEqualToDateTime and lessThanEqualToTime
+// and for equalTo, equalToDate, equalToDateTime, equalToTime 
+
 ```
 ``` csharp
 //Build the query
@@ -3837,7 +4763,40 @@ var greaterThanQuery = Query.Property("birthdate").IsGreaterThan(date);
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce 
 
 ``` javascript
-//Todo
+//Use of `And` and `Or` operators
+var center = new Appacitive.GeoCoord(36.1749687195, -115.1372222900);
+
+//AND query
+var complexFilter = 
+      Appacitive.Filter.And(
+          //OR query
+          Appacitive.Filter.Or( 
+             Appacitive.Filter.Property("firstname").startsWith("jo"),
+             Appacitive.Filter.Property("lastname").like("oe")
+          ),
+          Appacitive.Filter.Property("location")
+              .withinCircle(center, 
+                      10, 
+                      'mi') // can be set to 'km' or 'mi'
+      );
+//create query object
+var query = new Appacitive.Queries.FindAllQuery({
+  schema: 'player'
+});
+
+//set filter in query
+query.filter(complexFilter);
+
+//add more filters
+query.filter(
+            Appacitive.Filter.And(
+              Appacitive.Filter.Property('gender').equalTo('male'),
+              query.filter()
+            )
+          );
+
+//fire the query
+query.fetch(successHandler);
 ```
 ``` csharp
 //Use of `And` and `Or` operators
@@ -3862,7 +4821,11 @@ var complexQuery = BooleanOperator.And(new[]{
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce 
 
 ``` javascript
-//Todo
+var center = new Appacitive.GeoCoord(36.1749687195, -115.1372222900);
+var radialFilter = Appacitive.Filter.Property('location')
+                                 .withinCircle(center,
+                                               10,
+                                               'km');
 ```
 ``` csharp
 //Search for hotels near Las Vegas in a radius of 10 miles
@@ -3870,7 +4833,7 @@ var center = new Geocode(36.1749687195M, -115.1372222900M);
 var radialQuery = Query.Property("location")
                           .WithinCircle(center, 
                                   10.0M, 
-                                  DistanceUnit.Miles);
+                                  DistanceUnit.Miles); 
 ```
 
 ### Polygon Search
@@ -3878,7 +4841,13 @@ var radialQuery = Query.Property("location")
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce 
 
 ``` javascript
-//Todo
+var pt1 = new Appacitive.GeoCoord(36.1749687195, -115.1372222900);
+var pt2 = new Appacitive.GeoCoord(34.1749687195, -116.1372222900);
+var pt3 = new Appacitive.GeoCoord(35.1749687195, -114.1372222900);
+var pt4 = new Appacitive.GeoCoord(36.1749687195, -114.1372222900);
+var geocodes = [ pt1, pt2, pt3, pt4 ];
+var polygonFilter = Appacitive.Filter.Property("location")
+                                         .withinPolygon(geocodes);
 ```
 ``` csharp
 //Search for hotel which is between 4 co-ordinates
@@ -3972,6 +4941,22 @@ var filterQueryName = "sample_filter";
 var placeholderFillers = new Dictionary<string, string> { { "key1", "value1" }, { "key2", "value2" } };
 var results = await Graph.Filter(filterQueryName, placeholderFillers);
 ```
+```javascript
+$$$Method
+Appacitive.Queries.GraphFilterQuery({filterQueryName}, {placeholderFillers}).fetch();
+```
+```javascript
+$$$Sample Request
+var filterQueryName = "sample_filter";
+var placeholderFillers = { key1: "value1", key2: "value2" };
+var query = new Appacitive.Queries.GraphFilterQuery(filterQueryName, placeholderFillers);
+
+query.fetch(function(ids) {
+  console.log(ids.length + " found");
+}, function(status) {
+  console.log("Error running filter query");
+});
+```
 
 ### Executing projection graph queries
 
@@ -4048,6 +5033,30 @@ var projectQueryName = "sample_project";
 var rootIds = new List<string>() { "34912447775245454", "34322447235528474", "34943243891025029" };
 var placeholderFillers = new Dictionary<string, string> { { "key1", "value1" }, { "key2", "value2" } };
 var result = await Graph.Project(projectQueryName, rootIds, placeholderFillers);
+```
+```javascript
+$$$Method
+Appacitive.Queries.GraphProjectQuery({projectQueryName}, {placeholderFillers}).fetch();
+```
+```javascript
+$$$Sample Request
+var projectQueryName = "sample_filter";
+var placeholderFillers = { key1: "value1", key2: "value2" };
+var query = new Appacitive.Queries.GraphProjectQuery(projectQueryName, placeholderFillers);
+
+query.fetch(function(results) {
+  /* results object contains list of articles for provided ids
+     Each article contains a children property
+     Children contains array of article objects 
+     of specified child elements in query
+     eg: */ 
+  console.log("This id '" + results[0].id() + "' has " 
+       + results[0].children["freinds"].length) + " freinds and owns "
+       + results[0].children["owns"].length) + " houses");
+}, function(status) {
+  console.log("Error running project query");
+});
+
 ```
 
 Email
@@ -4180,7 +5189,7 @@ var email = {
 
 Appacitive.Email.sendRawEmail(email, function (email) {
     alert('Successfully sent.');
-}, function(err) {
+}, function(status) {
     alert('Email sending failed.')
 });
 ```
@@ -4386,7 +5395,7 @@ var email = {
 
 Appacitive.Email.sendTemplatedEmail(email, function (email) {
     alert('Successfully sent.');
-}, function(err) {
+}, function(status) {
     alert('Email sending failed.')
 });
 ```
@@ -4497,12 +5506,12 @@ $$$Sample Response
 ```
 
 ```javascript
-var device = new Appacitive.Article({ schema: 'device' });
+var device = new Appacitive.Article('device');
 device.set('devicetype', 'ios');
 device.set('devicetoken', 'c6ae0529f4752a6a0d127900f9e7c');
-device.save(function(){
+device.save(function(obj) {
   alert('new device registered successfully!');
-}, function(status){
+}, function(status, obj){
   alert('error while registering!');
 });
 ```
@@ -4641,7 +5650,6 @@ Appacitive.Push.send(options, successHandler, errorHandler);
 ``` javascript
 $$$Sample Request
 
-//This is supposed to be called just once as an initial setup
 var options = {
     "broadcast": true, // set this to true for broadcast
     "platformoptions": {
@@ -4667,7 +5675,7 @@ var options = {
 
 Appacitive.Push.send(options, function(notification) {
     alert('Push notification sent successfully');
-}, function(err) {
+}, function(status) {
     alert('Sending Push Notification failed.');
 });
 ```
@@ -4763,9 +5771,8 @@ Appacitive.Push.send(options, successHandler, errorHandler);
 ``` javascript
 $$$Sample Request
 
-//This is supposed to be called just once as an initial setup
 var options = {
-    "query": "*devicetype == 'ios'",
+    "query": Appacitive,.Filter.Property('devicetype').equalTo('ios'),
     "broadcast": false,
     "platformoptions": {
         // platform specific options
@@ -4790,7 +5797,7 @@ var options = {
 
 Appacitive.Push.send(options, function(notification) {
     alert('Push notification sent successfully');
-}, function(err) {
+}, function(status) {
     alert('Sending Push Notification failed.');
 });
 ```
@@ -4948,7 +5955,7 @@ var options = {
 
 Appacitive.Push.send(options, function(notification) {
     alert('Push notification sent successfully');
-}, function(err) {
+}, function(status) {
     alert('Sending Push Notification failed.');
 });
 ```
@@ -5076,7 +6083,7 @@ var options = {
 
 Appacitive.Push.send(options, function(notification) {
     alert('Push notification sent successfully');
-}, function(err) {
+}, function(status) {
     alert('Sending Push Notification failed.');
 });
 ```
@@ -5620,3 +6627,292 @@ await PushNotification
                   })
           })
 ```
+
+
+Files
+=======
+
+Appacitive allows you to upload, download and ditribute media files like images, videos etc. on the appacitive platform so you can build rich applications and deliver media using an extensive CDN. 
+The appacitive files api works by providing you `pre-signed` urls to a third-party cloud storage service (<a href="http://aws.amazon.com/s3/">Amazon S3</a>), where the files can be uploaded to or downloaded from.
+You can upload and download files of any size and most filetypes are supported. 
+
+``` javascript
+//To upload or download files, the SDK provides `Appacitive.File` class
+//You can instantiate it to perform operations on file.
+//You must know the content type (mimeType) of the file because this is a required parameter. 
+//Optionally you can provide name/id of the file by which it will be saved on the server.
+
+These are the options you need to initialize a file object
+var options = {
+    fileId: //  a unique string representing the filename on server,
+    contentType: // Mimetype of file,
+    fileData: // data to be uploaded, this could be bytes or HTML5 fileupload instance data
+};
+
+//If you don't provide contentType, then the SDK will try to get the MimeType from the HTML5 fileData object or it'll set it as 'text/plain'.
+```
+
+Upload
+----------------
+
+To upload a file on appacitive for your app, you need to get a pre-signed Amazon S3 url to which you will be uploading your file. 
+You can get this url by making a HTTP GET request to the appacitive file `getupload` url. 
+The `contenttype` query string parameter you send here should match the `content-type` http header value when uploading the file onto amazon s3 in the subsequent call.
+A unique string `id` is associated with every file you store on the appacitive platform. This string `id` is either the optional `filename` query string parameter you pass while generating the upload url or appacitive assigns it a unique system generated value.
+You can use this unique string file `id` to access, update or delete that file. Uploading multiple files using the same `filename` will lead to overwriting the file.
+
+In the request, the optional query string paramertes you can provide are.
+
+** Query string parameters **
+
+<dl>
+  <dt>contenttype</dt>
+  <dd>required<br/><span>Mime-type of the file you are uploading. 
+  <dt>filename</dt>
+  <dd>optional<br/><span>Unique name for the file.
+  <dt>expires</dt>
+  <dd>optional<br/><span>Duration (in minutes) for which the upload url will be valid, default value is 5.  
+</dl>
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`. 
+</dl>
+
+``` rest
+$$$Method
+GET https://apis.appacitive.com/file/uploadurl?contenttype={content-type}
+```
+``` rest
+$$$Sample Request
+//  Generate upload url
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/file/uploadurl?filename=mypicture&contenttype=image/jpeg&expires=10
+```
+``` rest
+$$$Sample Response
+{
+  "url": "https://stageblobstorage.s3.amazonaws.com/35003686659949394/_applications/35003695411364691/_deployments/35003749377377197/mypicture?AWSAccessKeyId=AKIAI5YIAGHRQS6VJETQ&Expires=1377164142&Signature=CELV5LBQs7d%2FJ%2FukBEnQJc%2Fb%2BBc%3D",
+  "id": "mypicture",
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "4f5a30f7-6b27-4d2b-92b5-c449d3083328",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+$$$Method
+Appacitive.File::save(successHandler, ErrorHandler);
+```
+``` javascript
+$$$Sample File Objects
+
+//If you have a byte stream, you can use the following interface to build file object.
+var bytes = [ 0xAB, 0xDE, 0xCA, 0xAC, 0XAE ];
+
+//create file object
+var file = new Appacitive.File({
+    fileId: 'serverFile.png',
+    fileData: bytes,
+    contentType: 'image/png'
+});
+
+
+//If you've a fileupload control in your HTML5 app which allows the user to pick a file from their local drive to upload, you can simply create the object as
+
+//consider this as your fileupload control
+<input type="file" id="imgUpload">
+
+//in a handler or in a function you could get a reference to it, if you've selected a file
+var fileData = $('#imgUpload')[0].files[0];
+
+//create file object
+var file = new Appacitive.File({
+    fileId: fileData.name,
+    fileData: fileData
+});
+```
+
+When the above request is successful, the HTTP response is a `200` OK and the response body is a json object containing the third party cloud storage providers upload `url` and the file `id`, which is the parameter `filename`'s value provided by you or a unique system generated identifier for the file.
+Now upload the file by making a PUT request to the `url` in the response above. The necessary authorization information is already embedded in the URI. For more details, refer to <a href="http://aws.amazon.com/documentation/s3/">Amazon S3 documentation</a>. 
+This url is valid for 5 minutes if `expires` was not specified while retreiving the url and only allows you to perform a PUT on the url. 
+You need to provied the same value for the `Content-Type` http header, which you provided while retreiving the url and if not provided, use 'application/octet-stream' or 'binary/octet-stream'. 
+You send the media file in the payload object of the PUT call.
+
+``` csharp
+//Upload via Byte Stream
+var fileName = "serverFileName.jpg";
+var bytes = memoryStream.ToArray();
+var upload = new FileUpload("image/jpeg", fileName, 30);
+string uploadedFileName = await upload.UploadAsync(bytes);
+
+//Upload via File Path
+var upload = new FileUpload("image/jpeg", fileName, 30);
+string uploadedFileName = await upload.UploadFileAsync(filePath);
+
+//Custom Upload
+//Get the upload url and upload the file
+var upload = new FileUpload("image/jpeg");
+string uploadUrl = await upload.GetUploadUrlAsync(30);
+//Custom logic to upload file
+```
+``` javascript
+$$$Sample Request
+// save it on server
+file.save(function(url) {
+  alert('Download url is ' + url);
+}, function(err) {
+  //alert("Error uploading file");
+});
+
+//After save, the successHandler callback gets a url in response which can be saved in your object and is also reflected in the file object. 
+//This url is basically a download url which you could be used to render it in your DOM.
+
+//file object after upload
+{
+  fileId: 'serverFile.png',
+  contentType: 'image/png',
+  url: '{{some url}}'
+}
+
+//if you don't provide fileId while upload, then you'll get a unique fileId set in you file object
+{
+  fileId: '3212jgfjs93798',
+  contentType: 'image/png',
+  url: '{{some url}}'
+}
+```
+
+Download
+----------------
+
+To download a file from Appacitive for your app, you need to get a `pre-signed` download url for the file using its file `id`, from where you will be able to download the file.
+
+** Parameters **
+
+<dl>
+  <dt>filename</dt>
+  <dd>required<br/><span>The filename used when generating the uploadurl.
+  <dt>expires</dt>
+  <dd>optional<br/><span>Time in minutes for which the url will be valid, default value 5 mins. 
+</dl>
+ 
+``` rest
+$$$Method
+GET https://apis.appacitive.com/file/download/{file id}
+```
+``` rest
+$$$Sample Request
+//  Generate download url
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/file/download/mypicture
+```
+``` rest
+$$$Sample Response
+{
+  "uri": "https://stageblobstorage.s3.amazonaws.com/35003686659949394/_applications/35003695411364691/_deployments/35003749377377197/mypicture?AWSAccessKeyId=AKIAI5YIAGHRQS6VJETQ&Expires=1377171161&Signature=%2FGpFSIMTVMdq%2FKf%2F8jvdPbvoGgs%3D",
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "0514cae7-2f8a-4232-8712-ed14e2a0c6ef",
+    "additionalmessages": []
+  }
+}
+```
+``` csharp
+//Three ways to download file
+var download = new FileDownload(fileName);
+
+//1: Get the byte stream
+var bytes = await download.DownloadAsync();
+
+//2: Download the data and write to a local file
+await download.DownloadFileAsync(localFileName);
+
+//3: Get the download URL
+var downloadUrl = await download.GetDownloadUrl(30);
+//Custom logic to download file
+```
+```javascript
+$$$Method
+Appacitive.File::getDownloadUrl(successHandler, errorHandler)
+```
+```javascript
+$$$Sample Request
+//create file object
+var file = new Appacitive.File({
+    fileId: "test.png"
+});
+
+// call to get download url
+file.getDownloadUrl(function(url) {
+    alert("Download url:" + url);
+    $("#imgUpload").attr('src',file.url);
+}, function(err) {
+    alert("Downloading file");
+});
+```
+
+You can now download the file by making a GET request to the `pre-signed` download `url` in the response object. 
+No additional headers are required. For more details, refer to <a href="http://aws.amazon.com/documentation/s3/">Amazon S3 documentation</a>. 
+Url is valid for 1 minute by default, but if you want to increase the expiry time set the `expires` query string parameter while retreiving the download url. 
+This url only allows you to perform a GET on the file.
+
+Delete a file
+------------------
+
+This deletes a previously uploaded file from appacitive.
+
+** Parameters **
+
+<dl>
+  <dt>filename</dt>
+  <dd>required<br/><span>The unique filename associated with the file in the app. 
+</dl>
+ 
+``` rest
+$$$Method
+DELETE https://apis.appacitive.com/file/delete/{file id}
+```
+``` rest
+$$$Sample Request
+//  Delete file
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/file/delete/mypicture
+```
+``` rest
+$$$Sample Response
+{
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "0514cae7-2f8a-4232-8712-ed14e2a0c6ef",
+    "additionalmessages": []
+  }
+}
+```
+
+Update a file
+--------------
+You can update a previously uploaded file for your app by using it's unique file name and re-uploading another file in its place.
