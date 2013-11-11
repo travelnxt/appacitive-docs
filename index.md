@@ -4629,12 +4629,43 @@ Appacitive.Users.sendResetPasswordEmail("{username}", "{subject for the mail}", 
 
 Querying Data
 ------------
+The appacitive platform supports rich constructs to search and query your application data. You can filter on all properties and attributes of your data.
+Apart from filters, you can also specify paging and sorting information for customizing the number and order of the results.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. 
 
-### Simple Search
+All search results are paged with a page size of `20` by default. You can change this by providing a custom page size. Please note that the maximum page size that is allowed is `200`.
+Passing any value higher than this will limit the results to `200`. Also the platform also supports providing modifiers to fine tune the exact set of fields to return for each 
+record of the search results. The platform specific examples will indicate how this can be done.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce 
+### Simple queries
+
+To query your data, simply provide the filter criteria based on which you want to filter you data.
+A filter criteria is typically a triple with the following information - 
+
+<dl>
+  <dt>property or attribute name</dt>
+  <dd>required<br/><span>The name of the property or attribute on which the filter is being applied.
+  <dt>operator</dt>
+  <dd>required<br/><span>The conditional operator that needs to be applied.
+  <dt>filter value</dt>
+  <dd>required<br/><span>The value which the operator will use to evaluate the filter.
+</dl>
+
+The table below shows a list of supported logical operators corresponding to the different types of properties:
+
+| Operator | Numbers | Strings | DateTime | Text | Geography | Boolean |
+|:---------------|:------------|
+| ** == **    | `Yes` | Yes | Yes | No | No | Yes 
+| ** <> **    | Yes | Yes | Yes | No | No | Yes 
+| ** > **     | Yes | No | Yes | No | No | No 
+| ** >= **    | Yes | No | Yes | No | No | No
+| ** < **     | Yes | No | Yes | No | No | No
+| ** <= **    | Yes | No | Yes | No | No | No
+| ** like **  | No | Yes | No | Yes | No | No
+
+
+The platform specific samples indicate how these operators can be used.
+
 
 ``` javascript
 $$$Method
@@ -4815,30 +4846,57 @@ var complexQuery = BooleanOperator.And(new[]{
                                   DistanceUnit.Miles)
           });
 ```
+### Geo queries
+You can specify a property type as a `geography` type for a given schema or relation. These properties are essential latitude-longitude pairs.
+Such properties support geo queries based on a user defined radial or polygonal region on the map. These are extremely useful for making map based or location based searches.
+E.g., searching for a list of all restaurants within 20 miles of a given users locations.
 
-### Radial Search
+#### Radial Search
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce 
+A radial search allows you to search for all records of a specific type which contain a geocode which lies within a predefined distance from a point on the map.
+A radial search requires the following parameters.
+
+<dl>
+  <dt>type</dt>
+  <dd>required<br/><span>The schema or relation type on which to apply the filter.
+  <dt>property name</dt>
+  <dd>required<br/><span>The name of the geography property on which to apply the filter.
+  <dt>center geocode</dt>
+  <dd>required<br/><span>The geocode which will act as the center of the radial region.
+  <dt>radius</dt>
+  <dd>required<br/><span>The radius of the radial region from the given center geocode.
+  <dt>distance unit</dt>
+  <dd>required<br/><span>The unit of distance (mi \ km).
+</dl>
+
 
 ``` javascript
 var center = new Appacitive.GeoCoord(36.1749687195, -115.1372222900);
-var radialFilter = Appacitive.Filter.Property('location')
-                                 .withinCircle(center,
-                                               10,
-                                               'km');
+var radialFilter = Appacitive.Filter.Property('location').withinCircle(center,10,'km');
 ```
 ``` csharp
 //Search for hotels near Las Vegas in a radius of 10 miles
 var center = new Geocode(36.1749687195M, -115.1372222900M);
-var radialQuery = Query.Property("location")
-                          .WithinCircle(center, 
-                                  10.0M, 
-                                  DistanceUnit.Miles); 
+var radialQuery = Query
+                    .Property("location")
+                    .WithinCircle(center, 10.0M, DistanceUnit.Miles); 
 ```
 
-### Polygon Search
+#### Polygon Search
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce 
+A polygon search is a more generic form of geographcal search. It allows you to specify a polygonal region on the map via a set of geocodes 
+indicating the vertices of the polygon. The search will allow you to query for all data of a specific type that lies within the given polygon.
+This is typically useful when you want finer grained control on the shape of the region to search.
+
+<dl>
+  <dt>type</dt>
+  <dd>required<br/><span>The schema or relation type on which to apply the filter.
+  <dt>property name</dt>
+  <dd>required<br/><span>The name of the geography property on which to apply the filter.
+  <dt>geocodes</dt>
+  <dd>required<br/><span>List of geocodes indicating the vertices of the polygonal region.
+</dl>
+ 
 
 ``` javascript
 var pt1 = new Appacitive.GeoCoord(36.1749687195, -115.1372222900);
