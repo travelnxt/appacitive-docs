@@ -127,7 +127,7 @@ curl -X GET \
 https://apis.appacitive.com/article/device/find/all
 ```
 
-Appacitive Modules
+Data
 =======
 In the next few sections we briefly describe some of the basic terms used in Appacitive like articles, connections, users, files etc.
 
@@ -2535,2097 +2535,6 @@ Appacitive.Connection.getInterconnects({
 
 ```
 
-Users
-------------
-
-Users represent your apps' users. Appacitive provides API(s) to store and manage details and data about your users out of the box through an inbuilt schema called `user`.
-This inbuilt schema `user` behaves just like any other schema created by you with added features like authentication, location tracking, password management, session management and third-party social integration using OAuth 1.0 or OAuth 2.0.
-
-`Note` : While working with user API(s) you need to pass an additional HTTP header called `Appacitive-User-Auth` with its value set to a valid user `session token` generated for that user.
-
-<span class="h3">The user object</span>
-
-** System generated properties ** 
-
-The `user` object contains all the `system defined properties` that you would find in an article of any schema like `__id`, `__schematype`, `__createdby`, `__lastmodifiedby`, `__utcdatecreated`, `__utclastupdateddate`, `__revision`, `__tags` and `__attributes`.  
-It also has some additional `pre-defined` properties to provide the added user management features, and you can also add more properties to the `user` schema the same way you would add properties to any other schema using the management portal. 
-
-The additional pre-defined properties are as follows.
-
-
-<dl>
-  <dt>username</dt>
-  <dd><span>A ```unique``` and ```mandatory``` ```string``` property for storing a username for every user in the system.</span></dd>
-  <dt>birthdate</dt>
-  <dd><span>A ```non-mandatory``` ```date``` property to store the date of birth of that user.</span></dd>
-  <dt>firstname</dt>
-  <dd><span>A ```mandatory``` ```string``` property for the firstname of the user.</span></dd>
-  <dt>lastname</dt>
-  <dd><span>An ```optional``` ```string``` property for the lastname of the user.</span></dd>
-  <dt>email</dt>
-  <dd><span>An ```mandatory``` ```string``` property with a email ```regex``` validation on it for storing and managing the users email address.</span></dd>
-  <dt>location</dt>
-  <dd><span>An ```optional``` ```geography``` property for checkin management and geo-based querying.</span></dd>
-  <dt>password</dt>
-  <dd><span>A ```masked``` and ```mandatory``` ```string``` property for storing and managing the password for that user.</span></dd>
-  <dt>phone</dt>
-  <dd><span>An ```optional``` ```string``` property for storing the phone number of the user.</span></dd>
-  <dt>isenabled</dt>
-  <dd><span>An ```optional``` ```bool``` property which lets you block the user.</span></dd>
-  <dt>isonline</dt>
-  <dd><span>An ```optional``` ```bool``` property which lets you check whether the user is currently online.</span></dd>
-  <dt>connectionid</dt>
-  <dd><span>An ```optional``` ```string``` property which lets you manage the bi-directional websocket on the user with real time messaging. For more info check out the RTM docs.</span></dd>
-</dl>
-
-
-``` rest
-$$$sample object 
-{
-	"__id": "34889377044890389",
-	"__schematype": "user",
-	"__createdby": "System",
-	"__lastmodifiedby": "System",
-	"__schemaid": "34888670844153416",
-	"__revision": "1",
-	"__tags": ["tall", "male"],
-	"__utcdatecreated": "2013-08-21T02:31:42.8498473Z",
-	"__utclastupdateddate": "2013-08-21T02:31:42.8498473Z",
-	"username": "john.doe",
-	"location": "18.534064,73.899551",
-	"email": "john.doe@appacitive.com",
-	"firstname": "John",
-	"lastname": "Doe",
-	"birthdate": "1982-11-17",
-	"isenabled": "true",
-	"phone": "+91 9041-222-333",
-	"__attributes": {
-		"company": "appacitive",
-		"niche": "ux",
-		"gender": "male"
-	}
-}
-```
-
-### Creating a new user
-
-Appacitive provides multiple ways through which you can add new users to your app.
-You may choose to use Appacitive's `User Management` system alone to manage all of your apps' users, or additionally integrate with facebook, twitter or any other <a href="http://en.wikipedia.org/wiki/OAuth">OAuth</a> provider for identity management.
-Appacitive allows you to link as many OAuth accounts with Appacitive `user` objects and manage them using Appacitive's user API(s). 
-And because `user` objects are internally similar to `article` objects, you can connect a `user` object to other users or articles of other schemas by creating corresponding relations from the management portal.
-
-#### Creating a simple user
-
-Creates a new user in Appacitive. This user is an independent user in the Appacitive system for your app, in the environment you specify through the `Appacitive-Environment` header, without any linked identites. 
-You can link it to a OAuth account later on.
-Some basic system properties are mandatory, namely `username`, `firstname`, `email` and `password`. The `username` should be unique for every user. 
-Every user is assigned a unique monotonically increasing `__id` by the system.
-All other pre-defined properties are optional and you may wish to use them or add more according to your app's requirements using the management portal.
-
-** Parameters ** 
-
-<dl>
-  <dt>user object</dt>
-  <dd>required<br/><span>The user object</span></dd>  
-</dl>
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-** Response **
-
-Returns the newly created user object with all the system defined properties set like `__id`, `__utcdatecreated`, `__createdby` etc.
-In case of an error, the `status` object contains details for the failure.
-
-``` rest
-$$$Method
-PUT https://apis.appacitive.com/user
-```
-``` rest
-$$$Sample Request
-curl -X PUT \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Content-Type: application/json" \
--d '{ "__tags": ["male"], "username": "john.doe", "firstname": "John", "email": "john.doe@appacitive.com", "password": "p@ssw0rd" }' \
-https://apis.appacitive.com/user
-```
-``` rest
-$$$Sample Response
-{
-	"user": {
-		"__id": "34889981737698423",
-		"__schematype": "user",
-		"__createdby": "System",
-		"__lastmodifiedby": "System",
-		"__schemaid": "34888670847828365",
-		"__revision": "1",
-		"__tags": [
-			"male"
-		],
-		"__utcdatecreated": "2013-08-21T02:41:19.5142397Z",
-		"__utclastupdateddate": "2013-08-21T02:41:19.5142397Z",
-		"username": "john.doe",
-		"email": "john.doe@appacitive.com",
-		"firstname": "John",
-		"isenabled": "true",
-		"phone": null,
-		"__attributes": {}
-	},
-	"status": {
-		"code": "201",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
-		"additionalmessages": []
-	}
-}
-```
-
-``` javascript
-$$$Method
-Appacitive.User::save(successHandler, errorHandler);
-```
-``` javascript
-$$$Sample Request
-
-// set the fields
-var userDetails = {
-    username: 'john.doe@appacitive.com',
-    password: /* password as string */,
-    email: 'johndoe@appacitive.com',
-    firstname: 'John',
-    lastname: 'Doe'
-};
-
-var newUser = new Appacitive.User(userDetails);
-
-//and then call save on that object
-newUser.save(function(obj) {
-    alert('Saved successfully, id: ' + newUser.get('__id'));
-}, function(status, obj) {
-    alert('An error occured while saving the user.');
-});
-```
-
-``` csharp
-//Create a User
-var user = new User
-{
-    Username = "john.doe",
-    FirstName = "John",
-    Email = "john.doe@appacitive.com",
-    Password = "p@ssw0rd"
-};
-await user.SaveAsync();
-```
-
-The `__createdby` and `__lastmodifiedby` properties are set to `System`. They will be set to a user id if you use another user's `session token` to perform actions on this user.
-The `__revision` is initially set to 1 when the user is created. This number gets incremented by 1 everytime you perform a successful update operation on the user object.
-`__attributes` are simple string key-value pairs which you can assign to every `user`, `article` and `connection` object. 
-The `__tags` object is an array of string tags. You can perform search queries on `__attributes` and `__tags`. 
-
-#### Creating a user with a link to a OAuth 2.0 provider
-
-Creates a new user in the Appacitive system and links it to a facebook account. Each linked identity is assigned a `name` like 'facebook' or 'twitter' or some custom name you provide.
-Here onwards, the linked identity can be accessed using the `name` of the identity.
-
-** Parameters ** 
-
-<dl>
-  <dt>user object</dt>
-  <dd>required<br/><span>The user object</span></dd>  
-  <dt>`__link` object</dt>
-  <dd>required<br/><span>Details about the linked account. These are enclosed inside the user object.</span></dd>  
-</dl>
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-``` rest
-$$$Method
-PUT https://apis.appacitive.com/user/
-```
-``` rest
-$$$Sample Request
-//	Create a new user and link it to a facebook account
-curl -X PUT \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Content-Type: application/json" \
--d '{ "username": "john.doe", "firstname": "John", "email": "john.doe@appacitive.com", "password": "p@ssw0rd", "__link": { "authtype": "facebook", "accesstoken": "{facebook access token}"	}}' \
-https://apis.appacitive.com/user
-```
-``` javascript
-$$$Method
-Appacitive.User::save(successHandler, errorHandler);
-```
-``` javascript
-$$$Sample Request
-//  Create a new user and link it to a facebook account
-// include this script in your page for facebook login
-window.fbAsyncInit = function() {
-    Appacitive.Facebook.initialize({
-        appId      : 'YOUR_APP_ID', // Facebook App ID
-        status     : false, // check login status
-        cookie     : true, // enable cookies to allow Appacitive to access the session
-        xfbml      : true  // parse XFBML
-    });
-    // Additional initialization code here
-};
-
-//create user object
-var user = new Appacitive.User({
-    username: 'john.doe@appacitive.com',
-    password: /* password as string */,
-    email: 'johndoe@appacitive.com',
-    firstname: 'John',
-    lastname: 'Doe' 
-});
-
-//link facebook account
-user.linkFacebookAccount();
-
-/You can access linked accounts of a user, using this field
-console.dir(user.linkedAccounts); 
-
-//create the user on server
-user.save(function(obj) {
-    console.dir(user.linkedAccounts);
-}, function(status, obj) {
-    alert('An error occured while saving the user.');
-});
-```
-
-``` rest
-$$$Sample Response
-{
-	"user": {
-		"__id": "34889981737698423",
-		"__schematype": "user",
-		"__createdby": "System",
-		"__lastmodifiedby": "System",
-		"__schemaid": "34888670847828365",
-		"__revision": "1",
-		"__tags": [
-			"newuser"
-		],
-		"__utcdatecreated": "2013-08-21T02:41:19.5142397Z",
-		"__utclastupdateddate": "2013-08-21T02:41:19.5142397Z",
-		"username": "john.doe",
-		"email": "john.doe@appacitive.com",
-		"firstname": "John",
-		"isemailverified": "false",
-		"isenabled": "true",
-		"phone": null,
-		"__attributes": {}
-	},
-	"status": {
-		"code": "201",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
-		"additionalmessages": []
-	}
-}
-```
-#### Creating a user and link it to a OAuth 1.0 provider
-
-Creates a new user in the Appacitive system and links it to a twitter account. 
-If you have already specified the `consumerkey` and `consumersecret` in the management portal, you don't have to pass it again for this call.
-
-** Parameters ** 
-
-<dl>
-  <dt>user object</dt>
-  <dd>required<br/><span>The user object</span></dd>  
-  <dt>`__link` object</dt>
-  <dd>required<br/><span>Details about the linked account. This object is sent inside the user object.</span></dd>  
-</dl>
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-``` rest
-$$$Method
-PUT https://apis.appacitive.com/user/
-```
-``` rest
-$$$Sample Request
-//Create a new user and link it to a twitter account
-curl -X PUT \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Content-Type: application/json" \
--d '{ "username": "john.doe", "firstname": "John", "email": "john.doe@appacitive.com", "password": "p@ssw0rd", "__link": { "authtype": "twitter", "oauthtoken": "{twitter oauth token}", "oauthtokensecret": "{twitter oauth token secret}", "consumerkey": "{twitter consumer key}", "consumersecret": "{twitter consumer secret}"}}' \
-https://apis.appacitive.com/user
-```
-``` rest
-$$$Sample Response
-{
-	"user": {
-		"__id": "34889981737698423",
-		"__schematype": "user",
-		"__createdby": "System",
-		"__lastmodifiedby": "System",
-		"__schemaid": "34888670847828365",
-		"__revision": "1",
-		"__tags": [
-			"newuser"
-		],
-		"__utcdatecreated": "2013-08-21T02:41:19.5142397Z",
-		"__utclastupdateddate": "2013-08-21T02:41:19.5142397Z",
-		"username": "john.doe",
-		"email": "john.doe@appacitive.com",
-		"firstname": "John",
-		"isemailverified": "false",
-		"isenabled": "true",
-		"phone": null,
-		"__attributes": {}
-	},
-	"status": {
-		"code": "201",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
-		"additionalmessages": []
-	}
-}
-```
-``` javascript
-$$$Method
-Appacitive.User::save(successHandler, errorHandler);
-```
-``` javascript
-$$$Sample Request
-//create user object
-var user = new Appacitive.User({
-    username: 'john.doe@appacitive.com',
-    password: /* password as string */,
-    email: 'johndoe@appacitive.com',
-    firstname: 'John',
-    lastname: 'Doe',
-    __link: {
-      authtype: "twitter", 
-      oauthtoken: "{twitter oauth token}", 
-      oauthtokensecret: "{twitter oauth token secret}",
-      consumerkey: "{twitter consumer key}", 
-      consumersecret: "{twitter consumer secret}"
-    }
-});
-
-//You can access linked accounts of a user, using this field
-console.dir(user.linkedAccounts); 
-
-//create the user on server
-user.save(function(obj) {
-    console.dir(user.linkedAccounts);
-}, function(status, obj) {
-    alert('An error occured while saving the user.');
-});
-```
-
-#### Create a user with just the OAuth access token
-
-You can optionally create a new user in Appacitive with just the OAth access token for the user. 
-You can use this option to integrate facebook login in your app.
-You need to add an extra property in the request object called `createnew` with its value set to `true`. 
-The system will pull the required details about the user from the OAth provider and create a new Appacitive user with it.
-Note that this is a `POST` HTTP call.
-
-In this example, we will use a facebook access token.
-
-** Parameters ** 
-
-<dl>
-  <dt>`__link` object</dt>
-  <dd>required<br/><span>Details about the linked account</span></dd>  
-</dl>
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-``` rest
-$$$Method
-PUT https://apis.appacitive.com/user/authenticate
-```
-``` rest
-$$$Sample Request
-//	Create a new user using the OAuth token
-curl -X POST \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Content-Type: application/json" \
--d '{ "type": "facebook", "accesstoken": "{facebook access token}", "createnew": true }' \
-https://apis.appacitive.com/user/authenticate
-```
-``` rest
-$$$Sample Response
-{
-	"user": {
-		"__id": "34889981737698423",
-		"__schematype": "user",
-		"__createdby": "System",
-		"__lastmodifiedby": "System",
-		"__schemaid": "34888670847828365",
-		"__revision": "1",
-		"__utcdatecreated": "2013-08-21T02:41:19.5142397Z",
-		"__utclastupdateddate": "2013-08-21T02:41:19.5142397Z",
-		"username": "john.doe",
-		"email": "john.doe@appacitive.com",
-		"firstname": "John",,
-		"lastname": "Doe",
-		"birthdate": "1980-05-20",
-		"isemailverified": "false",
-		"isenabled": "true",
-		"phone": null,
-		"__attributes": {}
-	},
-	"status": {
-		"code": "201",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
-		"additionalmessages": []
-	}
-}
-```
-``` javascript
-$$$Method
-Appacitive.Users.signupWithFacebook(successHandler, errorHandler);
-```
-``` javascript
-$$$Sample Request
-//  Create a new user using the Facebook access token
-//Include this script in your page for setting up facebook login
-window.fbAsyncInit = function() {
-    Appacitive.Facebook.initialize({
-        appId      : 'YOUR_APP_ID', // Facebook App ID
-        status     : true, // check login status
-        cookie     : true, // enable cookies to allow Appacitive to access the session
-        xfbml      : true  // parse XFBML
-    });
-    // Additional initialization code here
-};
-
-//Registering via facebook is done like so
-Appacitive.Users.signupWithFacebook(function (authResult) {
-    // user has been successfully signed up and set as current user
-    // authresult contains the user and Appacitive-usertoken
-}, function(status) {
-    // there was an error signing up the user
-});
-```
-``` javascript
-$$$Sample Request
-//  Create a new user using the OAuth 1.0 token
-
-var authRequest = {
-    'type': 'twitter',
-    'oauthtoken': {oauthtoken},
-    'oauthtokensecret': {oauthtokensecret},
-    'createnew': true
-}
- 
-Appacitive.Users.authenticateUser(authRequest, function(authResult) { 
-   // user has been successfully signed up and set as current user
-   // authresult contains the user and Appacitive-usertoken
-   console.dir(authResult.user.id());
-}, function(status) {
-    alert('An error occured while saving the user.');
-});
-```
-
-#### Link account with existing Appacitive user.
-
-You can link an existing Appacitive user to a social identity provider which works on OAuth 1.0 or OAuth 2.0.
-
-##### Link appacitive user to a OAuth 2.0 account 
-
-** Parameters ** 
-
-<dl>
-  <dt>```__link``` object</dt>
-  <dd>required<br/><span>Details about the linked account</span></dd>  
-</dl>
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-** Response **
-
-The response contains a `status` object which describes the status of the request.
-
-``` rest
-$$$Method
-POST https://apis.appacitive.com/user/{userId}/link
-```
-``` rest
-$$$Sample Request
-//	Link an account to a appacitive user
-curl -X PUT \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Content-Type: application/json" \
--d '{ "type": "facebook", "accesstoken": "{facebook access token}" }' \
-https://apis.appacitive.com/user/john.doe/link?useridtype=username
-```
-``` rest
-$$$Sample Response
-{
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
-		"additionalmessages": []
-	}
-}
-```
-``` javascript
-$$$Method
-Appacitive.User::linkFacebookAccount(successHandler, errorHandler);
-```
-``` javascript
-$$$Sample Request
-var user = Appacitive.User.currentUser();
-user.linkFacebookAccount(function(obj) {
-    console.dir(user.linkedAccounts);//You can access linked accounts of a user, using this field
-}, function(status, obj){
-    alert("Could not link FB account");
-});
-
-```
-
-##### Link appacitive user to a OAuth 1.0 account
-
-We can link an appacitive user to a twitter account after the user has already been created in Appacitive.
-
-** Parameters ** 
-
-<dl>
-  <dt>`__link` object</dt>
-  <dd>required<br/><span>Details about the linked account</span></dd>  
-</dl>
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-** Response **
-
-The response contains a `status` object which describes the status of the request.
-
-``` rest
-$$$Method
-PUT https://apis.appacitive.com/user/{userId}/link
-```
-``` rest
-$$$Sample Request
-//Create a new user
-curl -X PUT \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Content-Type: application/json" \
--d '{ "authtype": "twitter", "oauthtoken": "{twitter oauth token}",	"oauthtokensecret": "{twitter oauth token secret}",	"consumerkey": "{twitter consumer key}", "consumersecret": "{twitter consumer secret}" }' \
-https://apis.appacitive.com/user/john.doe/link?useridtype=username
-```
-``` rest
-$$$Sample Response
-{
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
-		"additionalmessages": []
-	}
-}
-```
-``` javascript
-Not supported
-```
-
-#### Delink account with existing appacitive user.
-
-If you no longer want to associate an Appacitive user to a OAuth provider, you can delink the account using the linked identity's `name`.
-
-** Parameters ** 
-
-<dl>
-  <dt>user id</dt>
-  <dd>required<br/><span>A user identifier for the user</span></dd> 
-  <dt>name</dt>
-  <dd>required<br/><span>The name of the linked identity you want to remove for the user</span></dd>  
-</dl>
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-``` rest
-$$$Method
-POST https://apis.appacitive.com/user/{userId}/{name}/delink
-```
-``` rest
-$$$Sample Request
-//Delink OAuth account
-curl -X POST \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Content-Type: application/json" \
-https://apis.appacitive.com/user/john.doe/facebook/delink?useridtype=username
-```
-``` rest
-$$$Sample Response
-{
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
-		"additionalmessages": []
-	}
-}
-```
-``` javascript
-$$$Method
-Appacitive.User::unlinkFacebookAccount(successHandler, errorHandler);
-```
-``` javascript
-$$$Sample Request
-Appacitive.Users.currentUser().unlinkFacebookAccount(function() {
-    alert("Facebook account delinked successfully");
-}, function(status){
-    alert("Could not delink facebook account");
-});
-```
-
-### Authenticating a user
-
-To make user specific API calls to Appacitive, you need to authenticate the user to the Appacitive API and create a `session token` for the user every time he logs into your app.
-You will pass this `session token` as a HTTP header called `Appacitive-User-Auth`. The `user` object is also returned on a successful authentication call.
-
-
-``` javascript
-//Whenever you use signup or login method, the user is stored in localStorage and can be retrieved using Appacitive.Users.currentUser().
-
-//So, everytime your app opens, you just need to check this value, to be sure whether the user is logged-in or logged-out.
-
-var cUser = Appacitive.User.currentUser();
-if (cUser) {
-    // user is logged in
-} else {
-    // user is not logged in
-}
-
-```
-
-#### Authenticating user by username and password
-
-** Parameter **
-
-<dl>
-	<dt>username</dt>
-	<dd>required<br/><span>The unique username for the user.
-	<dt>password</dt>
-	<dd>required<br/><span>The password associated for the user.
-	<dt>expiry</dt>
-	<dd>optional<br/><span>An optional integer which specifies the cascading window duration (in minutes) before the created token expires.
-	<dt>attempts</dt>
-	<dd>optional<br/><span>An optional integer which specifies for how many calls is the token valid for.
-</dl>
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-** Response **
-
-A newly generated string session `token`, the `user` object itself and a `status` object are returned.
-
-``` csharp
-//Authenticating user by `username` and `password`
-var creds = new UsernamePasswordCredentials("username", "password")
-{
-   TimeoutInSeconds = 15 * 60,
-   MaxAttempts = int.MaxValue 
-};
- 
-// Authenticate
-var result = await creds.AuthenticateAsync();
-User loggedInUser = result.LoggedInUser;
-string token = result.UserToken;
-
-//If you want to setup user context for the application you will need to do
-var creds = new UsernamePasswordCredentials("username", "password")
-{
-   TimeoutInSeconds = 15 * 60,
-   MaxAttempts = int.MaxValue
-};
-
-var userSession = await App.LoginAsync(credentials);
-var user = userSession.LoggedInUser;  //Logged in user
-```
-``` rest
-$$$Method
-POST https://apis.appacitive.com/user/authenticate
-```
-``` rest
-$$$Sample Request
-//	Authenticate user with his username and password
-curl -X POST \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Content-Type: application/json" \
--d '{ "username": "john.doe", "password": "p@ssw0rd" }' \
-https://apis.appacitive.com/user/authenticate
-```
-``` rest
-$$$Sample Response
-{
-	"token": "SThEdVFBc01ZRlR0N2ZEajRjNGV6UjhDREU1UWNxVURsK0E4bmZUQmYyOVdnbVlIdFhHQjZ6dlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa29LMWowMkg1c0trMXZxemFCS2dTaTNJaVpNRlBNKzdSZ3Y5OGlvT2hoRkMzd3dmTU5qcGtNRDN4R0Fzd3JwaU5jTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==",
-	"user": {
-		"__id": "34912447775245454",
-		"__schematype": "user",
-		"__createdby": "System",
-		"__lastmodifiedby": "System",
-		"__schemaid": "34888670847828365",
-		"__revision": "1",
-		"__tags": [],
-		"__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
-		"__utclastupdateddate": "2013-08-21T08:38:24.0000000Z",
-		"username": "john.doe",
-		"email": "john.doe@appacitive.com",
-		"firstname": "John",
-		"lastname": "Doe",
-		"birthdate": "1982-11-17",
-		"isemailverified": "false",
-		"isenabled": "true",
-		"location": "18.534064000000000,73.899551000000000",
-		"phone": "9876543210",
-		"__attributes": {}
-	},
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "237a743a-9091-48a4-8433-6643415cb970",
-		"additionalmessages": []
-	}
-}
-```
-
-``` javascript
-//Login with username and password
-```
-```javascript
-$$$Method
-Appacitive.Users.login("username", "password", successHandler, errorHandler);
-```
-``` javascript
-$$$Sample Request
-Appacitive.Users.login("username", "password", function (authResult) {
-    // user has been logged in successfully
-    conole.log(authResult.token);
-    alert('Saved successfully, id: ' + authResult.user.get('__id'));
-}, function(status) {
-    // log in attempt failed
-});
-
-//The `authResult` is similar as given above.
-{
-    "token": "token",
-    "user": Appacitive.User object
-}
-```
-
-``` javascript
-//Signup and login
-```
-```javascript
-$$$Method
-Appacitive.Users.signup(userDetails, successHandler, errorHandler);
-```
-``` javascript
-$$$Sample Request
-// set the fields
-var userDetails = {
-    username: 'john.doe@appacitive.com',
-    password: /* password as string */,
-    email: 'johndoe@appacitive.com',
-    firstname: 'John',
-    lastname: 'Doe'
-};
-
-// now to create the user
-Appacitive.Users.signup(userDetails , function(authResult) {
-    conole.log(authResult.token);
-    alert('Saved successfully, id: ' + authResult.user.get('__id'));
-}, function(status) {
-    alert('An error occured while saving the user.');
-});
-```
-
-
-#### Authenticate with OAuth 2.0 access token
-
-You can authenticate a user and generate a session token using a access token using one of his linked identities like facebook.
-
-** Parameter **
-
-<dl>
-	<dt>name</dt>
-	<dd>required<br/><span>The name of the linked identity.
-	<dt>accesstoken</dt>
-	<dd>required<br/><span>The access token linked to the user for the linked identity identified by the name above.	
-</dl>
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-``` rest
-$$$Method
-POST https://apis.appacitive.com/user/authenticate
-```
-``` rest
-$$$Sample Request
-//	Authenticate user using an access token associate with him in one of his linked identities
-curl -X POST \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Content-Type: application/json" \
--d '{ "type": "facebook", "accesstoken": "{facebook access token}" }' \
-https://apis.appacitive.com/user/authenticate
-```
-``` rest
-$$$Sample Response
-{
-	"token": "SThEdVFBc01ZRlR0N2ZEajRjNGV6UjhDREU1UWNxVURsK0E4bmZUQmYyOVdnbVlIdFhHQjZ6dlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa29LMWowMkg1c0trMXZxemFCS2dTaTNJaVpNRlBNKzdSZ3Y5OGlvT2hoRkMzd3dmTU5qcGtNRDN4R0Fzd3JwaU5jTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==",
-	"user": {
-		"__id": "34912447775245454",
-		"__schematype": "user",
-		"__createdby": "System",
-		"__lastmodifiedby": "System",
-		"__schemaid": "34888670847828365",
-		"__revision": "1",
-		"__tags": [],
-		"__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
-		"__utclastupdateddate": "2013-08-21T08:38:24.0000000Z",
-		"username": "john.doe",
-		"email": "john.doe@appacitive.com",
-		"firstname": "John",
-		"lastname": "Doe",
-		"birthdate": "1982-11-17",
-		"isemailverified": "false",
-		"isenabled": "true",
-		"location": "18.534064000000000,73.899551000000000",
-		"phone": "9876543210",
-		"__attributes": {}
-	},
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "237a743a-9091-48a4-8433-6643415cb970",
-		"additionalmessages": []
-	}
-}
-```
-``` javascript
-$$$Method
-Appacitive.Users.loginWithFacebook(successHandler, errorHandler);
-```
-``` javascript
-$$$Sample Request
-//  Authenticate user with facebook access token
-Appacitive.Users.loginWithFacebook(function (authResult) {
-    // authentication successful
-}, function(status) {
-    // authentication unsuccessful
-    // maybe incorrect credentials or maybe the user denied permissions
-});
-```
-
-#### Authenticate with a OAuth 1.0 access token
-
-The `consumerkey` and `consumersecret` are optional here. 
-You can set them up once in the management portal in the social network settings tab.
-
-``` rest
-$$$Method
-POST https://apis.appacitive.com/user/authenticate
-```
-``` rest
-$$$Sample Request
-//	Authenticate user using an access token associate with him in one of his linked identities
-curl -X POST \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Content-Type: application/json" \
--d '{ "type": "twitter", "oauthtoken": "{oAuth token}",	"oauthtokensecret": "{oAuth token secret}",	"consumerKey": "{consumer key}", "consumerSecret": "{consumer secret}" }' \
-https://apis.appacitive.com/user/authenticate
-```
-``` rest
-$$$Sample Response
-{
-	"token": "SThEdVFBc01ZRlR0N2ZEajRjNGV6UjhDREU1UWNxVURsK0E4bmZUQmYyOVdnbVlIdFhHQjZ6dlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa29LMWowMkg1c0trMXZxemFCS2dTaTNJaVpNRlBNKzdSZ3Y5OGlvT2hoRkMzd3dmTU5qcGtNRDN4R0Fzd3JwaU5jTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==",
-	"user": {
-		"__id": "34912447775245454",
-		"__schematype": "user",
-		"__createdby": "System",
-		"__lastmodifiedby": "System",
-		"__schemaid": "34888670847828365",
-		"__revision": "1",
-		"__tags": [],
-		"__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
-		"__utclastupdateddate": "2013-08-21T08:38:24.0000000Z",
-		"username": "john.doe",
-		"email": "john.doe@appacitive.com",
-		"firstname": "John",
-		"lastname": "Doe",
-		"birthdate": "1982-11-17",
-		"isemailverified": "false",
-		"isenabled": "true",
-		"location": "18.534064000000000,73.899551000000000",
-		"phone": "9876543210",
-		"__attributes": {}
-	},
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "237a743a-9091-48a4-8433-6643415cb970",
-		"additionalmessages": []
-	}
-}
-```
-``` javascript
-$$$Method
-Appacitive.Users.authenticateUser(authRequest, successHandler, errorHandler);
-```
-``` javascript
-$$$Sample Request
-//Authenticate user with twitter
-var authRequest = {
-    'type': 'twitter',
-    'oauthtoken': {oauthtoken},
-    'oauthtokensecret': {oauthtokensecret}
-}
-
-Appacitive.Users.authenticateUser(authRequest, function(authResult) { 
-   // user has been successfully signed up and set as current user
-   // authresult contains the user and Appacitive-usertoken
-   console.dir(authResult.user.id());
-}, function(status) {
-    alert('An error occured while saving the user.');
-}););
-```
-
-### Retrieving users
-
-Once a user is created in Appacitive, a unique long `__id` is assigned to it and a unique string `username`, which you provided, is associated with it.
-You can access the specific user for retrieving, updating, deleting etc. using one of three ways, by his `id`, by his `username` or by a session `token` generated for that user.
-You can specify what type of user accessing mechanism you are using by passing a query string parameter called `useridtype`. 
-The values for `useridtype` can be `id`, `username` and `token` for accessing the user using his unique system generated `__id`, a unique string `username` assigned by you or a generated token using his credentials respectively.
-In the absense of the parameter `useridtype`, the system assumes it to be `id`.
-
-This call takes an additional `Appacitive-User-Auth` header with its value set as a valid user token.
-The following three example illustrate retrieving the user in the three possible ways. 
-The same pattern applies for other calls like deleting the user or updating the user as well.
-
-#### Get User by Id
-
-
-** Parameter **
-
-<dl>
-	<dt>id</dt>
-	<dd>required<br/><span>The long user id assigned to the user by the system.
-</dl>
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Appacitive-User-Auth</dt>
-	<dd>required<br/><span>A session token generated for a user.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-** Response **
-
-The user object is returned if a user exists in the system for your app with the id you supplied.
-
-
-``` csharp
-//Get User by `id`
-var user = await Users.GetByIdAsync("1234525435344346");
-
-//To get only specific fields (username, firstname and lastname)
-var user = await Users.GetByIdAsync("1234525435344346", 
-                      new [] { "username", "firstname", "lastname" });
-```
-``` rest
-$$$Method
-GET https://apis.appacitive.com/user/{user Id}
-```
-``` rest
-$$$Sample Request
-//	Get user by id
-curl -X POST \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Appacitive-User-Auth: {User token}" \
--H "Content-Type: application/json" \
-https://apis.appacitive.com/user/34912447775245454
-```
-``` rest
-$$$Sample Response
-{
-	"user": {
-		"__id": "34912447775245454",
-		"__schematype": "user",
-		"__createdby": "System",
-		"__lastmodifiedby": "System",
-		"__schemaid": "34888670847828365",
-		"__revision": "1",
-		"__tags": [],
-		"__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
-		"__utclastupdateddate": "2013-08-21T08:38:24.0000000Z",
-		"username": "john.doe",
-		"email": "john.doe@appacitive.com",
-		"firstname": "John",
-		"lastname": "Doe",
-		"birthdate": "1982-11-17",
-		"isemailverified": "false",
-		"isenabled": "true",
-		"location": "18.534064000000000,73.899551000000000",
-		"phone": "9876543210",
-		"__attributes": {}
-	},
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
-		"additionalmessages": []
-	}
-}
-```
-``` javascript
-$$$Method
-Appacitive.User::fetch(successHandler, errorHandler);
-```
-``` javascript
-$$$Sample Request
-var user = new Appacitive.User({ __id: '12345' });
-user.fetch(function (obj) {
-    alert('Fetched user with id 12345');
-}, function(status, obj) {
-    alert('Could not fetch user with id 12345');
-});
-```
-
-#### Get User by username
-
-A user can be retrieved using his unique string `username` which you supplied when creating the user. 
-The value of `useridtype` is set to `username`.
-
-** Parameter **
-
-<dl>
-	<dt>username</dt>
-	<dd>required<br/><span>The string unique username assigned to the user by you while creating the user.
-</dl>
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Appacitive-User-Auth</dt>
-	<dd>required<br/><span>A session token generated for a user.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-
-``` rest
-$$$Method
-GET https://apis.appacitive.com/user/{username}?useridtype=username
-```
-``` rest
-$$$Sample Request
-//	Get user by username
-curl -X POST \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Appacitive-User-Auth: {User token}" \
--H "Content-Type: application/json" \
-https://apis.appacitive.com/user/john.doe?useridtype=username
-```
-``` rest
-$$$Sample Response
-{
-	"user": {
-		"__id": "34912447775245454",
-		"__schematype": "user",
-		"__createdby": "System",
-		"__lastmodifiedby": "System",
-		"__schemaid": "34888670847828365",
-		"__revision": "1",
-		"__tags": [],
-		"__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
-		"__utclastupdateddate": "2013-08-21T08:38:24.0000000Z",
-		"username": "john.doe",
-		"email": "john.doe@appacitive.com",
-		"firstname": "John",
-		"lastname": "Doe",
-		"birthdate": "1982-11-17",
-		"isemailverified": "false",
-		"isenabled": "true",
-		"location": "18.534064000000000,73.899551000000000",
-		"phone": "9876543210",
-		"__attributes": {}
-	},
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
-		"additionalmessages": []
-	}
-}
-```
-``` csharp
-//Get User by `username`
-var user = await Users.GetByUsernameAsync("john.doe");
-```
-
-``` javascript
-$$$Method
-Appacitive.Users.getUserByUsername('{{username}}', successHandler, errorHandler);
-```
-``` javascript
-$$$Sample Request
-//fetch user by username
-Appacitive.Users.getUserByUsername("john.doe", function(user) {
-    alert('Fetched user with username ' + user.get('username'));
-}, function(status) {
-    alert('Could not fetch user with username  john.doe');
-});
-```
-
-#### Get user by user token
-
-Here you can get a user by a session token generated for that user using his credentials. 
-A valid session token still needs to be passed in the `Appacitive-User-Auth` header, but the user that is returned is the user whose token you pass as the query string parameter `token`.
-The `useridtype` query string parameter is set to `token`.
-
-** Parameter **
-
-<dl>
-	<dt>token</dt>
-	<dd>required<br/><span>A string token generated for the user using his credentials.
-</dl>
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Appacitive-User-Auth</dt>
-	<dd>required<br/><span>A session token generated for a user.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-``` csharp
-//	Get logged in User
-var loggedInUser = await Users.GetLoggedInUserAsync();
-```
-``` rest
-$$$Method
-GET https://apis.appacitive.com/user/me?useridtype=token&token={user token}
-```
-``` rest
-$$$Sample Request
-//	Retrieve user with his session token
-curl -X POST \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Appacitive-User-Auth: {User token}" \
--H "Content-Type: application/json" \
-https://apis.appacitive.com/user/me?useridtype=token&token=K2liWXVlSHZ0elNESUloTFlLRE5EQ2lzWXZtM0FFL0JxYW01WTBtVFlmTHZ6aHFMaWtEKzRUdlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa2kvekJpTUZGYyt2ZEFTVi9mbGdNN2xRaEZuWUJidVByR3lFMkZlTzNrRHV3cldVUFRNbFA5M3B6NFN5Rkd3K1dNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==
-```
-``` rest
-$$$Sample Response
-{
-	"user": {
-		"__id": "34912447775245454",
-		"__schematype": "user",
-		"__createdby": "System",
-		"__lastmodifiedby": "System",
-		"__schemaid": "34888670847828365",
-		"__revision": "1",
-		"__tags": [],
-		"__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
-		"__utclastupdateddate": "2013-08-21T08:38:24.0000000Z",
-		"username": "john.doe",
-		"email": "john.doe@appacitive.com",
-		"firstname": "John",
-		"lastname": "Doe",
-		"birthdate": "1982-11-17",
-		"isemailverified": "false",
-		"isenabled": "true",
-		"location": "18.534064000000000,73.899551000000000",
-		"phone": "9876543210",
-		"__attributes": {}
-	},
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
-		"additionalmessages": []
-	}
-}
-```
-``` javascript
-$$$Method
-Appacitive.Users.getUserByToken("{{usertoken}}", successHandler, errorHandler);
-```
-``` javascript
-$$$Sample Request
-
-
-//fetch user by token
-Appacitive.Users.getUserByToken("asfa21sadas", function(user) {
-    alert('Fetched user with username ' + user.get('username'));
-}, function(status) {
-    alert('Could not fetch user with usertoken');
-});
-
-
-
-```
-
-### Updating a user
-
-The update user call is similar to the update article call. The update user calls expects a json object with only the user properties that you want updated.
-The property keys which you send with non-null values will get updated if they aren't marked as immutable.
-The property keys you don't send in the body of the POST call stay unchanged.
-The property keys you send with values set as `null` are deleted from the user object (set to null).
-The same convention is followed with `__attributes` as with the properties.
-The `__addtags` and `__removetags` properties which are arrays of strings are used to update tags.
-
-You can specify which user you want to update by using either his `id`, `username` or `token`. You will use the `useridtype` parameter to specify which option you are using.
- 
-** Parameters ** 
-
-<dl>
-  <dt>user object</dt>
-  <dd>required<br/><span>The user object with inserted, modified or nullified values.</span></dd>  
-</dl>
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-** Response **
-
-Returns the updated user object with the `__revision` number incremented.
-In case of an error, the `status` object contains details for the failure.
-
-``` rest
-$$$Method
-POST https://apis.appacitive.com/user/
-```
-``` rest
-$$$Sample Request
-//	Update user
-curl -X POST \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Content-Type: application/json" \
--d '{ "email":"johnny@appacitive.com", "username":"johnny", "phone": null, "lastname":null, "__addtags":[ "coffee.lover", "foodie" ], "__removetags":[ "newuser" ] }' \
-https://apis.appacitive.com/user
-```
-``` rest
-$$$Sample Response
-{
-	"user": {
-		"__id": "34889981737698423",
-		"__schematype": "user",
-		"__createdby": "System",
-		"__lastmodifiedby": "System",
-		"__schemaid": "34888670847828365",
-		"__revision": "2",
-		"__tags": [
-			"coffee.lover",
-            "foodie"
-		],
-		"__utcdatecreated": "2013-08-21T02:41:19.5142397Z",
-		"__utclastupdateddate": "2013-08-21T02:41:19.5142397Z",
-		"username": "john.doe",
-		"email": "johnny@appacitive.com",
-		"firstname": "John",
-		"lastname":null,
-		"birthdate": "1982-11-17",
-		"phone": null,
-		"isemailverified": "false",
-		"isenabled": "true",
-		"location": "18.534064000000000,73.899551000000000",
-		"__attributes": {}
-	},
-	"status": {
-		"code": "201",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
-		"additionalmessages": []
-	}
-}
-```
-``` csharp
-//Get the user which needs to be updated
-var user = await Users.GetByIdAsync("65464576879867989");
-user.FirstName = "jane";
-//Updating custom field 'city'
-user.Set<string>("city", "New York"); 
-await user.SaveAsync();
-```
-``` javascript
-$$$Method
-Appacitive.User::save(successHandler, errorHandler)
-```
-``` javascript
-$$$Sample Request
-//Update logged-in user
-var user = Appacitive.Users.currentUser();
-
-user.save(function(obj) {
-  alert('User updated successfully!');
-}, function(status, obj) {
-  alert('error while updating user!');
-});
-```
-
-### Searching for users
-
-Searching for users follows all the same filtering principles as searching for articles of any other schema.
-
-``` javascript
-$$$Method
-Appacitive.Article.findAll({
-  schema: 'user', //mandatory
-  fields: [],       //optional
-  filter: {Appacitive.Filter obj}, //optional  
-  pageNumber: 1 ,   //optional: default is 1
-  pageSize: 50,     //optional: default is 50
-  orderBy: '__id',  //optional: default is __utclastupdateddate
-  isAscending: false  //optional: default is false
-}, successHandler, errorHandler)
-```
-``` javascript
-$$$Sample Request
-Appacitive.Article.FindAll({
-  schema: 'user',
-  fields: ["username", "firstname", "email"]
-}, function(users) {
-  //users is an array of Appacitive.User objects
-  console.log("Users fetched");
-}, function(status) {
-  console.log("Error fetching users");
-});
-```
-``` csharp
-//Search user by building `Query`
-var token = "john";
-var query = BooleanOperator.Or(new[]{
-                          Query.Property("firstname").Like("*" + token + "*"),
-                          Query.Property("lastname").Like("*" + token + "*")
-                 });
-var users = await Users.FindAllAsync(query.ToString());
-```
-
-### Deleting a user
-
-Delete requests follow the same practice as get requests for user, the only difference being that the HTTP method type is DELETE, instead of GET.
-Make sure there are no connections with the user you are deleting, otherwise the API will return an error. You can use the `deleteconnections` query string parameter if you want to also delete all connections associated with the user.
-There are three ways you could delete the user (the same as retrieving a user), by his `id`, by his `username` or by his `token` generated for him.
-
-** Parameters **
-
-<dl>
-	<dt>user identifier</dt>
-	<dd>required<br/><span>An identifier to identify the user like username, id or token.	
-</dl>
-
-** Response **
-
-A status object describing the status of the delete user call.
-
-#### Deleting a user by his id
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Appacitive-User-Auth</dt>
-	<dd>required<br/><span>A session token generated for a user.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-
-``` rest
-$$$Method
-DELETE https://apis.appacitive.com/user/{userId}
-```
-``` rest
-$$$Sample Request
-//	Delete user using his id
-curl -X DELETE \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Appacitive-User-Auth: {User token}" \
--H "Content-Type: application/json" \
-https://apis.appacitive.com/user/34912447775245454
-```
-``` rest
-$$$Sample Response
-{
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
-		"additionalmessages": []
-	}
-}
-```
-``` javascript
-$$$Method
-Appacitive.Users.deleteUser('{{id}}', successHandler, ErrorHandler);
-```
-``` javascript
-$$$Sample Request
-//To delete a user with an `__id` of, say, 1000.
-Appacitive.Users.deleteUser('1000', function() {
-    // deleted successfully
-}, function(status) {
-    // delete failed
-});
-```
-
-#### Delete user by username
-
-An additional query string parameter called `useridtype` is sent to specify the kind of user identifier you are using, which in this case is `username`.
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Appacitive-User-Auth</dt>
-	<dd>required<br/><span>A session token generated for a user.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-
-``` rest
-$$$Method
-DELETE https://apis.appacitive.com/user/{username}?useridtype=username
-```
-``` rest
-$$$Sample Request
-//	Delete user using his username
-curl -X DELETE \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Appacitive-User-Auth: {User token}" \
--H "Content-Type: application/json" \
-https://apis.appacitive.com/user/john.doe?useridtype=username
-```
-``` rest
-$$$Sample Response
-{
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
-		"additionalmessages": []
-	}
-}
-```
-``` javascript
-$$$NOT SUPPORTED
-```
-
-#### Delete user by user token
-
-Here you can delete a user by his session token. 
-A valid session token still needs to be passed in the `Appacitive-User-Auth` header, but the user that is deleted is the user whose token you pass as the query string parameter `token`.
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Appacitive-User-Auth</dt>
-	<dd>required<br/><span>A session token generated for a user.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-``` rest
-$$$Method
-DELETE https://apis.appacitive.com/user/me?useridtype=token&token={user token}
-```
-``` rest
-$$$Sample Request
-//	Delete user using his session token
-curl -X DELETE \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Appacitive-User-Auth: {User token}" \
--H "Content-Type: application/json" \
-https://apis.appacitive.com/user/me?useridtype=token&token=K2liWXVlSHZ0elNESUloTFlLRE5EQ2lzWXZtM0FFL0JxYW01WTBtVFlmTHZ6aHFMaWtEKzRUdlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa2kvekJpTUZGYyt2ZEFTVi9mbGdNN2xRaEZuWUJidVByR3lFMkZlTzNrRHV3cldVUFRNbFA5M3B6NFN5Rkd3K1dNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==
-```
-``` rest
-$$$Sample Response
-{
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
-		"additionalmessages": []
-	}
-}
-```
-``` javascript
-$$$Method
-Appacitive.Users.deleteCurrentUser(successHandler, ErrorHandler);
-```
-``` javascript
-$$$Sample Request
-//You can delete the currently logged in user via a helper method.
-Appacitive.Users.deleteCurrentUser(function() {
-    // delete successful
-}, function(status) {
-    // delete failed
-});
-```
-
-### Location Tracking
-
-You can store the users last known location in the `geography` property called `location`. You can use these geo-coordinates in searches. 
-
-** Parameters **
-
-<dl>
-	<dt>userid</dt>
-	<dd>required<br/><span>The userid of the user you want to track location for.
-	<dt>lat</dt>
-	<dd>required<br/><span>The latitude of the coordinates (decimal) where the user is checking in.
-	<dt>long</dt>
-	<dd>required<br/><span>The longitude of the coordinates (decimal) where the user is checking in.
-</dl>
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Appacitive-User-Auth</dt>
-	<dd>required<br/><span>A session token generated for a user.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-``` rest
-$$$Method
-POST https://apis.appacitive.com/user/{userid}/checkin?lat={latitude}&long={longitude}
-```
-``` rest
-$$$Sample Request
-//	Delete user using his session token
-curl -X POST \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Appacitive-User-Auth: {User token}" \
--H "Content-Type: application/json" \
-https://apis.appacitive.com/user/john.doe/checkin?useridtype=username&lat=10.10&long=20.20
-```
-
-``` rest
-$$$Sample Response
-{
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
-		"additionalmessages": []
-	}
-}
-```
-``` javascript
-$$$Method
-Appacitive.User::checkin({
-  lat: {{latitude}},
-  lng: {{longitude}}
-}, successHandler, ErrorHandler);
-```
-``` javascript
-$$$Sample Request
-//Change current users location
-Appacitive.Users.currentUser().checkin({
-    lat:18.57, lng: 75.55
-}, function() {
-    alert("Checked in successfully");
-}, function(status) {
-    alert("There was an error checking in");
-});
-```
-
-### Session Management
-
-
-!!! javascript
-Once the user is authenticated successfully, you will be provided with the user details and an access token. This access token identifies the currently logged in user and will be used to implement access control. Each instance of an app can have one logged in user at any given time. By default the SDK takes care of setting and unsetting this token. However, you can explicitly tell the SDK to start using another access token.
-!!!
-
-``` javascript
-// the access token
-var token = {{token}};
-
-// setting it in the SDK
-Appacitive.session.setUserAuthHeader(token);
-// now the sdk will send this token with all requests to the server
-// Access control has started
-
-// removing the auth token
-Appacitive.session.removeUserAuthHeader();
-// Access control has been disabled
-```
-```javascript
-$$$Note 
-//Setting accessToken doesn't takes care of setting user associated for it. For that you will need to set current user too.
-
-var user = new Appacitive.User({
-    __id : '2121312'
-    username: 'john.doe@appacitive.com'
-    email: 'johndoe@appacitive.com',
-    firstname: 'John',
-    lastname: 'Doe'
-});
-
-Appacitive.Users.setCurrentUser(user, token);
-
-//Now current user points to `john.doe`
-console.log(Appacitive.Users.currentUser().get('__id'));
-```
-
-#### Validate session token
-
-Once you create a session `token` for a user using one of the aunthenticating mechanisms, you may want to validate whether the token is a valid token or not in subsequent api calls.
-
-** Parameters **
-
-<dl>
-	<dt>token</dt>
-	<dd>required<br/><span>The string session token previously generated for the user.
-</dl>
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Appacitive-User-Auth</dt>
-	<dd>required<br/><span>A session token generated for the user.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-``` rest
-$$$Method
-POST https://apis.appacitive.com/user/validate?userToken={user session token}
-```
-``` rest
-$$$Sample Request
-//	Validate user's session token
-curl -X POST \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Appacitive-User-Auth: {User token}" \
--H "Content-Type: application/json" \
-https://apis.appacitive.com/user/validate?userToken=RlYzRlcxY3lsRDlqYUpmQlNha0IwcTJRTXJDYVd6QWZOMlVPR0JWSmNhbTgyWVZxSTVnTmkvR1N0MXJMZm1nZGZCYWNZVk40eEZ4dTB3V3NBOFNVa3FUSEdQZVBTZDBWazJFUW03R0dZQVc5MjdZZmtGRFd1Q092enpTSUpQSWI1VEpqV2xsUUU0U3dIZGcwVTdZTkdNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==```
-
-``` rest
-$$$Sample Response
-{
-	"result": true,
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "d7cf599a-bce3-44db-b404-c9fe09d4c0f4",
-		"additionalmessages": []
-	}
-}
-```
-``` javascript
-$$$Method
-Appacitive.Users.validateCurrentUser(successHandler, validateAPI);
-```
-``` javascript
-$$$Sample Request
-// to check whether user is loggedin locally. This won't make any explicit apicall to validate user
-Appacitive.Users.validateCurrentUser(function(isValid) {
-    if (isValid) //user is logged in
-});
-
-// to check whether user is loggedin, explicitly making an apicall to validate usertoken
-Appacitive.Users.validateCurrentUser(function(isValid) {
-    if (isValid)  //user is logged in
-    // This method also sets the current user for that token
-}, true); // set to true to validate usertoken making an apicall
-```
-
-
-#### Invalidate session
-
-Yoy may want to invalidate a previously generated session token for a user at some point before its expiry.
-
-** Parameters **
-
-<dl>
-	<dt>token</dt>
-	<dd>required<br/><span>The string session token previously generated for the user.
-</dl>
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Appacitive-User-Auth</dt>
-	<dd>required<br/><span>A session token generated for the user.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-``` rest
-$$$Method
-POST https://apis.appacitive.com/user/invalidate?userToken={user session token}
-```
-``` rest
-$$$Sample Request
-//	Invalidate the user's session token
-curl -X POST \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Appacitive-User-Auth: {User token}" \
--H "Content-Type: application/json" \
-https://apis.appacitive.com/user/invalidate?userToken=RlYzRlcxY3lsRDlqYUpmQlNha0IwcTJRTXJDYVd6QWZOMlVPR0JWSmNhbTgyWVZxSTVnTmkvR1N0MXJMZm1nZGZCYWNZVk40eEZ4dTB3V3NBOFNVa3FUSEdQZVBTZDBWazJFUW03R0dZQVc5MjdZZmtGRFd1Q092enpTSUpQSWI1VEpqV2xsUUU0U3dIZGcwVTdZTkdNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==
-```
-
-``` rest
-$$$Sample Response
-{
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "d7cf599a-bce3-44db-b404-c9fe09d4c0f4",
-		"additionalmessages": []
-	}
-}
-```
-``` javascript
-$$$Method
-Appacitive.User::logout(callback);
-```
-```javascript
-$$4Sample Request
-Appacitive.Users.currentUser().logout(function() {
-    // user is logged out   
-    // this will now be null
-    var cUser = Appacitive.Users.currentUser();  
-});
-```
-
-### Password Management
-
-Appacitive provides an intuitive password management and recovery protocol to app developers so that their users can recover or change their passwords safely if and when the need arises.
-
-#### Reset password
-
-If a user of your app simply wants to change his/her password, it requires a simple HTTP call to Appacitive with the necessary details. This call is also available in all the SDKs.
-
-** Parameters **
-
-<dl>
-	<dt>userid</dt>
-	<dd>required<br/><span>The user's unique identifier
-	<dt>useridtype</dt>
-	<dd>required<br/><span>The user's unique identifier's type. Could be `id`, `username` or `token`
-	<dt>oldpassword</dt>
-	<dd>required<br/><span>The user's original password
-	<dt>newpassword</dt>
-	<dd>required<br/><span>The new password which the user wants to set for his account
-</dl>
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Appacitive-User-Auth</dt>
-	<dd>required<br/><span>A session token generated for the user.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-``` rest
-$$$Method
-POST https://apis.appacitive.com/user/{userId}/changepassword?useridtype={id/username/token}
-```
-
-``` rest
-$$$Sample Request
-//	Change user's password
-curl -X POST \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {target environment (sandbox/live)}" \
--H "Appacitive-User-Auth: {User token}" \
--H "Content-Type: application/json" \
--d '{ "oldpassword": "{old password}", "newpassword": "{new password}" }' \
-https://apis.appacitive.com/user/45178614534861534/changepassword?useridtype=id
-```
-
-``` rest
-$$$Sample Response
-{
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "d7cf599a-bce3-44db-b404-c9fe09d4c0f4",
-		"additionalmessages": []
-	}
-}
-```
-``` javascript
-$$$Method
-Appacitive.User::updatePassword('{oldPassword}','{newPassword}', successHandler, ErrorHandler);
-```
-``` javascript
-$$$Sample Request
-//You can make this call only for a loggedin user
-Appacitive.Users.currentUser().updatePassword('dfd4f43','456dfabc', function() {
-    console.log("Password updated successfully"); 
-}, function(status) {
-    console.log("Failed to updated password for user");
-});
-```
-
-
-#### Forgot password
-
-In situations where a user forgets his password, Appacitive provides a secure way to allow your users to reset their password. The process is initiated by your app sending an API call to Appacitive, asking the system to dispatch a reset password email to the user's verified email address.
-A link in this email redirects the user to a page (either hosted by Appacitive or by you on your end), where he can enter a new password for his account. Appacitive adds a special token to the url so that the link is valid only for a short duration. To read more about the forgot password flow and possible customizations to the email structure and the page (where the user enters his new password),
-read the blog post <a href="http://blogs.appacitive.com/2013/10/password-management-in-appacitive.html">here</a>.
-
-** Parameters **
-
-<dl>
-	<dt>username</dt>
-	<dd>required<br/><span>The user's unique username
-	<dt>subject</dt>
-	<dd>required<br/><span>The subject for the email that goes out to the user
-</dl>
-
-** HTTP headers **
-
-<dl>
-	<dt>Appacitive-Apikey</dt>
-	<dd>required<br/><span>The api key for your app.
-	<dt>Appacitive-Environment</dt>
-	<dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
-	<dt>Content-Type</dt>
-	<dd>required<br/><span>This should be set to `application/json`.
-</dl>
-
-``` rest
-$$$Method
-POST https://apis.appacitive.com/user/sendresetpasswordemail
-```
-
-``` rest
-$$$Sample Request
-//	Send reset password email
-curl -X POST \
--H "Appacitive-Apikey: {Your api key}" \
--H "Appacitive-Environment: {sandbox or live}" \
--H "Content-Type: application/json" \
--d '{ "username": "{username of the user}", "subject": "{subject of the email}" }' \
-https://apis.appacitive.com/user/sendresetpasswordemail
-```
-``` rest
-$$$Sample Response
-{
-	"status": {
-		"code": "200",
-		"message": "Successful",
-		"faulttype": null,
-		"version": null,
-		"referenceid": "d7cf599a-bce3-44db-b404-c9fe09d4c0f4",
-		"additionalmessages": []
-	}
-}
-```
-
-``` javascript
-$$$Method
-Appacitive.Users.sendResetPasswordEmail("{username}", "{subject for the mail}", successHandler, ErrorHandler);
-```
-``` javascript
-$$$Sample Request
-//You can make this call only for a loggedin user
-Appacitive.Users.sendResetPasswordEmail("{username}", "{subject for the mail}", function() {
-    alert("Password reset mail sent successfully"); 
-}, function(status) {
-    alert("Failed to reset password for user");
-});
-```
 
 Querying Data
 ------------
@@ -4636,6 +2545,70 @@ Apart from filters, you can also specify paging and sorting information for cust
 All search results are paged with a page size of `20` by default. You can change this by providing a custom page size. Please note that the maximum page size that is allowed is `200`.
 Passing any value higher than this will limit the results to `200`. Also the platform also supports providing modifiers to fine tune the exact set of fields to return for each 
 record of the search results. The platform specific examples will indicate how this can be done.
+
+### Conventions for REST api
+
+Incase you are using the REST api directly, you will need to provide all query information in the url.
+To prevent any ambiguity in terms of the property names or values, the platform provides its own 
+sql like query syntax as detailed below.
+
+#### Disambiguating between attribute and property names
+
+An article or connection can have properties and attributes with the same name.
+As a result, to disambiguate between the two, the following conventions should be followed when using the same in a query.
+
+* Property names should always be prefixed with a * to indicate that it is a property.
+* Attribute names should always be prefixed with an @ to indicate that it is an attribute.
+
+``` rest
+$$$ Samples
+// Find all users with property age greater than 25
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {sandbox or live}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/find/all?query=*age > 25
+
+// Find all users with attribute group_name equal to developers.
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {sandbox or live}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/find/all?query=@group_name=='developers'
+
+
+```
+
+``` javascript
+// Not applicable as this is handled inside the SDK.
+```
+
+``` csharp
+// Not applicable as this is handled inside the SDK.
+```
+
+#### Disambiguating between value data types
+
+To disambiguate between mistaking datetime and geocode information as strings, these type of values must be 
+sent in a specific format. The details of the formatting is provided below for each type of data type.
+
+| Data type | Description | Sample |
+|---------------|------------|------------|
+| ** Numbers ** | Numbers are to be sent as is without quotes. | 123, 123.43 
+| ** Strings ** | String values should be enclosed in single quotes. Existing single quotes in the value should be encoded. | 'This is a string value'
+| ** Text ** | Text values should be enclosed in single quotes. Existing single quotes in the value should be encoded. | 'This is a string value'
+| ** Date ** | Date values must be prefixed with the keyword date() as shown. | date('2012-04-10')
+| ** DateTime ** | DateTime values must be prefixed with the keyword datetime() as shown. | datetime('2012-04-10:12:30:30.0000000z')
+| ** Geocode ** | Geocode values are sent as a latitude,longitude pair. | 66.786123623,110.8971237213
+| ** Boolean ** | Boolean values can be one of true or false without quotes. | true, false
+
+``` javascript
+// Not applicable as this is handled inside the SDK.
+```
+
+``` csharp
+// Not applicable as this is handled inside the SDK.
+```
 
 ### Simple queries
 
@@ -4653,18 +2626,18 @@ A filter criteria is typically a triple with the following information -
 
 The table below shows a list of supported logical operators corresponding to the different types of properties:
 
-| Operator | Numbers | Strings | DateTime | Text | Geography | Boolean |
-|:---------------|:------------|
-| ** == **    | `Yes` | Yes | Yes | No | No | Yes 
-| ** <> **    | Yes | Yes | Yes | No | No | Yes 
-| ** > **     | Yes | No | Yes | No | No | No 
-| ** >= **    | Yes | No | Yes | No | No | No
-| ** < **     | Yes | No | Yes | No | No | No
-| ** <= **    | Yes | No | Yes | No | No | No
-| ** like **  | No | Yes | No | Yes | No | No
+| Operator        | Numbers      | Strings      | DateTime     | Text         | Geography    | Boolean      |
+|:---------------:|:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|
+| ** == **        | Yes          | Yes          | Yes          | No           | No           | Yes 
+| ** != **        | Yes          | Yes          | Yes          | No           | No           | Yes 
+| ** > **         | Yes          | No           | Yes          | No           | No           | No 
+| ** >= **        | Yes          | No           | Yes          | No           | No           | No 
+| ** < **         | Yes          | No           | Yes          | No           | No           | No 
+| ** <= **        | Yes          | No           | Yes          | No           | No           | No 
+| ** like **      | No           | Yes          | No           | Yes          | No           | No 
+| ** between **   | Yes          | No           | Yes          | No           | No           | No 
 
-
-The platform specific samples indicate how these operators can be used.
+`NOTE`: The `between` operator is inclusive at both ends.
 
 
 ``` javascript
@@ -4788,64 +2761,6 @@ var date = DateTime.UtcNow.AddYears(-30);
 var greaterThanQuery = Query.Property("birthdate").IsGreaterThan(date);
 ```
 
-
-### Compound Search
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce 
-
-``` javascript
-//Use of `And` and `Or` operators
-var center = new Appacitive.GeoCoord(36.1749687195, -115.1372222900);
-
-//AND query
-var complexFilter = 
-      Appacitive.Filter.And(
-          //OR query
-          Appacitive.Filter.Or( 
-             Appacitive.Filter.Property("firstname").startsWith("jo"),
-             Appacitive.Filter.Property("lastname").like("oe")
-          ),
-          Appacitive.Filter.Property("location")
-              .withinCircle(center, 
-                      10, 
-                      'mi') // can be set to 'km' or 'mi'
-      );
-//create query object
-var query = new Appacitive.Queries.FindAllQuery({
-  schema: 'player'
-});
-
-//set filter in query
-query.filter(complexFilter);
-
-//add more filters
-query.filter(
-            Appacitive.Filter.And(
-              Appacitive.Filter.Property('gender').equalTo('male'),
-              query.filter()
-            )
-          );
-
-//fire the query
-query.fetch(successHandler);
-```
-``` csharp
-//Use of `And` and `Or` operators
-var center = new Geocode(36.1749687195M, -115.1372222900M);
-
-                   //AND query
-var complexQuery = BooleanOperator.And(new[]{
-                      //OR query
-                      BooleanOperator.Or(new[] { 
-                         Query.Property("firstname").StartsWith("jo"),
-                         Query.Property("lastname").Like("*oe*")
-                      }),
-                      Query.Property("location")
-                          .WithinCircle(center, 
-                                  10.0M, 
-                                  DistanceUnit.Miles)
-          });
-```
 ### Geo queries
 You can specify a property type as a `geography` type for a given schema or relation. These properties are essential latitude-longitude pairs.
 Such properties support geo queries based on a user defined radial or polygonal region on the map. These are extremely useful for making map based or location based searches.
@@ -4917,10 +2832,336 @@ var geocodes = new[] { pt1, pt2, pt3, pt4 };
 var polygonQuery = Query.Property("location").WithinPolygon(geocodes);
 ```
 
+### Tag based queries
+
+The Appacitive platform provides inbuilt support for tagging on all data (articles, connections, users and devices).
+You can use this tag information to query for a specific data set. The different options available for searching based on tags is detailed in the sections below.
+
+#### Query data tagged with one or more of the given tags
+
+For data of a given type, you can query for all records that are tagged with one or more tags from a given list. For example - querying for all articles of type message that are tagged as `personal` or `private`.
+
+** Parameters ** 
+<dl>
+  <dt>type</dt>
+  <dd>required<br/><span>The schema or relation type on which to search.
+  <dt>tags</dt>
+  <dd>required<br/><span>List of tags to be searched for.
+</dl>
+
+** Response ** 
+Returns a list of all records of the given type that are tagged with atleast one of the given tag values.
+
+``` rest
+$$$Method
+GET https://apis.appacitive.com/article/{type}/find/all?query=tagged_with_one_or_more('{comma separated list of tags}')
+```
+``` rest
+$$$Sample Request
+// Get all articles of type message which are tagged with either personal or private.
+
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/article/message/find/all?query=tagged_with_one_or_more('personal,private')
+```
+``` rest
+$$$Sample Response
+
+// System attributes have been removed for readability
+{
+  "paginginfo": {
+    "pagenumber": 1,
+    "pagesize": 20,
+    "totalrecords": 2
+  },
+  "articles": [
+    {
+      "__id": "33017891581461312",
+      "__schematype": "message",
+      "__tags": ["personal"],
+      "title": "Personal message",
+      "text": "This is a test personal message."
+    },
+    {
+      "__id": "33017891581461313",
+      "__schematype": "message",
+      "__tags": ["private","test"],
+      "title": "Private message test",
+      "text": "This is a test private message."
+    }
+  ],
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "ce871063-5443-4524-9443-d14860949c59",
+    "additionalmessages": []
+  }
+}
+```
+
+
+
+#### Query data tagged with all of the given tags
+
+An alternative variation of the above tag based search allows you to query for all records that are tagged with all the tags from a given list. For example, querying for all articles of type `message` that are tagged as `personal` AND `private`.
+
+** Parameters ** 
+<dl>
+  <dt>type</dt>
+  <dd>required<br/><span>The schema or relation type on which to search.
+  <dt>tags</dt>
+  <dd>required<br/><span>List of tags to be searched for.
+</dl>
+
+** Response ** 
+Returns a list of all records of the given type that are tagged with all of the given tag values.
+
+``` rest
+$$$Method
+GET https://apis.appacitive.com/article/{type}/find/all?query=tagged_with_all('{comma separated list of tags}')
+```
+``` rest
+$$$Sample Request
+// Get all articles of type message which are tagged with either personal and test.
+
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/article/message/find/all?query=tagged_with_all('personal,test')
+```
+``` rest
+$$$Sample Response
+// System attributes have been removed for readability
+{
+  "paginginfo": {
+    "pagenumber": 1,
+    "pagesize": 20,
+    "totalrecords": 1
+  },
+  "articles": [
+    {
+      "__id": "33017891581124312",
+      "__schematype": "message",
+      "__tags": ["personal", "test"],
+      "title": "Personal test message",
+      "text": "This is a test personal message."
+    }
+  ],
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "ce871063-5443-4524-9443-d14860949c59",
+    "additionalmessages": []
+  }
+}
+```
+
+### Free text queries
+
+There are situations when you would want the ability to search across all text content inside your data.
+Free text queries are ideal for implementing this kind of functionality. As an example, consider a free text lookup for users
+which searches across the username, firstname, lastname, profile description etc.
+
+You can pass multiple values inside a free text search. It also supports passing certain modifiers that allow you to control
+how each search term should be used. This is detailed below.
+
+** Parameters ** 
+<dl>
+  <dt>type</dt>
+  <dd>required<br/><span>The schema or relation type on which to search.
+  <dt>free text terms</dt>
+  <dd>required<br/><span>List of free text terms to search for.
+</dl>
+
+** Response ** 
+Returns a list of all records of the given type that match the given free text expression.
+
+** Free text modifiers **
+
+| Modifier        | Syntax        | Sample
+|:---------------|:------------:|:------------|
+| Starts with     | {prefix}*        | `econo*` will searc for all text containing words starting with `econo`.
+| Ends with     | *{suffix}        | `*omic` will search for all text containing words ending with `omic`.
+| Single character substitution | {text}?{text}   | `h?re` will match all text containing terms like `here`, `hare` etc.
+| Must contain     | +{term}        | `+hello world` will search for all text that contains the term `hello` and may contain the term `world`.
+| Must not contain     | -{term}       | `hello -world` will search for all text may contain the term hello but does not contain the term `world`.
+
+
+``` rest
+$$$Method
+GET https://apis.appacitive.com/article/{type}/find/all?freetext={free text expression}
+```
+``` rest
+$$$Sample Request
+// Get all photos that contain the terms "champs" or "Palais".
+
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/article/photo/find/all?freetext=champs Palais
+```
+``` rest
+$$$Sample Response
+
+// System attributes have been removed for readability
+{
+  "articles": [
+    {
+      "__id": "38705090736030853",
+      "__schematype": "photo",
+      "url": "http://www.photosparis.com/images/paris_black_and_white_night/paris_champs_elysees_3_bwn.jpg",
+      "description": "Champs Elysees"
+    },
+    {
+      "__id": "38705134668218897",
+      "__schematype": "photo",
+      "url": "http://www.photosparis.com/images/paris_black_and_white/paris_parc_palais_royal_bw.jpg",
+      "description": "Parc Palais Royale"
+    }
+  ],
+  "paginginfo": {
+    "pagenumber": 1,
+    "pagesize": 20,
+    "totalrecords": 2
+  },
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "0eb5b341-76f1-4f9d-97ef-c1512ea4a4cc",
+    "additionalmessages": []
+  }
+}
+```
+
+
+
+### Sorting and paging
+
+All search queries on the platform return a paginated response. You can specify the page number and page size of the result set that you want returned. By default, the page size for results is `20`. This is capped to a max value of `200` for performance reasons. 
+
+
+You can also specify the property name based on which you would like the result set to be sorted, along with the direction (ascending or descending). Take a look at the platform specific samples to see how this information is passed from the client.
+
+``` rest
+$$$Method
+GET https://apis.appacitive.com/article/{type}/find/all?psize={page size}&pnum={page number}&orderBy={order by property name}&isAsc={true or false}
+```
+``` rest
+$$$Sample Request
+// Get page 2 of photos with page size 1 sorted by __id descending. 
+
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+GET https://apis.appacitive.com/article/photo/find/all?psize=1&pnum=2&orderBy=__id&isAsc=false
+
+```
+``` rest
+$$$Sample Response
+
+// System attributes have been removed for readability
+{
+  "articles": [
+    {
+      "__id": "38705319445135958",
+      "__schematype": "photo",
+      "__tags": [
+        "florence",
+        "italy"
+      ],
+      "url": "http://media-cdn.tripadvisor.com/media/photo-s/00/19/01/0a/florence-italy.jpg",
+      "description": "Florence bridge"
+    }
+  ],
+  "paginginfo": {
+    "pagenumber": 2,
+    "pagesize": 1,
+    "totalrecords": 9
+  },
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "de861482-b527-4023-9dec-d0e3d3eb490a",
+    "additionalmessages": []
+  }
+}
+```
+
+### Compound Queries
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce 
+
+``` javascript
+//Use of `And` and `Or` operators
+var center = new Appacitive.GeoCoord(36.1749687195, -115.1372222900);
+
+//AND query
+var complexFilter = 
+      Appacitive.Filter.And(
+          //OR query
+          Appacitive.Filter.Or( 
+             Appacitive.Filter.Property("firstname").startsWith("jo"),
+             Appacitive.Filter.Property("lastname").like("oe")
+          ),
+          Appacitive.Filter.Property("location")
+              .withinCircle(center, 
+                      10, 
+                      'mi') // can be set to 'km' or 'mi'
+      );
+//create query object
+var query = new Appacitive.Queries.FindAllQuery({
+  schema: 'player'
+});
+
+//set filter in query
+query.filter(complexFilter);
+
+//add more filters
+query.filter(
+            Appacitive.Filter.And(
+              Appacitive.Filter.Property('gender').equalTo('male'),
+              query.filter()
+            )
+          );
+
+//fire the query
+query.fetch(successHandler);
+```
+``` csharp
+//Use of `And` and `Or` operators
+var center = new Geocode(36.1749687195M, -115.1372222900M);
+
+                   //AND query
+var complexQuery = BooleanOperator.And(new[]{
+                      //OR query
+                      BooleanOperator.Or(new[] { 
+                         Query.Property("firstname").StartsWith("jo"),
+                         Query.Property("lastname").Like("*oe*")
+                      }),
+                      Query.Property("location")
+                          .WithinCircle(center, 
+                                  10.0M, 
+                                  DistanceUnit.Miles)
+          });
+```
+
 Graph Search
 ------------
 
-Graph queries offer immense potential when it comes to drilling and mining for connected data. There are two kinds of graph queries, `filter` and `projection`.
+Graph queries offer immense potential when it comes to traversing and mining for connected data. There are two kinds of graph queries, `filter` and `projection`.
 You can read about them here <http://www.example.com>.
 
 ### Creating graph queries
@@ -5115,6 +3356,2102 @@ query.fetch(function(results) {
   console.log("Error running project query");
 });
 
+```
+
+User management
+======
+
+Users represent your apps' users. Appacitive provides API(s) to store and manage details and data about your users out of the box through an inbuilt schema called `user`.
+
+Users
+------------
+
+This inbuilt schema `user` behaves just like any other schema created by you with added features like authentication, location tracking, password management, session management and third-party social integration using OAuth 1.0 or OAuth 2.0.
+
+`Note` : While working with user API(s) you need to pass an additional HTTP header called `Appacitive-User-Auth` with its value set to a valid user `session token` generated for that user.
+
+<span class="h3">The user object</span>
+
+** System generated properties ** 
+
+The `user` object contains all the `system defined properties` that you would find in an article of any schema like `__id`, `__schematype`, `__createdby`, `__lastmodifiedby`, `__utcdatecreated`, `__utclastupdateddate`, `__revision`, `__tags` and `__attributes`.  
+It also has some additional `pre-defined` properties to provide the added user management features, and you can also add more properties to the `user` schema the same way you would add properties to any other schema using the management portal. 
+
+The additional pre-defined properties are as follows.
+
+
+<dl>
+  <dt>username</dt>
+  <dd><span>A ```unique``` and ```mandatory``` ```string``` property for storing a username for every user in the system.</span></dd>
+  <dt>birthdate</dt>
+  <dd><span>A ```non-mandatory``` ```date``` property to store the date of birth of that user.</span></dd>
+  <dt>firstname</dt>
+  <dd><span>A ```mandatory``` ```string``` property for the firstname of the user.</span></dd>
+  <dt>lastname</dt>
+  <dd><span>An ```optional``` ```string``` property for the lastname of the user.</span></dd>
+  <dt>email</dt>
+  <dd><span>An ```mandatory``` ```string``` property with a email ```regex``` validation on it for storing and managing the users email address.</span></dd>
+  <dt>location</dt>
+  <dd><span>An ```optional``` ```geography``` property for checkin management and geo-based querying.</span></dd>
+  <dt>password</dt>
+  <dd><span>A ```masked``` and ```mandatory``` ```string``` property for storing and managing the password for that user.</span></dd>
+  <dt>phone</dt>
+  <dd><span>An ```optional``` ```string``` property for storing the phone number of the user.</span></dd>
+  <dt>isenabled</dt>
+  <dd><span>An ```optional``` ```bool``` property which lets you block the user.</span></dd>
+  <dt>isonline</dt>
+  <dd><span>An ```optional``` ```bool``` property which lets you check whether the user is currently online.</span></dd>
+  <dt>connectionid</dt>
+  <dd><span>An ```optional``` ```string``` property which lets you manage the bi-directional websocket on the user with real time messaging. For more info check out the RTM docs.</span></dd>
+</dl>
+
+
+``` rest
+$$$sample object 
+{
+  "__id": "34889377044890389",
+  "__schematype": "user",
+  "__createdby": "System",
+  "__lastmodifiedby": "System",
+  "__schemaid": "34888670844153416",
+  "__revision": "1",
+  "__tags": ["tall", "male"],
+  "__utcdatecreated": "2013-08-21T02:31:42.8498473Z",
+  "__utclastupdateddate": "2013-08-21T02:31:42.8498473Z",
+  "username": "john.doe",
+  "location": "18.534064,73.899551",
+  "email": "john.doe@appacitive.com",
+  "firstname": "John",
+  "lastname": "Doe",
+  "birthdate": "1982-11-17",
+  "isenabled": "true",
+  "phone": "+91 9041-222-333",
+  "__attributes": {
+    "company": "appacitive",
+    "niche": "ux",
+    "gender": "male"
+  }
+}
+```
+
+### Creating a new user
+
+Appacitive provides multiple ways through which you can add new users to your app.
+You may choose to use Appacitive's `User Management` system alone to manage all of your apps' users, or additionally integrate with facebook, twitter or any other <a href="http://en.wikipedia.org/wiki/OAuth">OAuth</a> provider for identity management.
+Appacitive allows you to link as many OAuth accounts with Appacitive `user` objects and manage them using Appacitive's user API(s). 
+And because `user` objects are internally similar to `article` objects, you can connect a `user` object to other users or articles of other schemas by creating corresponding relations from the management portal.
+
+#### Creating a simple user
+
+Creates a new user in Appacitive. This user is an independent user in the Appacitive system for your app, in the environment you specify through the `Appacitive-Environment` header, without any linked identites. 
+You can link it to a OAuth account later on.
+Some basic system properties are mandatory, namely `username`, `firstname`, `email` and `password`. The `username` should be unique for every user. 
+Every user is assigned a unique monotonically increasing `__id` by the system.
+All other pre-defined properties are optional and you may wish to use them or add more according to your app's requirements using the management portal.
+
+** Parameters ** 
+
+<dl>
+  <dt>user object</dt>
+  <dd>required<br/><span>The user object</span></dd>  
+</dl>
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+** Response **
+
+Returns the newly created user object with all the system defined properties set like `__id`, `__utcdatecreated`, `__createdby` etc.
+In case of an error, the `status` object contains details for the failure.
+
+``` rest
+$$$Method
+PUT https://apis.appacitive.com/user
+```
+``` rest
+$$$Sample Request
+curl -X PUT \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d '{ "__tags": ["male"], "username": "john.doe", "firstname": "John", "email": "john.doe@appacitive.com", "password": "p@ssw0rd" }' \
+https://apis.appacitive.com/user
+```
+``` rest
+$$$Sample Response
+{
+  "user": {
+    "__id": "34889981737698423",
+    "__schematype": "user",
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__schemaid": "34888670847828365",
+    "__revision": "1",
+    "__tags": [
+      "male"
+    ],
+    "__utcdatecreated": "2013-08-21T02:41:19.5142397Z",
+    "__utclastupdateddate": "2013-08-21T02:41:19.5142397Z",
+    "username": "john.doe",
+    "email": "john.doe@appacitive.com",
+    "firstname": "John",
+    "isenabled": "true",
+    "phone": null,
+    "__attributes": {}
+  },
+  "status": {
+    "code": "201",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
+    "additionalmessages": []
+  }
+}
+```
+
+``` javascript
+$$$Method
+Appacitive.User::save(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+
+// set the fields
+var userDetails = {
+    username: 'john.doe@appacitive.com',
+    password: /* password as string */,
+    email: 'johndoe@appacitive.com',
+    firstname: 'John',
+    lastname: 'Doe'
+};
+
+var newUser = new Appacitive.User(userDetails);
+
+//and then call save on that object
+newUser.save(function(obj) {
+    alert('Saved successfully, id: ' + newUser.get('__id'));
+}, function(status, obj) {
+    alert('An error occured while saving the user.');
+});
+```
+
+``` csharp
+//Create a User
+var user = new User
+{
+    Username = "john.doe",
+    FirstName = "John",
+    Email = "john.doe@appacitive.com",
+    Password = "p@ssw0rd"
+};
+await user.SaveAsync();
+```
+
+The `__createdby` and `__lastmodifiedby` properties are set to `System`. They will be set to a user id if you use another user's `session token` to perform actions on this user.
+The `__revision` is initially set to 1 when the user is created. This number gets incremented by 1 everytime you perform a successful update operation on the user object.
+`__attributes` are simple string key-value pairs which you can assign to every `user`, `article` and `connection` object. 
+The `__tags` object is an array of string tags. You can perform search queries on `__attributes` and `__tags`. 
+
+#### Creating a user with a link to a OAuth 2.0 provider
+
+Creates a new user in the Appacitive system and links it to a facebook account. Each linked identity is assigned a `name` like 'facebook' or 'twitter' or some custom name you provide.
+Here onwards, the linked identity can be accessed using the `name` of the identity.
+
+** Parameters ** 
+
+<dl>
+  <dt>user object</dt>
+  <dd>required<br/><span>The user object</span></dd>  
+  <dt>`__link` object</dt>
+  <dd>required<br/><span>Details about the linked account. These are enclosed inside the user object.</span></dd>  
+</dl>
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+``` rest
+$$$Method
+PUT https://apis.appacitive.com/user/
+```
+``` rest
+$$$Sample Request
+//  Create a new user and link it to a facebook account
+curl -X PUT \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d '{ "username": "john.doe", "firstname": "John", "email": "john.doe@appacitive.com", "password": "p@ssw0rd", "__link": { "authtype": "facebook", "accesstoken": "{facebook access token}" }}' \
+https://apis.appacitive.com/user
+```
+``` javascript
+$$$Method
+Appacitive.User::save(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+//  Create a new user and link it to a facebook account
+// include this script in your page for facebook login
+window.fbAsyncInit = function() {
+    Appacitive.Facebook.initialize({
+        appId      : 'YOUR_APP_ID', // Facebook App ID
+        status     : false, // check login status
+        cookie     : true, // enable cookies to allow Appacitive to access the session
+        xfbml      : true  // parse XFBML
+    });
+    // Additional initialization code here
+};
+
+//create user object
+var user = new Appacitive.User({
+    username: 'john.doe@appacitive.com',
+    password: /* password as string */,
+    email: 'johndoe@appacitive.com',
+    firstname: 'John',
+    lastname: 'Doe' 
+});
+
+//link facebook account
+user.linkFacebookAccount();
+
+/You can access linked accounts of a user, using this field
+console.dir(user.linkedAccounts); 
+
+//create the user on server
+user.save(function(obj) {
+    console.dir(user.linkedAccounts);
+}, function(status, obj) {
+    alert('An error occured while saving the user.');
+});
+```
+
+``` rest
+$$$Sample Response
+{
+  "user": {
+    "__id": "34889981737698423",
+    "__schematype": "user",
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__schemaid": "34888670847828365",
+    "__revision": "1",
+    "__tags": [
+      "newuser"
+    ],
+    "__utcdatecreated": "2013-08-21T02:41:19.5142397Z",
+    "__utclastupdateddate": "2013-08-21T02:41:19.5142397Z",
+    "username": "john.doe",
+    "email": "john.doe@appacitive.com",
+    "firstname": "John",
+    "isemailverified": "false",
+    "isenabled": "true",
+    "phone": null,
+    "__attributes": {}
+  },
+  "status": {
+    "code": "201",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
+    "additionalmessages": []
+  }
+}
+```
+#### Creating a user and link it to a OAuth 1.0 provider
+
+Creates a new user in the Appacitive system and links it to a twitter account. 
+If you have already specified the `consumerkey` and `consumersecret` in the management portal, you don't have to pass it again for this call.
+
+** Parameters ** 
+
+<dl>
+  <dt>user object</dt>
+  <dd>required<br/><span>The user object</span></dd>  
+  <dt>`__link` object</dt>
+  <dd>required<br/><span>Details about the linked account. This object is sent inside the user object.</span></dd>  
+</dl>
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+``` rest
+$$$Method
+PUT https://apis.appacitive.com/user/
+```
+``` rest
+$$$Sample Request
+//Create a new user and link it to a twitter account
+curl -X PUT \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d '{ "username": "john.doe", "firstname": "John", "email": "john.doe@appacitive.com", "password": "p@ssw0rd", "__link": { "authtype": "twitter", "oauthtoken": "{twitter oauth token}", "oauthtokensecret": "{twitter oauth token secret}", "consumerkey": "{twitter consumer key}", "consumersecret": "{twitter consumer secret}"}}' \
+https://apis.appacitive.com/user
+```
+``` rest
+$$$Sample Response
+{
+  "user": {
+    "__id": "34889981737698423",
+    "__schematype": "user",
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__schemaid": "34888670847828365",
+    "__revision": "1",
+    "__tags": [
+      "newuser"
+    ],
+    "__utcdatecreated": "2013-08-21T02:41:19.5142397Z",
+    "__utclastupdateddate": "2013-08-21T02:41:19.5142397Z",
+    "username": "john.doe",
+    "email": "john.doe@appacitive.com",
+    "firstname": "John",
+    "isemailverified": "false",
+    "isenabled": "true",
+    "phone": null,
+    "__attributes": {}
+  },
+  "status": {
+    "code": "201",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+$$$Method
+Appacitive.User::save(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+//create user object
+var user = new Appacitive.User({
+    username: 'john.doe@appacitive.com',
+    password: /* password as string */,
+    email: 'johndoe@appacitive.com',
+    firstname: 'John',
+    lastname: 'Doe',
+    __link: {
+      authtype: "twitter", 
+      oauthtoken: "{twitter oauth token}", 
+      oauthtokensecret: "{twitter oauth token secret}",
+      consumerkey: "{twitter consumer key}", 
+      consumersecret: "{twitter consumer secret}"
+    }
+});
+
+//You can access linked accounts of a user, using this field
+console.dir(user.linkedAccounts); 
+
+//create the user on server
+user.save(function(obj) {
+    console.dir(user.linkedAccounts);
+}, function(status, obj) {
+    alert('An error occured while saving the user.');
+});
+```
+
+#### Create a user with just the OAuth access token
+
+You can optionally create a new user in Appacitive with just the OAth access token for the user. 
+You can use this option to integrate facebook login in your app.
+You need to add an extra property in the request object called `createnew` with its value set to `true`. 
+The system will pull the required details about the user from the OAth provider and create a new Appacitive user with it.
+Note that this is a `POST` HTTP call.
+
+In this example, we will use a facebook access token.
+
+** Parameters ** 
+
+<dl>
+  <dt>`__link` object</dt>
+  <dd>required<br/><span>Details about the linked account</span></dd>  
+</dl>
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+``` rest
+$$$Method
+PUT https://apis.appacitive.com/user/authenticate
+```
+``` rest
+$$$Sample Request
+//  Create a new user using the OAuth token
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d '{ "type": "facebook", "accesstoken": "{facebook access token}", "createnew": true }' \
+https://apis.appacitive.com/user/authenticate
+```
+``` rest
+$$$Sample Response
+{
+  "user": {
+    "__id": "34889981737698423",
+    "__schematype": "user",
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__schemaid": "34888670847828365",
+    "__revision": "1",
+    "__utcdatecreated": "2013-08-21T02:41:19.5142397Z",
+    "__utclastupdateddate": "2013-08-21T02:41:19.5142397Z",
+    "username": "john.doe",
+    "email": "john.doe@appacitive.com",
+    "firstname": "John",,
+    "lastname": "Doe",
+    "birthdate": "1980-05-20",
+    "isemailverified": "false",
+    "isenabled": "true",
+    "phone": null,
+    "__attributes": {}
+  },
+  "status": {
+    "code": "201",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+$$$Method
+Appacitive.Users.signupWithFacebook(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+//  Create a new user using the Facebook access token
+//Include this script in your page for setting up facebook login
+window.fbAsyncInit = function() {
+    Appacitive.Facebook.initialize({
+        appId      : 'YOUR_APP_ID', // Facebook App ID
+        status     : true, // check login status
+        cookie     : true, // enable cookies to allow Appacitive to access the session
+        xfbml      : true  // parse XFBML
+    });
+    // Additional initialization code here
+};
+
+//Registering via facebook is done like so
+Appacitive.Users.signupWithFacebook(function (authResult) {
+    // user has been successfully signed up and set as current user
+    // authresult contains the user and Appacitive-usertoken
+}, function(status) {
+    // there was an error signing up the user
+});
+```
+``` javascript
+$$$Sample Request
+//  Create a new user using the OAuth 1.0 token
+
+var authRequest = {
+    'type': 'twitter',
+    'oauthtoken': {oauthtoken},
+    'oauthtokensecret': {oauthtokensecret},
+    'createnew': true
+}
+ 
+Appacitive.Users.authenticateUser(authRequest, function(authResult) { 
+   // user has been successfully signed up and set as current user
+   // authresult contains the user and Appacitive-usertoken
+   console.dir(authResult.user.id());
+}, function(status) {
+    alert('An error occured while saving the user.');
+});
+```
+
+#### Link account with existing Appacitive user.
+
+You can link an existing Appacitive user to a social identity provider which works on OAuth 1.0 or OAuth 2.0.
+
+##### Link appacitive user to a OAuth 2.0 account 
+
+** Parameters ** 
+
+<dl>
+  <dt>```__link``` object</dt>
+  <dd>required<br/><span>Details about the linked account</span></dd>  
+</dl>
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+** Response **
+
+The response contains a `status` object which describes the status of the request.
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/user/{userId}/link
+```
+``` rest
+$$$Sample Request
+//  Link an account to a appacitive user
+curl -X PUT \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d '{ "type": "facebook", "accesstoken": "{facebook access token}" }' \
+https://apis.appacitive.com/user/john.doe/link?useridtype=username
+```
+``` rest
+$$$Sample Response
+{
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+$$$Method
+Appacitive.User::linkFacebookAccount(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+var user = Appacitive.User.currentUser();
+user.linkFacebookAccount(function(obj) {
+    console.dir(user.linkedAccounts);//You can access linked accounts of a user, using this field
+}, function(status, obj){
+    alert("Could not link FB account");
+});
+
+```
+
+##### Link appacitive user to a OAuth 1.0 account
+
+We can link an appacitive user to a twitter account after the user has already been created in Appacitive.
+
+** Parameters ** 
+
+<dl>
+  <dt>`__link` object</dt>
+  <dd>required<br/><span>Details about the linked account</span></dd>  
+</dl>
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+** Response **
+
+The response contains a `status` object which describes the status of the request.
+
+``` rest
+$$$Method
+PUT https://apis.appacitive.com/user/{userId}/link
+```
+``` rest
+$$$Sample Request
+//Create a new user
+curl -X PUT \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d '{ "authtype": "twitter", "oauthtoken": "{twitter oauth token}", "oauthtokensecret": "{twitter oauth token secret}", "consumerkey": "{twitter consumer key}", "consumersecret": "{twitter consumer secret}" }' \
+https://apis.appacitive.com/user/john.doe/link?useridtype=username
+```
+``` rest
+$$$Sample Response
+{
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+Not supported
+```
+
+#### Delink account with existing appacitive user.
+
+If you no longer want to associate an Appacitive user to a OAuth provider, you can delink the account using the linked identity's `name`.
+
+** Parameters ** 
+
+<dl>
+  <dt>user id</dt>
+  <dd>required<br/><span>A user identifier for the user</span></dd> 
+  <dt>name</dt>
+  <dd>required<br/><span>The name of the linked identity you want to remove for the user</span></dd>  
+</dl>
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/user/{userId}/{name}/delink
+```
+``` rest
+$$$Sample Request
+//Delink OAuth account
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/john.doe/facebook/delink?useridtype=username
+```
+``` rest
+$$$Sample Response
+{
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+$$$Method
+Appacitive.User::unlinkFacebookAccount(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+Appacitive.Users.currentUser().unlinkFacebookAccount(function() {
+    alert("Facebook account delinked successfully");
+}, function(status){
+    alert("Could not delink facebook account");
+});
+```
+
+### Authenticating a user
+
+To make user specific API calls to Appacitive, you need to authenticate the user to the Appacitive API and create a `session token` for the user every time he logs into your app.
+You will pass this `session token` as a HTTP header called `Appacitive-User-Auth`. The `user` object is also returned on a successful authentication call.
+
+
+``` javascript
+//Whenever you use signup or login method, the user is stored in localStorage and can be retrieved using Appacitive.Users.currentUser().
+
+//So, everytime your app opens, you just need to check this value, to be sure whether the user is logged-in or logged-out.
+
+var cUser = Appacitive.User.currentUser();
+if (cUser) {
+    // user is logged in
+} else {
+    // user is not logged in
+}
+
+```
+
+#### Authenticating user by username and password
+
+** Parameter **
+
+<dl>
+  <dt>username</dt>
+  <dd>required<br/><span>The unique username for the user.
+  <dt>password</dt>
+  <dd>required<br/><span>The password associated for the user.
+  <dt>expiry</dt>
+  <dd>optional<br/><span>An optional integer which specifies the cascading window duration (in minutes) before the created token expires.
+  <dt>attempts</dt>
+  <dd>optional<br/><span>An optional integer which specifies for how many calls is the token valid for.
+</dl>
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+** Response **
+
+A newly generated string session `token`, the `user` object itself and a `status` object are returned.
+
+``` csharp
+//Authenticating user by `username` and `password`
+var creds = new UsernamePasswordCredentials("username", "password")
+{
+   TimeoutInSeconds = 15 * 60,
+   MaxAttempts = int.MaxValue 
+};
+ 
+// Authenticate
+var result = await creds.AuthenticateAsync();
+User loggedInUser = result.LoggedInUser;
+string token = result.UserToken;
+
+//If you want to setup user context for the application you will need to do
+var creds = new UsernamePasswordCredentials("username", "password")
+{
+   TimeoutInSeconds = 15 * 60,
+   MaxAttempts = int.MaxValue
+};
+
+var userSession = await App.LoginAsync(credentials);
+var user = userSession.LoggedInUser;  //Logged in user
+```
+``` rest
+$$$Method
+POST https://apis.appacitive.com/user/authenticate
+```
+``` rest
+$$$Sample Request
+//  Authenticate user with his username and password
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d '{ "username": "john.doe", "password": "p@ssw0rd" }' \
+https://apis.appacitive.com/user/authenticate
+```
+``` rest
+$$$Sample Response
+{
+  "token": "SThEdVFBc01ZRlR0N2ZEajRjNGV6UjhDREU1UWNxVURsK0E4bmZUQmYyOVdnbVlIdFhHQjZ6dlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa29LMWowMkg1c0trMXZxemFCS2dTaTNJaVpNRlBNKzdSZ3Y5OGlvT2hoRkMzd3dmTU5qcGtNRDN4R0Fzd3JwaU5jTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==",
+  "user": {
+    "__id": "34912447775245454",
+    "__schematype": "user",
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__schemaid": "34888670847828365",
+    "__revision": "1",
+    "__tags": [],
+    "__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
+    "__utclastupdateddate": "2013-08-21T08:38:24.0000000Z",
+    "username": "john.doe",
+    "email": "john.doe@appacitive.com",
+    "firstname": "John",
+    "lastname": "Doe",
+    "birthdate": "1982-11-17",
+    "isemailverified": "false",
+    "isenabled": "true",
+    "location": "18.534064000000000,73.899551000000000",
+    "phone": "9876543210",
+    "__attributes": {}
+  },
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "237a743a-9091-48a4-8433-6643415cb970",
+    "additionalmessages": []
+  }
+}
+```
+
+``` javascript
+//Login with username and password
+```
+```javascript
+$$$Method
+Appacitive.Users.login("username", "password", successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+Appacitive.Users.login("username", "password", function (authResult) {
+    // user has been logged in successfully
+    conole.log(authResult.token);
+    alert('Saved successfully, id: ' + authResult.user.get('__id'));
+}, function(status) {
+    // log in attempt failed
+});
+
+//The `authResult` is similar as given above.
+{
+    "token": "token",
+    "user": Appacitive.User object
+}
+```
+
+``` javascript
+//Signup and login
+```
+```javascript
+$$$Method
+Appacitive.Users.signup(userDetails, successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+// set the fields
+var userDetails = {
+    username: 'john.doe@appacitive.com',
+    password: /* password as string */,
+    email: 'johndoe@appacitive.com',
+    firstname: 'John',
+    lastname: 'Doe'
+};
+
+// now to create the user
+Appacitive.Users.signup(userDetails , function(authResult) {
+    conole.log(authResult.token);
+    alert('Saved successfully, id: ' + authResult.user.get('__id'));
+}, function(status) {
+    alert('An error occured while saving the user.');
+});
+```
+
+
+#### Authenticate with OAuth 2.0 access token
+
+You can authenticate a user and generate a session token using a access token using one of his linked identities like facebook.
+
+** Parameter **
+
+<dl>
+  <dt>name</dt>
+  <dd>required<br/><span>The name of the linked identity.
+  <dt>accesstoken</dt>
+  <dd>required<br/><span>The access token linked to the user for the linked identity identified by the name above.  
+</dl>
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/user/authenticate
+```
+``` rest
+$$$Sample Request
+//  Authenticate user using an access token associate with him in one of his linked identities
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d '{ "type": "facebook", "accesstoken": "{facebook access token}" }' \
+https://apis.appacitive.com/user/authenticate
+```
+``` rest
+$$$Sample Response
+{
+  "token": "SThEdVFBc01ZRlR0N2ZEajRjNGV6UjhDREU1UWNxVURsK0E4bmZUQmYyOVdnbVlIdFhHQjZ6dlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa29LMWowMkg1c0trMXZxemFCS2dTaTNJaVpNRlBNKzdSZ3Y5OGlvT2hoRkMzd3dmTU5qcGtNRDN4R0Fzd3JwaU5jTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==",
+  "user": {
+    "__id": "34912447775245454",
+    "__schematype": "user",
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__schemaid": "34888670847828365",
+    "__revision": "1",
+    "__tags": [],
+    "__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
+    "__utclastupdateddate": "2013-08-21T08:38:24.0000000Z",
+    "username": "john.doe",
+    "email": "john.doe@appacitive.com",
+    "firstname": "John",
+    "lastname": "Doe",
+    "birthdate": "1982-11-17",
+    "isemailverified": "false",
+    "isenabled": "true",
+    "location": "18.534064000000000,73.899551000000000",
+    "phone": "9876543210",
+    "__attributes": {}
+  },
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "237a743a-9091-48a4-8433-6643415cb970",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+$$$Method
+Appacitive.Users.loginWithFacebook(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+//  Authenticate user with facebook access token
+Appacitive.Users.loginWithFacebook(function (authResult) {
+    // authentication successful
+}, function(status) {
+    // authentication unsuccessful
+    // maybe incorrect credentials or maybe the user denied permissions
+});
+```
+
+#### Authenticate with a OAuth 1.0 access token
+
+The `consumerkey` and `consumersecret` are optional here. 
+You can set them up once in the management portal in the social network settings tab.
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/user/authenticate
+```
+``` rest
+$$$Sample Request
+//  Authenticate user using an access token associate with him in one of his linked identities
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d '{ "type": "twitter", "oauthtoken": "{oAuth token}", "oauthtokensecret": "{oAuth token secret}", "consumerKey": "{consumer key}", "consumerSecret": "{consumer secret}" }' \
+https://apis.appacitive.com/user/authenticate
+```
+``` rest
+$$$Sample Response
+{
+  "token": "SThEdVFBc01ZRlR0N2ZEajRjNGV6UjhDREU1UWNxVURsK0E4bmZUQmYyOVdnbVlIdFhHQjZ6dlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa29LMWowMkg1c0trMXZxemFCS2dTaTNJaVpNRlBNKzdSZ3Y5OGlvT2hoRkMzd3dmTU5qcGtNRDN4R0Fzd3JwaU5jTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==",
+  "user": {
+    "__id": "34912447775245454",
+    "__schematype": "user",
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__schemaid": "34888670847828365",
+    "__revision": "1",
+    "__tags": [],
+    "__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
+    "__utclastupdateddate": "2013-08-21T08:38:24.0000000Z",
+    "username": "john.doe",
+    "email": "john.doe@appacitive.com",
+    "firstname": "John",
+    "lastname": "Doe",
+    "birthdate": "1982-11-17",
+    "isemailverified": "false",
+    "isenabled": "true",
+    "location": "18.534064000000000,73.899551000000000",
+    "phone": "9876543210",
+    "__attributes": {}
+  },
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "237a743a-9091-48a4-8433-6643415cb970",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+$$$Method
+Appacitive.Users.authenticateUser(authRequest, successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+//Authenticate user with twitter
+var authRequest = {
+    'type': 'twitter',
+    'oauthtoken': {oauthtoken},
+    'oauthtokensecret': {oauthtokensecret}
+}
+
+Appacitive.Users.authenticateUser(authRequest, function(authResult) { 
+   // user has been successfully signed up and set as current user
+   // authresult contains the user and Appacitive-usertoken
+   console.dir(authResult.user.id());
+}, function(status) {
+    alert('An error occured while saving the user.');
+}););
+```
+
+### Retrieving users
+
+Once a user is created in Appacitive, a unique long `__id` is assigned to it and a unique string `username`, which you provided, is associated with it.
+You can access the specific user for retrieving, updating, deleting etc. using one of three ways, by his `id`, by his `username` or by a session `token` generated for that user.
+You can specify what type of user accessing mechanism you are using by passing a query string parameter called `useridtype`. 
+The values for `useridtype` can be `id`, `username` and `token` for accessing the user using his unique system generated `__id`, a unique string `username` assigned by you or a generated token using his credentials respectively.
+In the absense of the parameter `useridtype`, the system assumes it to be `id`.
+
+This call takes an additional `Appacitive-User-Auth` header with its value set as a valid user token.
+The following three example illustrate retrieving the user in the three possible ways. 
+The same pattern applies for other calls like deleting the user or updating the user as well.
+
+#### Get User by Id
+
+
+** Parameter **
+
+<dl>
+  <dt>id</dt>
+  <dd>required<br/><span>The long user id assigned to the user by the system.
+</dl>
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+  <dt>Appacitive-User-Auth</dt>
+  <dd>required<br/><span>A session token generated for a user.
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+** Response **
+
+The user object is returned if a user exists in the system for your app with the id you supplied.
+
+
+``` csharp
+//Get User by `id`
+var user = await Users.GetByIdAsync("1234525435344346");
+
+//To get only specific fields (username, firstname and lastname)
+var user = await Users.GetByIdAsync("1234525435344346", 
+                      new [] { "username", "firstname", "lastname" });
+```
+``` rest
+$$$Method
+GET https://apis.appacitive.com/user/{user Id}
+```
+``` rest
+$$$Sample Request
+//  Get user by id
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Appacitive-User-Auth: {User token}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/34912447775245454
+```
+``` rest
+$$$Sample Response
+{
+  "user": {
+    "__id": "34912447775245454",
+    "__schematype": "user",
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__schemaid": "34888670847828365",
+    "__revision": "1",
+    "__tags": [],
+    "__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
+    "__utclastupdateddate": "2013-08-21T08:38:24.0000000Z",
+    "username": "john.doe",
+    "email": "john.doe@appacitive.com",
+    "firstname": "John",
+    "lastname": "Doe",
+    "birthdate": "1982-11-17",
+    "isemailverified": "false",
+    "isenabled": "true",
+    "location": "18.534064000000000,73.899551000000000",
+    "phone": "9876543210",
+    "__attributes": {}
+  },
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+$$$Method
+Appacitive.User::fetch(successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+var user = new Appacitive.User({ __id: '12345' });
+user.fetch(function (obj) {
+    alert('Fetched user with id 12345');
+}, function(status, obj) {
+    alert('Could not fetch user with id 12345');
+});
+```
+
+#### Get User by username
+
+A user can be retrieved using his unique string `username` which you supplied when creating the user. 
+The value of `useridtype` is set to `username`.
+
+** Parameter **
+
+<dl>
+  <dt>username</dt>
+  <dd>required<br/><span>The string unique username assigned to the user by you while creating the user.
+</dl>
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+  <dt>Appacitive-User-Auth</dt>
+  <dd>required<br/><span>A session token generated for a user.
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+
+``` rest
+$$$Method
+GET https://apis.appacitive.com/user/{username}?useridtype=username
+```
+``` rest
+$$$Sample Request
+//  Get user by username
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Appacitive-User-Auth: {User token}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/john.doe?useridtype=username
+```
+``` rest
+$$$Sample Response
+{
+  "user": {
+    "__id": "34912447775245454",
+    "__schematype": "user",
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__schemaid": "34888670847828365",
+    "__revision": "1",
+    "__tags": [],
+    "__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
+    "__utclastupdateddate": "2013-08-21T08:38:24.0000000Z",
+    "username": "john.doe",
+    "email": "john.doe@appacitive.com",
+    "firstname": "John",
+    "lastname": "Doe",
+    "birthdate": "1982-11-17",
+    "isemailverified": "false",
+    "isenabled": "true",
+    "location": "18.534064000000000,73.899551000000000",
+    "phone": "9876543210",
+    "__attributes": {}
+  },
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
+    "additionalmessages": []
+  }
+}
+```
+``` csharp
+//Get User by `username`
+var user = await Users.GetByUsernameAsync("john.doe");
+```
+
+``` javascript
+$$$Method
+Appacitive.Users.getUserByUsername('{{username}}', successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+//fetch user by username
+Appacitive.Users.getUserByUsername("john.doe", function(user) {
+    alert('Fetched user with username ' + user.get('username'));
+}, function(status) {
+    alert('Could not fetch user with username  john.doe');
+});
+```
+
+#### Get user by user token
+
+Here you can get a user by a session token generated for that user using his credentials. 
+A valid session token still needs to be passed in the `Appacitive-User-Auth` header, but the user that is returned is the user whose token you pass as the query string parameter `token`.
+The `useridtype` query string parameter is set to `token`.
+
+** Parameter **
+
+<dl>
+  <dt>token</dt>
+  <dd>required<br/><span>A string token generated for the user using his credentials.
+</dl>
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+  <dt>Appacitive-User-Auth</dt>
+  <dd>required<br/><span>A session token generated for a user.
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+``` csharp
+//  Get logged in User
+var loggedInUser = await Users.GetLoggedInUserAsync();
+```
+``` rest
+$$$Method
+GET https://apis.appacitive.com/user/me?useridtype=token&token={user token}
+```
+``` rest
+$$$Sample Request
+//  Retrieve user with his session token
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Appacitive-User-Auth: {User token}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/me?useridtype=token&token=K2liWXVlSHZ0elNESUloTFlLRE5EQ2lzWXZtM0FFL0JxYW01WTBtVFlmTHZ6aHFMaWtEKzRUdlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa2kvekJpTUZGYyt2ZEFTVi9mbGdNN2xRaEZuWUJidVByR3lFMkZlTzNrRHV3cldVUFRNbFA5M3B6NFN5Rkd3K1dNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==
+```
+``` rest
+$$$Sample Response
+{
+  "user": {
+    "__id": "34912447775245454",
+    "__schematype": "user",
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__schemaid": "34888670847828365",
+    "__revision": "1",
+    "__tags": [],
+    "__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
+    "__utclastupdateddate": "2013-08-21T08:38:24.0000000Z",
+    "username": "john.doe",
+    "email": "john.doe@appacitive.com",
+    "firstname": "John",
+    "lastname": "Doe",
+    "birthdate": "1982-11-17",
+    "isemailverified": "false",
+    "isenabled": "true",
+    "location": "18.534064000000000,73.899551000000000",
+    "phone": "9876543210",
+    "__attributes": {}
+  },
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+$$$Method
+Appacitive.Users.getUserByToken("{{usertoken}}", successHandler, errorHandler);
+```
+``` javascript
+$$$Sample Request
+
+
+//fetch user by token
+Appacitive.Users.getUserByToken("asfa21sadas", function(user) {
+    alert('Fetched user with username ' + user.get('username'));
+}, function(status) {
+    alert('Could not fetch user with usertoken');
+});
+
+
+
+```
+
+### Updating a user
+
+The update user call is similar to the update article call. The update user calls expects a json object with only the user properties that you want updated.
+The property keys which you send with non-null values will get updated if they aren't marked as immutable.
+The property keys you don't send in the body of the POST call stay unchanged.
+The property keys you send with values set as `null` are deleted from the user object (set to null).
+The same convention is followed with `__attributes` as with the properties.
+The `__addtags` and `__removetags` properties which are arrays of strings are used to update tags.
+
+You can specify which user you want to update by using either his `id`, `username` or `token`. You will use the `useridtype` parameter to specify which option you are using.
+ 
+** Parameters ** 
+
+<dl>
+  <dt>user object</dt>
+  <dd>required<br/><span>The user object with inserted, modified or nullified values.</span></dd>  
+</dl>
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+** Response **
+
+Returns the updated user object with the `__revision` number incremented.
+In case of an error, the `status` object contains details for the failure.
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/user/
+```
+``` rest
+$$$Sample Request
+//  Update user
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d '{ "email":"johnny@appacitive.com", "username":"johnny", "phone": null, "lastname":null, "__addtags":[ "coffee.lover", "foodie" ], "__removetags":[ "newuser" ] }' \
+https://apis.appacitive.com/user
+```
+``` rest
+$$$Sample Response
+{
+  "user": {
+    "__id": "34889981737698423",
+    "__schematype": "user",
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__schemaid": "34888670847828365",
+    "__revision": "2",
+    "__tags": [
+      "coffee.lover",
+            "foodie"
+    ],
+    "__utcdatecreated": "2013-08-21T02:41:19.5142397Z",
+    "__utclastupdateddate": "2013-08-21T02:41:19.5142397Z",
+    "username": "john.doe",
+    "email": "johnny@appacitive.com",
+    "firstname": "John",
+    "lastname":null,
+    "birthdate": "1982-11-17",
+    "phone": null,
+    "isemailverified": "false",
+    "isenabled": "true",
+    "location": "18.534064000000000,73.899551000000000",
+    "__attributes": {}
+  },
+  "status": {
+    "code": "201",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
+    "additionalmessages": []
+  }
+}
+```
+``` csharp
+//Get the user which needs to be updated
+var user = await Users.GetByIdAsync("65464576879867989");
+user.FirstName = "jane";
+//Updating custom field 'city'
+user.Set<string>("city", "New York"); 
+await user.SaveAsync();
+```
+``` javascript
+$$$Method
+Appacitive.User::save(successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
+//Update logged-in user
+var user = Appacitive.Users.currentUser();
+
+user.save(function(obj) {
+  alert('User updated successfully!');
+}, function(status, obj) {
+  alert('error while updating user!');
+});
+```
+
+### Searching for users
+
+Searching for users follows all the same filtering principles as searching for articles of any other schema.
+
+``` javascript
+$$$Method
+Appacitive.Article.findAll({
+  schema: 'user', //mandatory
+  fields: [],       //optional
+  filter: {Appacitive.Filter obj}, //optional  
+  pageNumber: 1 ,   //optional: default is 1
+  pageSize: 50,     //optional: default is 50
+  orderBy: '__id',  //optional: default is __utclastupdateddate
+  isAscending: false  //optional: default is false
+}, successHandler, errorHandler)
+```
+``` javascript
+$$$Sample Request
+Appacitive.Article.FindAll({
+  schema: 'user',
+  fields: ["username", "firstname", "email"]
+}, function(users) {
+  //users is an array of Appacitive.User objects
+  console.log("Users fetched");
+}, function(status) {
+  console.log("Error fetching users");
+});
+```
+``` csharp
+//Search user by building `Query`
+var token = "john";
+var query = BooleanOperator.Or(new[]{
+                          Query.Property("firstname").Like("*" + token + "*"),
+                          Query.Property("lastname").Like("*" + token + "*")
+                 });
+var users = await Users.FindAllAsync(query.ToString());
+```
+
+### Deleting a user
+
+Delete requests follow the same practice as get requests for user, the only difference being that the HTTP method type is DELETE, instead of GET.
+Make sure there are no connections with the user you are deleting, otherwise the API will return an error. You can use the `deleteconnections` query string parameter if you want to also delete all connections associated with the user.
+There are three ways you could delete the user (the same as retrieving a user), by his `id`, by his `username` or by his `token` generated for him.
+
+** Parameters **
+
+<dl>
+  <dt>user identifier</dt>
+  <dd>required<br/><span>An identifier to identify the user like username, id or token. 
+</dl>
+
+** Response **
+
+A status object describing the status of the delete user call.
+
+#### Deleting a user by his id
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+  <dt>Appacitive-User-Auth</dt>
+  <dd>required<br/><span>A session token generated for a user.
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+
+``` rest
+$$$Method
+DELETE https://apis.appacitive.com/user/{userId}
+```
+``` rest
+$$$Sample Request
+//  Delete user using his id
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Appacitive-User-Auth: {User token}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/34912447775245454
+```
+``` rest
+$$$Sample Response
+{
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+$$$Method
+Appacitive.Users.deleteUser('{{id}}', successHandler, ErrorHandler);
+```
+``` javascript
+$$$Sample Request
+//To delete a user with an `__id` of, say, 1000.
+Appacitive.Users.deleteUser('1000', function() {
+    // deleted successfully
+}, function(status) {
+    // delete failed
+});
+```
+
+#### Delete user by username
+
+An additional query string parameter called `useridtype` is sent to specify the kind of user identifier you are using, which in this case is `username`.
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+  <dt>Appacitive-User-Auth</dt>
+  <dd>required<br/><span>A session token generated for a user.
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+
+``` rest
+$$$Method
+DELETE https://apis.appacitive.com/user/{username}?useridtype=username
+```
+``` rest
+$$$Sample Request
+//  Delete user using his username
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Appacitive-User-Auth: {User token}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/john.doe?useridtype=username
+```
+``` rest
+$$$Sample Response
+{
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+$$$NOT SUPPORTED
+```
+
+#### Delete user by user token
+
+Here you can delete a user by his session token. 
+A valid session token still needs to be passed in the `Appacitive-User-Auth` header, but the user that is deleted is the user whose token you pass as the query string parameter `token`.
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+  <dt>Appacitive-User-Auth</dt>
+  <dd>required<br/><span>A session token generated for a user.
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+``` rest
+$$$Method
+DELETE https://apis.appacitive.com/user/me?useridtype=token&token={user token}
+```
+``` rest
+$$$Sample Request
+//  Delete user using his session token
+curl -X DELETE \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Appacitive-User-Auth: {User token}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/me?useridtype=token&token=K2liWXVlSHZ0elNESUloTFlLRE5EQ2lzWXZtM0FFL0JxYW01WTBtVFlmTHZ6aHFMaWtEKzRUdlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa2kvekJpTUZGYyt2ZEFTVi9mbGdNN2xRaEZuWUJidVByR3lFMkZlTzNrRHV3cldVUFRNbFA5M3B6NFN5Rkd3K1dNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==
+```
+``` rest
+$$$Sample Response
+{
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+$$$Method
+Appacitive.Users.deleteCurrentUser(successHandler, ErrorHandler);
+```
+``` javascript
+$$$Sample Request
+//You can delete the currently logged in user via a helper method.
+Appacitive.Users.deleteCurrentUser(function() {
+    // delete successful
+}, function(status) {
+    // delete failed
+});
+```
+
+### Location Tracking
+
+You can store the users last known location in the `geography` property called `location`. You can use these geo-coordinates in searches. 
+
+** Parameters **
+
+<dl>
+  <dt>userid</dt>
+  <dd>required<br/><span>The userid of the user you want to track location for.
+  <dt>lat</dt>
+  <dd>required<br/><span>The latitude of the coordinates (decimal) where the user is checking in.
+  <dt>long</dt>
+  <dd>required<br/><span>The longitude of the coordinates (decimal) where the user is checking in.
+</dl>
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+  <dt>Appacitive-User-Auth</dt>
+  <dd>required<br/><span>A session token generated for a user.
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/user/{userid}/checkin?lat={latitude}&long={longitude}
+```
+``` rest
+$$$Sample Request
+//  Delete user using his session token
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Appacitive-User-Auth: {User token}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/john.doe/checkin?useridtype=username&lat=10.10&long=20.20
+```
+
+``` rest
+$$$Sample Response
+{
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "52c15dea-23ff-46cd-9edf-6266e7217271",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+$$$Method
+Appacitive.User::checkin({
+  lat: {{latitude}},
+  lng: {{longitude}}
+}, successHandler, ErrorHandler);
+```
+``` javascript
+$$$Sample Request
+//Change current users location
+Appacitive.Users.currentUser().checkin({
+    lat:18.57, lng: 75.55
+}, function() {
+    alert("Checked in successfully");
+}, function(status) {
+    alert("There was an error checking in");
+});
+```
+
+### Session Management
+
+
+!!! javascript
+Once the user is authenticated successfully, you will be provided with the user details and an access token. This access token identifies the currently logged in user and will be used to implement access control. Each instance of an app can have one logged in user at any given time. By default the SDK takes care of setting and unsetting this token. However, you can explicitly tell the SDK to start using another access token.
+!!!
+
+``` javascript
+// the access token
+var token = {{token}};
+
+// setting it in the SDK
+Appacitive.session.setUserAuthHeader(token);
+// now the sdk will send this token with all requests to the server
+// Access control has started
+
+// removing the auth token
+Appacitive.session.removeUserAuthHeader();
+// Access control has been disabled
+```
+```javascript
+$$$Note 
+//Setting accessToken doesn't takes care of setting user associated for it. For that you will need to set current user too.
+
+var user = new Appacitive.User({
+    __id : '2121312'
+    username: 'john.doe@appacitive.com'
+    email: 'johndoe@appacitive.com',
+    firstname: 'John',
+    lastname: 'Doe'
+});
+
+Appacitive.Users.setCurrentUser(user, token);
+
+//Now current user points to `john.doe`
+console.log(Appacitive.Users.currentUser().get('__id'));
+```
+
+#### Validate session token
+
+Once you create a session `token` for a user using one of the aunthenticating mechanisms, you may want to validate whether the token is a valid token or not in subsequent api calls.
+
+** Parameters **
+
+<dl>
+  <dt>token</dt>
+  <dd>required<br/><span>The string session token previously generated for the user.
+</dl>
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+  <dt>Appacitive-User-Auth</dt>
+  <dd>required<br/><span>A session token generated for the user.
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/user/validate?userToken={user session token}
+```
+``` rest
+$$$Sample Request
+//  Validate user's session token
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Appacitive-User-Auth: {User token}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/validate?userToken=RlYzRlcxY3lsRDlqYUpmQlNha0IwcTJRTXJDYVd6QWZOMlVPR0JWSmNhbTgyWVZxSTVnTmkvR1N0MXJMZm1nZGZCYWNZVk40eEZ4dTB3V3NBOFNVa3FUSEdQZVBTZDBWazJFUW03R0dZQVc5MjdZZmtGRFd1Q092enpTSUpQSWI1VEpqV2xsUUU0U3dIZGcwVTdZTkdNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==```
+
+``` rest
+$$$Sample Response
+{
+  "result": true,
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "d7cf599a-bce3-44db-b404-c9fe09d4c0f4",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+$$$Method
+Appacitive.Users.validateCurrentUser(successHandler, validateAPI);
+```
+``` javascript
+$$$Sample Request
+// to check whether user is loggedin locally. This won't make any explicit apicall to validate user
+Appacitive.Users.validateCurrentUser(function(isValid) {
+    if (isValid) //user is logged in
+});
+
+// to check whether user is loggedin, explicitly making an apicall to validate usertoken
+Appacitive.Users.validateCurrentUser(function(isValid) {
+    if (isValid)  //user is logged in
+    // This method also sets the current user for that token
+}, true); // set to true to validate usertoken making an apicall
+```
+
+
+#### Invalidate session
+
+Yoy may want to invalidate a previously generated session token for a user at some point before its expiry.
+
+** Parameters **
+
+<dl>
+  <dt>token</dt>
+  <dd>required<br/><span>The string session token previously generated for the user.
+</dl>
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+  <dt>Appacitive-User-Auth</dt>
+  <dd>required<br/><span>A session token generated for the user.
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/user/invalidate?userToken={user session token}
+```
+``` rest
+$$$Sample Request
+//  Invalidate the user's session token
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Appacitive-User-Auth: {User token}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/user/invalidate?userToken=RlYzRlcxY3lsRDlqYUpmQlNha0IwcTJRTXJDYVd6QWZOMlVPR0JWSmNhbTgyWVZxSTVnTmkvR1N0MXJMZm1nZGZCYWNZVk40eEZ4dTB3V3NBOFNVa3FUSEdQZVBTZDBWazJFUW03R0dZQVc5MjdZZmtGRFd1Q092enpTSUpQSWI1VEpqV2xsUUU0U3dIZGcwVTdZTkdNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==
+```
+
+``` rest
+$$$Sample Response
+{
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "d7cf599a-bce3-44db-b404-c9fe09d4c0f4",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+$$$Method
+Appacitive.User::logout(callback);
+```
+```javascript
+$$4Sample Request
+Appacitive.Users.currentUser().logout(function() {
+    // user is logged out   
+    // this will now be null
+    var cUser = Appacitive.Users.currentUser();  
+});
+```
+
+### Password Management
+
+Appacitive provides an intuitive password management and recovery protocol to app developers so that their users can recover or change their passwords safely if and when the need arises.
+
+#### Reset password
+
+If a user of your app simply wants to change his/her password, it requires a simple HTTP call to Appacitive with the necessary details. This call is also available in all the SDKs.
+
+** Parameters **
+
+<dl>
+  <dt>userid</dt>
+  <dd>required<br/><span>The user's unique identifier
+  <dt>useridtype</dt>
+  <dd>required<br/><span>The user's unique identifier's type. Could be `id`, `username` or `token`
+  <dt>oldpassword</dt>
+  <dd>required<br/><span>The user's original password
+  <dt>newpassword</dt>
+  <dd>required<br/><span>The new password which the user wants to set for his account
+</dl>
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+  <dt>Appacitive-User-Auth</dt>
+  <dd>required<br/><span>A session token generated for the user.
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/user/{userId}/changepassword?useridtype={id/username/token}
+```
+
+``` rest
+$$$Sample Request
+//  Change user's password
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Appacitive-User-Auth: {User token}" \
+-H "Content-Type: application/json" \
+-d '{ "oldpassword": "{old password}", "newpassword": "{new password}" }' \
+https://apis.appacitive.com/user/45178614534861534/changepassword?useridtype=id
+```
+
+``` rest
+$$$Sample Response
+{
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "d7cf599a-bce3-44db-b404-c9fe09d4c0f4",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+$$$Method
+Appacitive.User::updatePassword('{oldPassword}','{newPassword}', successHandler, ErrorHandler);
+```
+``` javascript
+$$$Sample Request
+//You can make this call only for a loggedin user
+Appacitive.Users.currentUser().updatePassword('dfd4f43','456dfabc', function() {
+    console.log("Password updated successfully"); 
+}, function(status) {
+    console.log("Failed to updated password for user");
+});
+```
+
+
+#### Forgot password
+
+In situations where a user forgets his password, Appacitive provides a secure way to allow your users to reset their password. The process is initiated by your app sending an API call to Appacitive, asking the system to dispatch a reset password email to the user's verified email address.
+A link in this email redirects the user to a page (either hosted by Appacitive or by you on your end), where he can enter a new password for his account. Appacitive adds a special token to the url so that the link is valid only for a short duration. To read more about the forgot password flow and possible customizations to the email structure and the page (where the user enters his new password),
+read the blog post <a href="http://blogs.appacitive.com/2013/10/password-management-in-appacitive.html">here</a>.
+
+** Parameters **
+
+<dl>
+  <dt>username</dt>
+  <dd>required<br/><span>The user's unique username
+  <dt>subject</dt>
+  <dd>required<br/><span>The subject for the email that goes out to the user
+</dl>
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/user/sendresetpasswordemail
+```
+
+``` rest
+$$$Sample Request
+//  Send reset password email
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {sandbox or live}" \
+-H "Content-Type: application/json" \
+-d '{ "username": "{username of the user}", "subject": "{subject of the email}" }' \
+https://apis.appacitive.com/user/sendresetpasswordemail
+```
+``` rest
+$$$Sample Response
+{
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "d7cf599a-bce3-44db-b404-c9fe09d4c0f4",
+    "additionalmessages": []
+  }
+}
+```
+
+``` javascript
+$$$Method
+Appacitive.Users.sendResetPasswordEmail("{username}", "{subject for the mail}", successHandler, ErrorHandler);
+```
+``` javascript
+$$$Sample Request
+//You can make this call only for a loggedin user
+Appacitive.Users.sendResetPasswordEmail("{username}", "{subject for the mail}", function() {
+    alert("Password reset mail sent successfully"); 
+}, function(status) {
+    alert("Failed to reset password for user");
+});
 ```
 
 Email
