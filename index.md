@@ -3102,7 +3102,11 @@ $$$Sample Response
 
 ### Compound Queries
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus rhoncus quam quis semper. Vivamus at eros in diam eleifend rhoncus non non lorem. Nunc sed vehicula nibh. Nam sed turpis sem. Fusce lectus mi, viverra id felis eu, varius suscipit odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce 
+Compound queries allow you to combine multiple queries into one single query. The multiple queries can be combined using the boolean 
+&& (AND) and || (OR) operators. When using a combination of AND and OR, you can use round brackets to create logical groups within the compound query. 
+Individual SDKs provide helper methods to help assist in building compound queries.
+
+`NOTE`: All types of queries with the exception of free text queries can be combined into a compound query.
 
 ``` javascript
 //Use of `And` and `Or` operators
