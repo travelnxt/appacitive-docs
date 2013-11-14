@@ -2546,6 +2546,109 @@ All search results are paged with a page size of `20` by default. You can change
 Passing any value higher than this will limit the results to `200`. Also the platform also supports providing modifiers to fine tune the exact set of fields to return for each 
 record of the search results. The platform specific examples will indicate how this can be done.
 
+``` rest
+$$$Method
+GET https://apis.appacitive.com/article/{type}/find/all?query={query expression}
+```
+``` rest
+$$$Sample Request
+// Get all articles of type players where firstname = John
+
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/article/player/find/all?query=*firstname == 'john'
+```
+``` rest
+$$$Sample Response
+
+// System attributes have been removed for readability
+{
+  "paginginfo": {
+    "pagenumber": 1,
+    "pagesize": 20,
+    "totalrecords": 2
+  },
+  "articles": [
+    {
+      "__id": "33017891581461312",
+      "__schematype": "player",
+      "firstname": "John",
+      "lastname" : "Smith"
+    },
+    {
+      "__id": "33017891581461313",
+      "__schematype": "player",
+      "firstname": "John",
+      "lastname" : "Doe"
+    }
+  ],
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "ce871063-5443-4524-9443-d14860949c59",
+    "additionalmessages": []
+  }
+}
+```
+``` javascript
+$$$Method
+Appacitive.Queries.FindAllQuery(options).fetch(successHandler, errorHandler);
+```
+```javascript
+$$$Sample Request
+
+var filter = Appacitive.Filter.Property("firstname").equalTo("John");
+
+var query = new Appacitive.Queries.FindAllQuery(
+  schema: 'player', //mandatory 
+  //or relation: 'freinds'
+  fields: [*],      //optional: returns all user fields only
+  filter: filter,   //optional  
+  pageNumber: 1 ,   //optional: default is 1
+  pageSize: 20,     //optional: default is 50
+  orderBy: '__id',  //optional: default is __utclastupdateddate
+  isAscending: false  //optional: default is false
+}); 
+
+// success callback
+var successHandler = function(players) {
+  //`players` is `PagedList` of `Article`
+
+  console.log(players.total); //total records for query
+  console.log(players.pageNumber); //pageNumber for this set of records
+  console.log(players.pageSize); //pageSize for this set of records
+  
+  // fetching other left players
+  if (!players.isLastPage) {
+    // if this is not the last page then fetch further records 
+    query.fetchNext(successHandler);
+  }
+};
+
+// make a call
+query.fetch(successHandler);
+```
+``` csharp
+//Build the query
+var query = Query.Property("firstname").Equals("John");
+
+//`results` is `PagedList` of `Article`
+var results = await Articles.FindAllAsync("player", query.ToString());
+
+//Iterating the `response`
+var players = new List<Article>();
+while (true)
+{
+     results.ForEach(r => players.Add(r));
+     if(response.IsLastPage) 
+      break;
+     results = await results.NextPageAsync();
+}
+```
 ### Conventions for REST api
 
 Incase you are using the REST api directly, you will need to provide all query information in the url.
@@ -2640,44 +2743,29 @@ The table below shows a list of supported logical operators corresponding to the
 `NOTE`: The `between` operator is inclusive at both ends.
 
 
-``` javascript
-$$$Method
-Appacitive.Queries.FindAllQuery(options).fetch(successHandler, errorHandler);
+``` rest
+$$$ Query Samples
+
+/// Equals Operator
+..?query=*firstname == 'john'
+..?query=*age == 25
+..?query=*update_date == datetime(‘2012-04-10:12:30:30.0000000z’)
+
+/// Comparison operators
+..?query=*age > 25
+..?query=*update_date <= datetime(‘2012-04-10:12:30:30.0000000z’)
+
+/// between operator
+// between is inclusive at both ends
+..?query=*age between (25,35)
+..?query=*last_read_timestamp between (datetime(‘2012-04-10:00:00:00.0000000z’),datetime(‘2012-05-10:00:00:00.0000000z’))
+
+/// like operator
+..?query=*firstname like '*ohn'   //  starts with
+..?query=*firstname like 'oh*'    //  ends with
+..?query=*firstname like '*oh*'   //  contains
 ```
-```javascript
-$$$Sample Request
 
-var filter = Appacitive.Filter.Property("firstname").equalTo("John");
-
-var query = new Appacitive.Queries.FindAllQuery(
-  schema: 'player', //mandatory 
-  //or relation: 'freinds'
-  fields: [*],      //optional: returns all user fields only
-  filter: filter,   //optional  
-  pageNumber: 1 ,   //optional: default is 1
-  pageSize: 20,     //optional: default is 50
-  orderBy: '__id',  //optional: default is __utclastupdateddate
-  isAscending: false  //optional: default is false
-}); 
-
-// success callback
-var successHandler = function(players) {
-  //`players` is `PagedList` of `Article`
-
-  console.log(players.total); //total records for query
-  console.log(players.pageNumber); //pageNumber for this set of records
-  console.log(players.pageSize); //pageSize for this set of records
-  
-  // fetching other left players
-  if (!players.isLastPage) {
-    // if this is not the last page then fetch further records 
-    query.fetchNext(successHandler);
-  }
-};
-
-// make a call
-query.fetch(successHandler);
-```
 ``` javascript
 $$$MORE SAMPLES
 
@@ -2727,23 +2815,9 @@ var greaterThanFilter = Appacitive.Filter.Property("age").greaterThan(25);
 // and for equalTo, equalToDate, equalToDateTime, equalToTime 
 
 ```
+
 ``` csharp
-//Build the query
-var query = Query.Property("firstname").Equals("John");
-
-//`response` is `PagedList` of `Article`
-var reponse = await Articles.FindAllAsync("player", query.ToString());
-
-//Iterating the `response`
-var list = new List<Article>();
-while (response.Count > 0)
-{
-     response.ForEach(r => list.Add(r));
-     if (response.IsLastPage) break;
-     await response.NextPageAsync();
-}
-
-//MORE SAMPLES
+///Samples
 
 //First name like "oh"
 var likeQuery = Query.Property("firstname").Like("oh");
@@ -2766,6 +2840,7 @@ You can specify a property type as a `geography` type for a given schema or rela
 Such properties support geo queries based on a user defined radial or polygonal region on the map. These are extremely useful for making map based or location based searches.
 E.g., searching for a list of all restaurants within 20 miles of a given users locations.
 
+
 #### Radial Search
 
 A radial search allows you to search for all records of a specific type which contain a geocode which lies within a predefined distance from a point on the map.
@@ -2784,7 +2859,54 @@ A radial search requires the following parameters.
   <dd>required<br/><span>The unit of distance (mi \ km).
 </dl>
 
+``` rest
+$$$Method
+GET https://apis.appacitive.com/article/{type}/find/all?query=*{property_name} within_circle {latitude},{longitude},{radius} {km or mi}
+```
+``` rest
+$$$Sample Request
+// Get all hotels with geocode property within 10 miles of 36.1749687195M, -115.1372222900M
 
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/article/hotel/find/all?query=*geocode within_circle 36.1749687195,-115.1372222900,10 mi
+```
+``` rest
+$$$Sample Response
+
+// System attributes have been removed for readability
+{
+  "paginginfo": {
+    "pagenumber": 1,
+    "pagesize": 20,
+    "totalrecords": 2
+  },
+  "articles": [
+    {
+      "__id": "33017891581461312",
+      "__schematype": "hotel",
+      "name": "Hotel BeachFront",
+      "geocode" : "36.1749687195,-115.1372222900"
+    },
+    {
+      "__id": "33017891581461313",
+      "__schematype": "hotel",
+      "firstname": "Hotel SeaView",
+      "lastname" : "36.1749687195,-115.1372222900023"
+    }
+  ],
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "ce871063-5443-4524-9443-d14860949c59",
+    "additionalmessages": []
+  }
+}
+```
 ``` javascript
 var center = new Appacitive.GeoCoord(36.1749687195, -115.1372222900);
 var radialFilter = Appacitive.Filter.Property('location').withinCircle(center,10,'km');
@@ -2794,7 +2916,8 @@ var radialFilter = Appacitive.Filter.Property('location').withinCircle(center,10
 var center = new Geocode(36.1749687195M, -115.1372222900M);
 var radialQuery = Query
                     .Property("location")
-                    .WithinCircle(center, 10.0M, DistanceUnit.Miles); 
+                    .WithinCircle(center, 10.0M, DistanceUnit.Miles);
+var hotels = await Articles.FindAllAsync( "hotel", radialQuery.ToString());
 ```
 
 #### Polygon Search
@@ -2812,7 +2935,58 @@ This is typically useful when you want finer grained control on the shape of the
   <dd>required<br/><span>List of geocodes indicating the vertices of the polygonal region.
 </dl>
  
+``` rest
+$$$Method
+GET https://apis.appacitive.com/article/{type}/find/all?query=*{property_name} within_polygon {lat1,long1} | {lat2,long2} | {lat3,long3} | ..
+```
+``` rest
+$$$Sample Request
+// Get all hotels with geocode property within a polygon created by points
+1) 36.1749687195,-115.1372222900
+2) 38.1123237195,-115.1372222900
+3) 38.1123237195,-113.871283723
+4) 36.1749687195,-113.871283723
 
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+https://apis.appacitive.com/article/hotel/find/all?query=*geocode within_polygon 36.1749687195,-115.1372222900 | 38.1123237195,-115.1372222900 | 38.1123237195,-113.871283723 | 36.1749687195,-113.871283723
+```
+``` rest
+$$$Sample Response
+
+// System attributes have been removed for readability
+{
+  "paginginfo": {
+    "pagenumber": 1,
+    "pagesize": 20,
+    "totalrecords": 2
+  },
+  "articles": [
+    {
+      "__id": "33017891581461312",
+      "__schematype": "hotel",
+      "name": "Hotel BeachFront",
+      "geocode" : "36.1749687195,-114.1372222900"
+    },
+    {
+      "__id": "33017891581461313",
+      "__schematype": "hotel",
+      "firstname": "Hotel SeaView",
+      "lastname" : "37.1749687195,-114.1372222900023"
+    }
+  ],
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "ce871063-5443-4524-9443-d14860949c59",
+    "additionalmessages": []
+  }
+}
+```
 ``` javascript
 var pt1 = new Appacitive.GeoCoord(36.1749687195, -115.1372222900);
 var pt2 = new Appacitive.GeoCoord(34.1749687195, -116.1372222900);
@@ -2902,7 +3076,14 @@ $$$Sample Response
   }
 }
 ```
-
+``` csharp
+// Get all messages tagged with tags personal or private.
+var query = Query
+              .Tags
+              .MatchOneOrMore("personal", "private")
+              .ToString();
+var messages = await Articles.FindAllAsync( "message", query );
+```
 
 
 #### Query data tagged with all of the given tags
@@ -2962,7 +3143,14 @@ $$$Sample Response
   }
 }
 ```
-
+``` csharp
+// Get all messages tagged with tags personal and test
+var query = Query
+              .Tags
+              .MatchAll("personal", "test")
+              .ToString();
+var messages = await Articles.FindAllAsync( "message", query );
+```
 ### Free text queries
 
 There are situations when you would want the ability to search across all text content inside your data.
