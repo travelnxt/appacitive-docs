@@ -18,6 +18,7 @@
         newline: /^\n+/,
         code: /^( {4}[^\n]+\n*)+/,
         fences: noop,
+        extra: /^ *(!{3,}|~{3,}) *(\S+)? *\n([\s\S]+?)\s*\1 *(?:\n+|$)/,
         hr: /^( *[-*_]){3,} *(?:\n+|$)/,
         heading: /^ *(#{1,6}) *([^\n]+?) *#* *(?:\n+|$)/,
         nptable: noop,
@@ -184,6 +185,17 @@
                 src = src.substring(cap[0].length);
                 this.tokens.push({
                     type: 'code',
+                    lang: cap[2],
+                    text: cap[3]
+                });
+                continue;
+            }
+
+            // extra  (gfm)
+            if (cap = this.rules.extra.exec(src)) {
+                src = src.substring(cap[0].length);
+                this.tokens.push({
+                    type: 'extra',
                     lang: cap[2],
                     text: cap[3]
                 });
@@ -811,36 +823,25 @@
                 } else {
                     var token = this.tok();
 
-                    if (token && token.indexOf('!!!') != -1) {
+                    if (this.token.type == 'extra') {
                         token = this.token.text;
-                        var split = token.split('\n');
-                        var lang = split.shift(1).replace(/!!!/g, '');
-                        token = split.join('\n').replace(/!!!/g, '').trim();
+                        var lang = this.token.lang;
+
+                        lang = $.trim(lang);
+                        token = marked(token);
+                        token = $(token).html();
+
                         if (lang) {
-                            lang = lang.trim();
-                            var code = this.options.highlight(token);
-                            if (code && code !== token)
-                                token = '<pre'
-                                  + (lang
-                                  ? ' class="'
-                                  + this.options.langPrefix
-                                  + lang
-                                  + '"'
-                                  : '')
-                                  + '><code>'
-                                  + code
-                                  + '</code></pre>\n';
-                            else
-                                token = '<p'
-                                  + (lang
-                                  ? ' class="'
-                                  + this.options.langPrefix
-                                  + lang
-                                  + '"'
-                                  : '')
-                                  + '>'
-                                  + token
-                                  + '</p>\n';
+                            token = '<div'
+                              + (lang
+                              ? ' style="padding:10px 40px;" class="'
+                              + this.options.langPrefix
+                              + lang
+                              + '"'
+                              : '')
+                              + '>'
+                              + token
+                              + '</div>\n';
                         } else token = '<p>' + token + '</p>';
                     }
                     block += token;
