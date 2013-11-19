@@ -2909,7 +2909,19 @@ $$$Sample Response
 ```
 ``` javascript
 var center = new Appacitive.GeoCoord(36.1749687195, -115.1372222900);
-var radialFilter = Appacitive.Filter.Property('location').withinCircle(center,10,'km');
+var radialFilter = Appacitive.Filter.Property('location')
+                                       .withinCircle(center,10,'km');
+
+//create query object
+var query = new Appacitive.Queries.FindAllQuery({
+  schema: 'hotel',
+  filter: radialFilter
+});
+
+//or set it in an existing query
+query.filter(radialFilter);
+
+query.fetch();
 ```
 ``` csharp
 //Search for hotels near Las Vegas in a radius of 10 miles
@@ -2995,6 +3007,19 @@ var pt4 = new Appacitive.GeoCoord(36.1749687195, -114.1372222900);
 var geocodes = [ pt1, pt2, pt3, pt4 ];
 var polygonFilter = Appacitive.Filter.Property("location")
                                          .withinPolygon(geocodes);
+
+
+//create query object
+var query = new Appacitive.Queries.FindAllQuery({
+  schema: 'hotel',
+  filter: polygonFilter
+});
+
+//or set it in an existing query
+query.filter(polygonFilter);
+
+//call fetch
+query.fetch();
 ```
 ``` csharp
 //Search for hotel which is between 4 co-ordinates
@@ -3084,6 +3109,24 @@ var query = Query
               .ToString();
 var messages = await Articles.FindAllAsync( "message", query );
 ```
+```javascript
+//create the filter 
+//accepts an array of tags
+var tagFilter = Appacitive.Filter
+                      .taggedWithOneOrMore(["personal", "private"]);
+
+//create the query
+var query = new Appacitvie.Filter.FindAllQuery({
+  schema: 'message',
+  filter: tagFilter
+});
+
+//or set it in an existing query
+query.filter(tagFilter);
+
+//call fetch
+query.fetch();
+```
 
 
 #### Query data tagged with all of the given tags
@@ -3150,6 +3193,24 @@ var query = Query
               .MatchAll("personal", "test")
               .ToString();
 var messages = await Articles.FindAllAsync( "message", query );
+```
+```javascript
+//create the filter 
+//accepts an array of tags
+var tagFilter = Appacitive.Filter
+                          .taggedWithAll(["personal", "test"]);
+
+//create the query
+var query = new Appacitvie.Filter.FindAllQuery({
+  schema: 'message',
+  filter: tagFilter
+});
+
+//or set it in an existing query
+query.filter(tagFilter);
+
+//call fetch
+query.fetch();
 ```
 ### Free text queries
 
@@ -3230,8 +3291,19 @@ $$$Sample Response
   }
 }
 ```
+```javascript
+//create the query
+var query = new Appacitvie.Filter.FindAllQuery({
+  schema: 'message',
+  freeText: 'champs palais'
+});
 
+//or set it in the query
+query.freeText('champs palais');
 
+//call fetch
+query.fetch();
+```
 
 ### Sorting and paging
 
@@ -3286,6 +3358,43 @@ $$$Sample Response
     "additionalmessages": []
   }
 }
+```
+```javascript
+//create a query
+var query = new Appacitive.Queries.findAllQuery({
+  schema: 'photo',
+  pageSize: 30, //default: 50
+  pageNumber: 4, //default: 1
+  orderBy: '__id', //default: __utclastupdateddate
+  isAscending: true //default: false
+});
+
+//set paging in an existing query
+query.pageSize(25);
+query.pageNumber(2);
+
+
+//set sorting in an existing query
+query.orderBy('__createdby');
+query.isAscending(false);
+
+// success callback
+var successHandler = function(photos) {
+  //`photos` is `PagedList` of `Article`
+
+  console.log(photos.total); //total records for query
+  console.log(photos.pageNumber); //pageNumber for this set of records
+  console.log(photos.pageSize); //pageSize for this set of records
+
+  // fetching other left players
+  if (!players.isLastPage) {
+    // if this is not the last page then fetch further records 
+    query.fetchNext(successHandler);
+  }
+};
+
+//call fetch
+query.fetch(successHandler);
 ```
 
 ### Compound Queries
