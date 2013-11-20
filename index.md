@@ -135,7 +135,7 @@ Articles
 -------
 Articles represent your data stored inside the Appacitive platform. Every article has a dedicated type. This type is mapped to the schema that you create via the designer in your management console. If we were to use conventional databases as a metaphor, then a schema would correspond to a table and an article would correspond to one row inside that table.
 
-The article api allows you to store, retrieve and manage all the data that you store inside appacitive. You can retrieve individual records or lists of records based on a specific filter criteria.
+The article api allows you to store, retrieve and manage all the data that you store inside Appacitive. You can retrieve individual records or lists of records based on a specific filter criteria.
 
 <span class="h3">The article object</span>
 
@@ -230,7 +230,7 @@ Creates a new article of a specific type.
 ** Response **
 
 Returns the newly created article object with all the system defined properties (e.g., ``__id``) set.
-In case of an error, the `status` object contains details for the failure.
+In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
@@ -312,8 +312,8 @@ $$$Sample Response
 ```
 
 ### Retrieve an existing article
-The appacitive platform supports retrieving single or multiple articles. All article retrievals on the platform
-are done purely on the based of the article id and type. You can also fine tune the exact list of fields that 
+The Appacitive platform supports retrieving single or multiple articles. All article retrievals on the platform
+are done purely on the basis of the article id and type. You can also fine tune the exact list of fields that 
 you want to be returned. This will allow for fine tuning the size of the message incase you are on a 
 low bandwidth connection.
 
@@ -338,7 +338,7 @@ type and its system defined id.
 ** Response **
 
 Returns the existing article object matching the given id.
-In case of an error, the `status` object contains details for the failure.
+In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
@@ -432,9 +432,9 @@ post.fetch(function(obj) {
 });
 ```
 
-#### Retrieve multiple article 
+#### Retrieve multiple articles 
 
-Returns an list of multiple existing articles from the system. To get a list of articles you 
+Returns a list of multiple existing articles from the system. To get a list of articles you 
 must provide the type of the article and a list of ids to retrieve. Given that only one type is allowed,
 the list of ids must correspond to articles of the same type.
 
@@ -451,8 +451,8 @@ the list of ids must correspond to articles of the same type.
 
 ** Response **
 
-Returns an array of article corresponding to the given id list. 
-In case of an error, the `status` object contains details for the failure.
+Returns an array of articles corresponding to the given id list. 
+In case of an error, the `status` object contains details of the failure.
 
 `NOTE` : Please note that providing the same id multiple times will not return duplicates.
 
@@ -659,7 +659,7 @@ and update only needs the information that has actually changed.
 ** Response **
 
 Returns the updated article object.
-In case of an error, the `status` object contains details for the failure.
+In case of an error, the `status` object contains details of the failure.
 
 
 ``` rest
@@ -781,7 +781,7 @@ post.save(function(obj) {
 
 ### Delete an article
 
-You can delete existing articles by simply providing the article id of the article tht you want to delete.
+You can delete existing articles by simply providing the article id of the article that you want to delete.
 This operation will fail if the article has existing connections with other articles.
 
 ** Parameters ** 
@@ -796,7 +796,7 @@ This operation will fail if the article has existing connections with other arti
 ** Response **
 
 Returns successful `status` object.
-In case of an error, the `status` object contains details for the failure.
+In case of an error, the `status` object contains details of the failure.
 
 
 ``` rest
@@ -860,7 +860,7 @@ Do note that all the articles should be of the same type and must not be connect
 ** Response **
 
 Returns successful `status` object.
-In case of an error, the `status` object contains details for the failure.
+In case of an error, the `status` object contains details of the failure.
 
 
 ``` rest
@@ -931,7 +931,7 @@ There are scenarios where you might want to delete an article irrespective of ex
 ** Response **
 
 Returns successful `status` object.
-In case of an error, the `status` object contains details for the failure.
+In case of an error, the `status` object contains details of the failure.
 
 
 ``` rest
@@ -979,7 +979,7 @@ await Articles.DeleteAsync("friend", "123456678809", deleteConnection);
 
 Connections
 ------------
-Connections represent business relationships between articles. As an example, a `employment` connection between a user article and a company article would indicate an relationship of "employment". In a typical relational database, linkages between data are represented via foreign key relationships. Connections are similar to foreign key relationships to the extent that they connect two articles. However, unlike foreign keys, connections can also define properties and store data just like articles. In the `employment` connection example we took earlier, the connection could contain a property called `joining_date` which would store the date the employee joined the company. This data is only relevant as long as the connection is relevant. 
+Connections represent business relationships between articles. As an example, a `employment` connection between a user article and a company article would indicate a relationship of "employment". In a typical relational database, linkages between data are represented via foreign key relationships. Connections are similar to foreign key relationships to the extent that they connect two articles. However, unlike foreign keys, connections can also define properties and store data just like articles. In the `employment` connection example we took earlier, the connection could contain a property called `joining_date` which would store the date the employee joined the company. This data is only relevant as long as the connection is relevant. 
 
 Just like articles, every connection also has a dedicated type. This type is called a `Relation` and is defined using the designer in your management console. 
 
@@ -1093,7 +1093,7 @@ To create a connection between two existing articles, you need to pass the conne
 ** Response **
 
 Returns the newly created connection object with all the system defined properties (e.g., ``__id``) set.
-In case of an error, the `status` object contains details for the failure.
+In case of an error, the `status` object contains details of the failure.
 
 
 ``` rest
@@ -1210,7 +1210,7 @@ await connection .SaveAsync();
 #### Create a connection between a new and existing article.
 
 In your application, you might want to be able to create a new article and connect it with an existing article 
-as part of one transactional operation. The create connection operation allows you to interchangable provide 
+as part of one transactional operation. The create connection operation allows you to interchangeably provide 
 either an existing article reference or a completely new article inside the endpoint definition.
 
 If a new article is provided in the request, then the operation will create both the article and the connection 
@@ -1457,7 +1457,7 @@ connection.save(function (obj) {
 ``` csharp
 /* Will create a new my_score connection between 
     - existing player article with id 123445678 and 
-    - new score article which will also be created when the connection is created.
+    - new score article, which will also be created when the connection is created.
   The my_score relation defines two endpoints "player" and "score" for this information.
 */ 
 
@@ -1481,8 +1481,8 @@ var playerId = player.Id;
 ```
 ### Retrieve an existing connection
 
-The appacitive platform allows you to get connections in 3 ways depending on the usecase for your application.
-The section below detail out each of the 3 scenarios.
+The Appacitive platform allows you to get connections in 3 ways depending on the usecase of your application.
+The section below details out each of the 3 scenarios.
 
 #### Retrieve a single connection by id
 
@@ -1502,7 +1502,7 @@ Returns a single connection specified by id. To get a single connection you need
 ** Response **
 
 Returns the existing connection object matching the given id.
-In case of an error, the `status` object contains details for the failure.
+In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
@@ -1595,8 +1595,8 @@ the list of ids must correspond to connections of the same type.
 
 ** Response **
 
-Returns an array of connection corresponding to the given id list. 
-In case of an error, the `status` object contains details for the failure.
+Returns an array of connections corresponding to the given id list. 
+In case of an error, the `status` object contains details of the failure.
 
 `NOTE` : Please note that providing the same id multiple times will not return duplicates.
 
@@ -1716,7 +1716,7 @@ Appacitive.Connection.multiGet({
 Only a single instance of a connection of a specific type can be created between two article instances.
 As a result, a connection can also be uniquely identified by its type and the id pair of its endpoints.
 As an example, say you have two users and you want to see if they are friends (by virtue of a "friend" connection between them),
-the you can simply try and retrieve that connection by specifying the type as "friend" and providing the ids of the two users.
+then you can simply try and retrieve that connection by specifying the type as "friend" and providing the ids of the two users.
 
 ** Parameters ** 
 
@@ -1733,7 +1733,7 @@ the you can simply try and retrieve that connection by specifying the type as "f
 
 ** Response **
 
-Returns a connection of specified type if exists between articleAid and articleBid
+Returns a connection of the specified type if one exists between articleAid and articleBid
 
 ``` rest
 $$$Method
@@ -1741,7 +1741,7 @@ GET https://apis.appacitive.com/connection/{type}/find/{articleAid}/{articleBid}
 ```
 ``` rest
 $$$Sample Request
-// Try and get an existing friend connection between two users John(22322) and Jane(33422) with endpoint label as 'freind' for jane
+// Try and get an existing friend connection between two users John(22322) and Jane(33422) with endpoint label as 'friend' for Jane
 
 curl -X GET \
 -H "Appacitive-Environment: sandbox" \
@@ -1761,7 +1761,7 @@ $$$Sample Response
       "articleid": "22322"
     },
     "__endpointb": {
-      "label": "freind",
+      "label": "friend",
       "type": "user",
       "articleid": "33422"
     }
@@ -1793,7 +1793,7 @@ var idForJohn = "22322";
 var idForJane = "33422";
 
 Appacitive.Connection.getBetweenArticlesForRelation({ 
-    relation: "freind", 
+    relation: "friend", 
     articleAId : idForJohn, 
     articleBId : idForJane
 }, function(obj){
@@ -1858,7 +1858,7 @@ The Appacitive platform supports partial updates on connections. As a result, in
 ** Response **
 
 Returns the updated connection object.
-In case of an error, the `status` object contains details for the failure.
+In case of an error, the `status` object contains details of the failure.
 
 
 ``` rest
@@ -2105,13 +2105,13 @@ connected data inside the platform.
 #### Get connected articles
 
 In a relational database, you can query for related data by querying over a table's foreign key. Similarly, on the Appacitive platform,
-related data can be retreived by querying connections. You can query for all articles connected to a specific article via a given connection type. 
+related data can be retrieved by querying connections. You can query for all articles connected to a specific article via a given connection type. 
 
 **For example**<br>
-Querying for all users who have visited San Franciso can be represented as <br>
+Querying for all users who have visited San Francisco can be represented as <br>
 `Get all user articles connected to the city article (San Francisco) via the visited connection`.
 
-The query for connected data, you need to specify the type of the connection and the article (type & id ) for which you need connected data.
+In the query for connected data, you need to specify the type of the connection and the article (type & id ) for which you need connected data.
 
 ** Parameters ** 
 
@@ -2242,7 +2242,7 @@ var visitors = await city.GetConnectedArticlesAsync("visitor");
 
 #### Retrieve all connections between two endpoints
 
-Many instances of connections of diferent types can be created between two article instances.
+Many instances of connections of different types can be created between two article instances.
 Allowing us, to retrieve all connections between two article ids of same or different schemas.
 
 **For example**<br>
@@ -2385,7 +2385,7 @@ Scenarios where you may need to determine all type of connections between one ar
 
 **For example**<br>
 
-Say you have many `users` and `houses`( articles of schema type house) and you want to determine if they are connected to `jane` by either a `freind` or by `marriage` or by `owns` connection, then you can simply try and retrieve those connections providing jane's id as root and ids of the users and house as target.
+Say you have many `users` and `houses`( articles of schema type house) and you want to determine if they are connected to `Jane` by either a `friend` or by `marriage` or by `owns` connection, then you can simply try and retrieve those connections providing Jane's id as root and ids of the users and house as target.
 
 ** Parameters ** 
 
@@ -2398,7 +2398,7 @@ Say you have many `users` and `houses`( articles of schema type house) and you w
 
 ** Response **
 
-Returns a list of all connections that exists between articleAid and articleBids of any relation type
+Returns a list of all connections that exist between articleAid and articleBids of any relation type
 
 **Note** that this is a `POST` HTTP call.
 
@@ -2538,12 +2538,12 @@ Appacitive.Connection.getInterconnects({
 
 Querying Data
 ------------
-The appacitive platform supports rich constructs to search and query your application data. You can filter on all properties and attributes of your data.
+The Appacitive platform supports rich constructs to search and query your application data. You can filter on all properties and attributes of your data.
 Apart from filters, you can also specify paging and sorting information for customizing the number and order of the results.
 
 
 All search results are paged with a page size of `20` by default. You can change this by providing a custom page size. Please note that the maximum page size that is allowed is `200`.
-Passing any value higher than this will limit the results to `200`. Also the platform also supports providing modifiers to fine tune the exact set of fields to return for each 
+Passing any value higher than this will limit the results to `200`. The platform also supports providing modifiers to fine tune the exact set of fields to return for each 
 record of the search results. The platform specific examples will indicate how this can be done.
 
 ``` rest
@@ -2693,7 +2693,7 @@ https://apis.appacitive.com/user/find/all?query=@group_name=='developers'
 #### Disambiguating between value data types
 
 To disambiguate between mistaking datetime and geocode information as strings, these type of values must be 
-sent in a specific format. The details of the formatting is provided below for each type of data type.
+sent in a specific format. The details of the formatting are provided below for each data type.
 
 | Data type | Description | Sample |
 |---------------|------------|------------|
@@ -2838,12 +2838,12 @@ var greaterThanQuery = Query.Property("birthdate").IsGreaterThan(date);
 ### Geo queries
 You can specify a property type as a `geography` type for a given schema or relation. These properties are essential latitude-longitude pairs.
 Such properties support geo queries based on a user defined radial or polygonal region on the map. These are extremely useful for making map based or location based searches.
-E.g., searching for a list of all restaurants within 20 miles of a given users locations.
+E.g., searching for a list of all restaurants within 20 miles of a given user's locations.
 
 
 #### Radial Search
 
-A radial search allows you to search for all records of a specific type which contain a geocode which lies within a predefined distance from a point on the map.
+A radial search allows you to search for all records of a specific type which contain a geocode which lie within a predefined distance from a point on the map.
 A radial search requires the following parameters.
 
 <dl>
@@ -2924,7 +2924,7 @@ var hotels = await Articles.FindAllAsync( "hotel", radialQuery.ToString());
 
 A polygon search is a more generic form of geographcal search. It allows you to specify a polygonal region on the map via a set of geocodes 
 indicating the vertices of the polygon. The search will allow you to query for all data of a specific type that lies within the given polygon.
-This is typically useful when you want finer grained control on the shape of the region to search.
+This is typically useful when you want a finer grained control on the shape of the region to search.
 
 <dl>
   <dt>type</dt>
@@ -3009,7 +3009,7 @@ var polygonQuery = Query.Property("location").WithinPolygon(geocodes);
 ### Tag based queries
 
 The Appacitive platform provides inbuilt support for tagging on all data (articles, connections, users and devices).
-You can use this tag information to query for a specific data set. The different options available for searching based on tags is detailed in the sections below.
+You can use this tag information to query for a specific data set. The different options available for searching based on tags are detailed in the sections below.
 
 #### Query data tagged with one or more of the given tags
 
@@ -3662,7 +3662,7 @@ All other pre-defined properties are optional and you may wish to use them or ad
 ** Response **
 
 Returns the newly created user object with all the system defined properties set like `__id`, `__utcdatecreated`, `__createdby` etc.
-In case of an error, the `status` object contains details for the failure.
+In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
@@ -4163,7 +4163,7 @@ user.linkFacebookAccount(function(obj) {
 
 ##### Link appacitive user to a OAuth 1.0 account
 
-We can link an appacitive user to a twitter account after the user has already been created in Appacitive.
+We can link an Appacitive user to a twitter account after the user has already been created in Appacitive.
 
 ** Parameters ** 
 
@@ -4220,7 +4220,7 @@ Not supported
 
 #### Delink account with existing appacitive user.
 
-If you no longer want to associate an Appacitive user to a OAuth provider, you can delink the account using the linked identity's `name`.
+If you no longer want to associate an Appacitive user to an OAuth provider, you can delink the account using the linked identity's `name`.
 
 ** Parameters ** 
 
@@ -4288,7 +4288,7 @@ You will pass this `session token` as a HTTP header called `Appacitive-User-Auth
 
 
 ``` javascript
-//Whenever you use signup or login method, the user is stored in localStorage and can be retrieved using Appacitive.Users.currentUser().
+//Whenever you use the signup or login method, the user is stored in localStorage and can be retrieved using Appacitive.Users.currentUser().
 
 //So, everytime your app opens, you just need to check this value, to be sure whether the user is logged-in or logged-out.
 
@@ -4922,7 +4922,7 @@ Appacitive.Users.getUserByToken("asfa21sadas", function(user) {
 
 ### Updating a user
 
-The update user call is similar to the update article call. The update user calls expects a json object with only the user properties that you want updated.
+The update user call is similar to the update article call. The update user calls expect a json object with only the user properties that you want updated.
 The property keys which you send with non-null values will get updated if they aren't marked as immutable.
 The property keys you don't send in the body of the POST call stay unchanged.
 The property keys you send with values set as `null` are deleted from the user object (set to null).
@@ -4952,7 +4952,7 @@ You can specify which user you want to update by using either his `id`, `usernam
 ** Response **
 
 Returns the updated user object with the `__revision` number incremented.
-In case of an error, the `status` object contains details for the failure.
+In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
@@ -5071,7 +5071,7 @@ var users = await Users.FindAllAsync(query.ToString());
 
 Delete requests follow the same practice as get requests for user, the only difference being that the HTTP method type is DELETE, instead of GET.
 Make sure there are no connections with the user you are deleting, otherwise the API will return an error. You can use the `deleteconnections` query string parameter if you want to also delete all connections associated with the user.
-There are three ways you could delete the user (the same as retrieving a user), by his `id`, by his `username` or by his `token` generated for him.
+There are three ways in which you could delete the user (the same as retrieving a user), by his `id`, by his `username` or by the `token` generated for him.
 
 ** Parameters **
 
@@ -6003,7 +6003,7 @@ Windows Phone : http://msdn.microsoft.com/en-us/library/hh221549.aspx
 Registering the devices
 ------------
 
-You need to give Appacitive an info about the device on which you want to send the push notfication, i.e. the device type (ios,android etc),device token etc.
+You need to give Appacitive an info about the device on which you want to send the push notfication, i.e. the device type (ios, android etc), device token etc.
 Below you can see the call to register the device
 
 ** Parameter **
@@ -6708,8 +6708,8 @@ await PushNotification
 Platform specific options
 ------------
 
-There is a section of platform specific options which are different for the different platforms.
-Here I shall explain these options that we support
+There is a section of platform specific options which are different for different platforms.
+Following are the options that we support.
 
 ###iOS options
 
