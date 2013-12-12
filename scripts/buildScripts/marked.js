@@ -844,6 +844,7 @@
                               + '>'
                               + token
                               + '</div>\n';
+                            block = '<div class="content-wrapper" style="padding-bottom:0px !important;">';
                         } else token = '<p>' + token + '</p>';
                     }
                     block += token;

@@ -79,6 +79,30 @@ $$$Status object
    }
 }
 ```
+!!!javascript
+** Conventions **
+
+1. The javascript SDK is an async library and all data calls are async. Most calls have a signature like 
+      `object::method({ success: onSuccess, error: onError })`
+    where `onSuccess` and `onError` are functions that'll get executed in case of the call being a success or a failure respectively.
+2. Every data call also returns a promise.
+3. Every onSuccess callback for an object will get 1 argument viz. its own instance.
+4. Every onError callback for an object will get 2 argument viz. error object and its own instance.
+     Error object basically contains a code and message.
+!!!
+```javascript
+$$$Example
+
+//callbacks
+obj.save({ 
+    success: function(obj) {}, 
+    error: function(err, obj){} 
+});
+
+//promise
+var promise = obj.save();
+promise.then(function(obj) {}, function(err, obj){} );
+```
 
 Errors
 ------------
@@ -207,12 +231,21 @@ score.SetAttribute("team_color", "blue");
 ```
 
 ``` javascript
+// Create object of type score
 var score = new Appacitive.Object({ __type: 'score' });
+
+// Set properties
 score.set('difficulty', 'normal');
 score.set('level', 10);
 score.set('score', 1400);
+
+// Set atributes
 score.attr('is_first_time_user', 'true');
-score.attr('has_verified', 'false');
+score.attr('team_color', 'blue');
+
+// Add Tage
+score.addTag("amateur");
+score.addtag("unverified")
 ```
 
 
@@ -242,7 +275,7 @@ Appacitive.SDK.APObject.SaveAsync();
 ```
 ``` javascript
 $$$Method
-Appacitive.Object::save(successHandler, errorHandler);
+Appacitive.Object::save();
 ```
 
 ``` rest
@@ -265,10 +298,18 @@ await post.SaveAsync();
 ```
 ``` javascript
 $$$Sample Request
+// Create object of type post
 var post = new Appacitive.Object('post');
+
+// Set properties
 post.set('title', 'sample post');
 post.set('text', 'This is a sample post.');
-post.save(function(){
+
+// Set attribbutes
+post.attr('has_verified', 'false');
+
+// Call save
+post.save().then(function(){
   alert('new post saved successfully!');
 }, function(status){
   alert('error while saving!');
@@ -404,7 +445,7 @@ Appacitive.Object.get({
   __type: 'type',    //mandatory
   id: 'objectId',   //mandatory
   fields: []         //optional
-}, successHandler, errorHandler);
+});
 ```
 ``` javascript
 $$$Sample Request
@@ -412,7 +453,7 @@ Appacitive.Object.get({
     __type: 'post',
     id: '33017891581461312',
     fields: ['title']
-}, function(post) {
+}).then(function(post) {
     // Object is returned as argument to onsuccess
     alert('Fetched post with title: ' + post.get('title')); 
 }, function(status) {
@@ -425,7 +466,7 @@ var post = new Appacitive.Object('post');
 post.id('33017891581461312');
 post.fields(['title','text']);
 
-post.fetch(function(obj) {
+post.fetch().then(function(obj) {
     alert('Fetched post with title: ' + post.get('title'));
 }, function(status, obj) {
     alert('Could not fetch, probably because of an incorrect id');
@@ -543,7 +584,7 @@ Appacitive.Object.multiGet({
   type: 'type',   //mandatory
   ids: [],          //mandatory
   fields: []        //optional
-}, successHandler, errorHandler);
+});
 ```
 ``` javascript
 $$$Sample Request
@@ -551,7 +592,7 @@ Appacitive.Object.multiGet({
     type: 'post',
     ids: ["33017891581461312", "33017891581461313"],
     fields: ["title"]
-}, function(posts) { 
+}).then(function(posts) { 
     // posts is an array of objects
 }, function(status) {
     alert("code:" + status.code + "\nmessage:" + status.message);
@@ -621,7 +662,7 @@ Appacitive.Object.get({
   type: 'type',    //mandatory
   id: 'objectId',   //mandatory
   fields: []         //optional
-}, successHandler, errorHandler);
+});
 ```
 ``` javascript
 $$$Sample Request
@@ -629,7 +670,7 @@ Appacitive.Object.get({
     type: 'post',
     id: '33017891581461312',
     fields: ['title','text']
-}, function(obj) {
+}).then(function(obj) {
     // object obj is returned as argument to onsuccess
     alert('Fetched post with title: ' + obj.get('title')); 
 }, function(status, obj) {
@@ -754,7 +795,7 @@ of all the fields.
 
 ``` javascript
 $$$Method
-Appacitive.Object::save(successHandler, errorHandler);
+Appacitive.Object::save();
 ```
 ``` javascript
 $$$Sample Request
@@ -771,7 +812,7 @@ post.attr('topic', 'testing');
 post.addTag('tagA');
 post.removeTag('tagC');
 
-post.save(function(obj) {
+post.save().then(function(obj) {
   alert('updated successfully!');
 }, function(status, obj){
   alert('error while updating!');
@@ -827,12 +868,12 @@ $$$Sample Response
 
 ``` javascript
 $$$Method
-Appacitive.Object::del(successHandler, errorHandler);
+Appacitive.Object::destroy();
 ```
 ``` javascript
 $$$Sample Request
 /* Delete a single object */
-player.del(function() {
+player.destroy().then(function() {
     alert('Deleted successfully');
 }, function(status, obj) {
     alert('Delete failed')
@@ -894,7 +935,7 @@ $$$Method
 Appacitive.Object.multiDelete({
   type: 'type', //mandatory
   ids: [], //mandatory
-},successHandler, errorHandler);
+});
 ```
 ``` javascript
 $$$Sample Request
@@ -902,7 +943,7 @@ $$$Sample Request
 Appacitive.Object.multiDelete({    
     type: 'player', //mandatory
     ids: ["14696753262625025", "14696753262625026"], //mandatory
-}, function() { 
+}).then(function() { 
     //successfully deleted all objects
 }, function(status) {
     alert("code:" + err.code + "\nmessage:" + err.message);
@@ -960,15 +1001,15 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Object::del(successHandler, errorHandler, true);
+Appacitive.Object::destroy(true);
 
 $$$Sample Request
 //Setting the third argument to true will delete its connections if they exist
-player.del(function() {
+player.destroy(true).then(function() {
     alert('Deleted successfully');
 }, function(status, obj) {
     alert('Delete failed')
-}, true); 
+}); 
 ```
 ``` csharp
 /* Single Delete with connected objects */
@@ -1149,7 +1190,7 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Connection::save(successHandler, errorHandler)
+Appacitive.Connection::save()
 ```
 ``` javascript
 $$$Sample Request
@@ -1165,7 +1206,7 @@ var connection = new Appacitive.Connection({
                       label: 'hotel'
                   }]                
               });
-connection.save(function (obj) {
+connection.save().then(function (obj) {
     alert('saved successfully!');
 }, function (status, obj) {
     alert('error while saving!');
@@ -1183,7 +1224,7 @@ var connection = new Appacitive.Connection({
                       label: 'hotel'
                   }]                
               });
-connection.save(function (obj) {
+connection.save().then(function (obj) {
     alert('saved successfully!');
 }, function (status, obj) {
     alert('error while saving!');
@@ -1281,7 +1322,7 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Connection::save(successHandler, errorHandler)
+Appacitive.Connection::save()
 ```
 ``` javascript
 $$$Sample Request
@@ -1307,7 +1348,7 @@ var connection = new Appacitive.Connection({
                       label: 'score'
                   }]                
               });
-connection.save(function (obj) {
+connection.save().then(function (obj) {
     console.log(connection.id());
     console.log(score.id());
     alert('saved successfully!');
@@ -1418,7 +1459,7 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Connection::save(successHandler, errorHandler)
+Appacitive.Connection::save()
 ```
 ``` javascript
 $$$Sample Request
@@ -1445,7 +1486,7 @@ var connection = new Appacitive.Connection({
                       label: 'score'
                   }]                
               });
-connection.save(function (obj) {
+connection.save().then(function (obj) {
     console.log(connection.id());
     console.log(score.id());
     console.log(player.id());
@@ -1556,7 +1597,7 @@ Appacitive.Connection.get({
   relation: 'type', //mandatory
   id: 'connectionId', //mandatory
   fields: [] //optional
-}, successHandler, errorHandler)
+})
 ```
 ``` javascript
 $$$Sample Request
@@ -1564,7 +1605,7 @@ $$$Sample Request
 Appacitive.Connection.get({ 
     relation: 'reviewed',       //mandatory
     id: '33017891581461312'     //mandatory
-}, function(obj) {
+}).then(function(obj) {
     // connection obj is returned as argument to onsuccess
     alert('review connection fetched successfully.');
 }, function(status, obj) {
@@ -1696,7 +1737,7 @@ Appacitive.Connection.multiGet({
   relation: 'type',   //mandatory
   ids: [],          //mandatory
   fields: []        //optional
-}, successHandler, errorHandler);
+});
 ```
 ``` javascript
 $$$Sample Request
@@ -1704,7 +1745,7 @@ Appacitive.Connection.multiGet({
     relation: 'reviewed',
     ids: ["33017891581461312", "33017891581461313"],
     fields: ["__id"]
-}, function(reviewed) { 
+}).then(function(reviewed) { 
     // reviewed is an array of connection objects
 }, function(status) {
     alert("code:" + status.code + "\nmessage:" + status.message);
@@ -1783,7 +1824,7 @@ Appacitive.Connection.getBetweenObjectsForRelation({
   objectAId : 'objectAId', //mandatory
   objectBId : 'objectBId', //mandatory
   label: 'label' //optional
-}, successHandler, errorHandler)
+})
 ```
 ``` javascript
 $$$Sample Request
@@ -1796,7 +1837,7 @@ Appacitive.Connection.getBetweenObjectsForRelation({
     relation: "friend", 
     objectAId : idForJohn, 
     objectBId : idForJane
-}, function(obj){
+}).then(function(obj){
     // connection obj is returned as argument to onsuccess
     if( obj !== null && obj !== undefined ) {
       alert('John and Jane are friends.');
@@ -1818,7 +1859,7 @@ Appacitive.Connection.getBetweenObjectsForRelation({
     objectAId : "22322", 
     objectBId : "33422",
     label : "me"
-}, function(obj){
+}).then(function(obj){
     // connection obj is returned as argument to onsuccess
     alert('Connection fetched successfully');
 }, function(status, obj) {
@@ -1928,7 +1969,7 @@ $$$Sample Response
 
 ``` javascript
 $$$Method
-Appacitive.Connection::save(successHandler, errorHandler)
+Appacitive.Connection::save()
 ```
 ``` javascript
 $$$Sample Request
@@ -1937,7 +1978,7 @@ Appacitive.Connection.get({
     relation: 'review',    //mandatory
     id: '1234345',         //mandatory
     fields: ["description"]
-}, function(review) {
+}).then(function(review) {
     // connection obj is returned as argument to onsuccess
     review.set('description','good hotel')
     review.save(function(){
@@ -2002,7 +2043,7 @@ $$$Sample Response
 
 ``` javascript
 $$$Method
-Appacitive.Connection::del(successHandler, errorHandler)
+Appacitive.Connection::destroy()
 ```
 ``` javascript
 $$$Sample Request
@@ -2010,7 +2051,7 @@ $$$Sample Request
 var review = new Appacitive
   .Connection({relation: 'review', __id : '123123'});
 
-review.del(function() {
+review.destroy().then(function() {
     alert('Deleted successfully');
 }, function(status, obj) {
     alert('Delete failed')
@@ -2074,7 +2115,7 @@ $$$Method
 Appacitive.Connection.multiDelete({
   relation: 'type', //mandatory
   ids: []           //mandatory  
-}, successHandler, errorHandler)
+})
 ```
 ``` javascript
 $$$Sample Request
@@ -2083,7 +2124,7 @@ $$$Sample Request
 Appacitive.Connection.multiDelete({    
     relation: 'reivew', //mandatory
     ids: ["40438996554377032", "40440007982449139", "40440007982449139"] //mandatory
-}, function() { 
+}).then(function() { 
     //successfully deleted all connections
 }, function(status) {
     alert("code:" + status.code + "\nmessage:" + status.message);
@@ -2204,23 +2245,27 @@ Appacitive.Object::fetchConnectedObjects({
   filter: {Appacitive.Filter obj}, //optional  
   pageNumber: 1 ,           //optional: default is 1
   pageSize: 50,             //optional: default is 50
-  orderBy: '__utclastupdateddate', //optional: default is __utclastupdateddate
+  orderBy: '__utclastupdateddate', //optional
   isAscending: false        //optional: default is false
-}, successHandler, errorHandler)
+})
 ```
 ``` javascript
 $$$Sample Request
-// Get all users who have visited San Francisco (city object with id 636523636) 
-var city = new Appacitive.Object({ __id : '636523636', __type : 'city');
+// Get all users who have visited San Francisco (city object with id 63652363) 
+var city = new Appacitive.Object({ __id : '63652363', __type : 'city');
 
 city.fetchConnectedObjects({ 
   relation : 'visitor', //mandatory
   label: 'visitor', // optional
   returnEdge: true, // set to false to stop returning connection
   fields: ["__id"]
-}, function(obj, pi) {
+}).then(function(results) {
+
   // list of all connected objects to jane
   var users = city.children["visitor"];
+
+  // Or you can directly pick users from results
+  users = results;
 
   //iterating on the users array
   users.forEach(function (u) {
@@ -2353,7 +2398,7 @@ Appacitive.Connection.getBetweenObjects({
   pageSize: 50,             //optional: default is 50
   orderBy: '__utclastupdateddate', //optional: default is __utclastupdateddate
   isAscending: false        //optional: default is false
-}, successHandler, errorHandler)
+})
 ```
 ``` javascript
 $$$Sample Request
@@ -2366,7 +2411,7 @@ Appacitive.Connection.getBetweenObjects({
     objectAId : idForJohn, 
     objectBId : idForJane,
 	  fields: ["__id"]
-}, function(connections, pi){
+}).then(function(connections) {
     // connections is an array of all connections between two ids which is returned as argument to onsuccess
     connections.forEach(function(con) {
       if (conn.relation == 'marriage') {
@@ -2504,9 +2549,9 @@ Appacitive.Connection.getInterconnects({
   fields: [],                //optional
   pageNumber: 1 ,           //optional: default is 1
   pageSize: 50,             //optional: default is 50
-  orderBy: '__utclastupdateddate', //optional: default is __utclastupdateddate
+  orderBy: '__utclastupdateddate', //optional
   isAscending: false        //optional: default is false
-}, successHandler, errorHandler)
+})
 ```
 ``` javascript
 $$$Sample Request
@@ -2519,7 +2564,7 @@ Appacitive.Connection.getInterconnects({
     objectAId : idForJohn, 
     objectBIds : [idForJane, idForTarzan, idForHouse1, idForHouse2]
     fields: ["__id"]
-}, function(connections, pi){
+}).then(function(connections) {
     // connections is an array of all connections netween objectAId  and objectBIds which is returned as argument to onsuccess
     connections.forEach(function(con) {
       if (conn.relation == 'marriage') {
@@ -2596,7 +2641,7 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Queries.FindAllQuery(options).fetch(successHandler, errorHandler);
+Appacitive.Queries.FindAllQuery(options).fetch();
 ```
 ```javascript
 $$$Sample Request
@@ -2610,7 +2655,7 @@ var query = new Appacitive.Queries.FindAllQuery(
   filter: filter,   //optional  
   pageNumber: 1 ,   //optional: default is 1
   pageSize: 20,     //optional: default is 50
-  orderBy: '__id',  //optional: default is __utclastupdateddate
+  orderBy: '__id',  //optional
   isAscending: false  //optional: default is false
 }); 
 
@@ -2625,12 +2670,15 @@ var successHandler = function(players) {
   // fetching other left players
   if (!players.isLastPage) {
     // if this is not the last page then fetch further records 
-    query.fetchNext(successHandler);
+    query.fetchNext().then(succcessHandler);
+
+    // or you can fetch previous records too
+    query.fetchPrev().then(succcessHandler);
   }
 };
 
 // make a call
-query.fetch(successHandler);
+query.fetch().then(succcessHandler);
 ```
 ``` csharp
 //Build the query
@@ -2775,12 +2823,17 @@ var likeFilter = Appacitive.Filter.Property("firstname").like("oh");
 //First name starts with "jo"
 var startsWithFilter = Appacitive.Filter.Property("firstname").startsWith("jo");
 
-
 //First name ends with "oe"
 var endsWithFilter = Appacitive.Filter.Property("firstname").endsWith("oe");
 
 //First name matching several different values
 var containsFilter = Appacitive.Filter.Property("firstname").contains(["John", "Jane", "Tarzan"]);
+
+//Equal to some string
+var equalToFilter = Appacitive.Filter.Property("firstname").equalTo("John");
+
+//Equal to some number
+var equalToNumberFilter = Appacitive.Filter.Property("age").equalTo(25);
 
 //Between two dates
 var start = new Date("12 Dec 1975");
@@ -2812,7 +2865,7 @@ var greaterThanFilter = Appacitive.Filter.Property("age").greaterThan(25);
 //Same works for greaterThanEqualTo, greaterThanEqualToDate, greaterThanEqualToDateTime and greaterThanEqualToTime
 //and for lessThan, lessThanDate, lessThanDateTime and lessThanTime
 //and for lessThanEqualTo, lessThanEqualToDate, lessThanEqualToDateTime and lessThanEqualToTime
-// and for equalTo, equalToDate, equalToDateTime, equalToTime 
+// and for equalTo, equalToNumber equalToDate, equalToDateTime, equalToTime 
 
 ```
 
@@ -3387,12 +3440,12 @@ var successHandler = function(photos) {
   // fetching other left players
   if (!players.isLastPage) {
     // if this is not the last page then fetch further records 
-    query.fetchNext(successHandler);
+    query.fetchNext().then(successHandler);
   }
 };
 
 //call fetch
-query.fetch(successHandler);
+query.fetch().then(successHandler);
 ```
 
 ### Compound Queries
@@ -3437,7 +3490,7 @@ query.filter(
           );
 
 //fire the query
-query.fetch(successHandler);
+query.fetch();
 ```
 ``` csharp
 //Use of `And` and `Or` operators
@@ -3549,7 +3602,7 @@ var filterQueryName = "sample_filter";
 var placeholderFillers = { key1: "value1", key2: "value2" };
 var query = new Appacitive.Queries.GraphFilterQuery(filterQueryName, placeholderFillers);
 
-query.fetch(function(ids) {
+query.fetch().then(function(ids) {
   console.log(ids.length + " found");
 }, function(status) {
   console.log("Error running filter query");
@@ -3642,7 +3695,7 @@ var projectQueryName = "sample_filter";
 var placeholderFillers = { key1: "value1", key2: "value2" };
 var query = new Appacitive.Queries.GraphProjectQuery(projectQueryName, placeholderFillers);
 
-query.fetch(function(results) {
+query.fetch().then(function(results) {
   /* results object contains list of objects for provided ids
      Each object contains a children property
      Children contains array of objects 
@@ -3819,7 +3872,7 @@ $$$Sample Response
 
 ``` javascript
 $$$Method
-Appacitive.User::save(successHandler, errorHandler);
+Appacitive.User::save();
 ```
 ``` javascript
 $$$Sample Request
@@ -3836,7 +3889,7 @@ var userDetails = {
 var newUser = new Appacitive.User(userDetails);
 
 //and then call save on that object
-newUser.save(function(obj) {
+newUser.save().then(function(obj) {
     alert('Saved successfully, id: ' + newUser.get('__id'));
 }, function(status, obj) {
     alert('An error occured while saving the user.');
@@ -3901,12 +3954,14 @@ https://apis.appacitive.com/user
 ```
 ``` javascript
 $$$Method
-Appacitive.User::save(successHandler, errorHandler);
+Appacitive.User::save();
 ```
 ``` javascript
 $$$Sample Request
 //  Create a new user and link it to a facebook account
-// include this script in your page for facebook login
+
+// Include this script in your page for facebook login
+
 window.fbAsyncInit = function() {
     Appacitive.Facebook.initialize({
         appId      : 'YOUR_APP_ID', // Facebook App ID
@@ -3926,15 +3981,20 @@ var user = new Appacitive.User({
     lastname: 'Doe' 
 });
 
-//link facebook account
-user.linkFacebookAccount();
+//Registering via facebook is done like so
+Appacitive.Facebook.requestLogin().then(function(fbResponse) {
+  console.log('Facebook login successfull with access token: ' + Appacitive.Facebook.accessToken());
+  
+  //link facebook account
+  user.linkFacebook(global.Appacitive.Facebook.accessToken());
 
-/You can access linked accounts of a user, using this field
-console.dir(user.linkedAccounts); 
+  //You can access linked accounts of a user, using this field
+  console.dir(user.linkedAccounts()); 
 
-//create the user on server
-user.save(function(obj) {
-    console.dir(user.linkedAccounts);
+  //create the user on server
+  return user.save()
+}).then(function(obj) {
+    console.dir(user.linkedAccounts());
 }, function(status, obj) {
     alert('An error occured while saving the user.');
 });
@@ -4047,7 +4107,7 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.User::save(successHandler, errorHandler);
+Appacitive.User::save();
 ```
 ``` javascript
 $$$Sample Request
@@ -4057,25 +4117,28 @@ var user = new Appacitive.User({
     password: /* password as string */,
     email: 'johndoe@appacitive.com',
     firstname: 'John',
-    lastname: 'Doe',
-    __link: {
-      authtype: "twitter", 
-      oauthtoken: "{twitter oauth token}", 
-      oauthtokensecret: "{twitter oauth token secret}",
-      consumerkey: "{twitter consumer key}", 
-      consumersecret: "{twitter consumer secret}"
-    }
+    lastname: 'Doe'
 });
+
+//link facebook account
+user.linkTwitter({
+  oauthtoken: {{twitterObj.oAuthToken}}, //mandatory
+  oauthtokensecret: {{twitterObj.oAuthTokenSecret}}, //mandatory
+  consumerKey: {{twitterObj.consumerKey}}, // optional
+  consumerSecret: {{twitterObj.consumerSecret}} // optional
+});
+
+// consumerKey and consumerSecret are optional, if they've
+// been configured on Appacitive Portal Social section 
 
 //You can access linked accounts of a user, using this field
-console.dir(user.linkedAccounts); 
+console.dir(user.linkedAccounts()); 
 
 //create the user on server
-user.save(function(obj) {
-    console.dir(user.linkedAccounts);
-}, function(status, obj) {
-    alert('An error occured while saving the user.');
+user.save().then(function(obj) {
+  console.dir(user.linkedAccounts());
 });
+
 ```
 
 #### Create a user with just the OAuth access token
@@ -4154,48 +4217,73 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Users.signupWithFacebook(successHandler, errorHandler);
+Appacitive.Users.signupWithFacebook();
 ```
 ``` javascript
 $$$Sample Request
 //  Create a new user using the Facebook access token
-//Include this script in your page for setting up facebook login
+
+// Include this script in your page for facebook login
 window.fbAsyncInit = function() {
     Appacitive.Facebook.initialize({
         appId      : 'YOUR_APP_ID', // Facebook App ID
-        status     : true, // check login status
+        status     : false, // check login status
         cookie     : true, // enable cookies to allow Appacitive to access the session
         xfbml      : true  // parse XFBML
     });
     // Additional initialization code here
 };
 
-//Registering via facebook is done like so
-Appacitive.Users.signupWithFacebook(function (authResult) {
-    // user has been successfully signed up and set as current user
-    // authresult contains the user and Appacitive-usertoken
-}, function(status) {
+//Login with facebook
+Appacitive.Facebook.requestLogin().then(function(fbResponse) {
+  var token = Appacitive.Facebook.accessToken();
+
+  console.log('Facebook login successfull with access token: '
+     + token);
+
+  // signup with Appacitive
+  return Appacitive.Users.signupWithFacebook(token);
+
+}).then(function (authResult) {
+  // user has been successfully signed up and set as current user
+  // authresult contains the user and Appacitive-usertoken
+}, function(err) {
+  if (global.Appacitive.Facebook.accessToken()) {
+    // there was an error during facebook login
+  } else {
     // there was an error signing up the user
+  }
 });
+
+{
+    "token": "{{userAuthToken}}",
+    "user": Appacitive.User object
+}
+
 ```
 ``` javascript
 $$$Sample Request
 //  Create a new user using the OAuth 1.0 token
 
-var authRequest = {
-    'type': 'twitter',
-    'oauthtoken': {oauthtoken},
-    'oauthtokensecret': {oauthtokensecret},
-    'createnew': true
-}
- 
-Appacitive.Users.authenticateUser(authRequest, function(authResult) { 
-   // user has been successfully signed up and set as current user
-   // authresult contains the user and Appacitive-usertoken
-   console.dir(authResult.user.id());
-}, function(status) {
-    alert('An error occured while saving the user.');
+//For login with twitter, pass twitter credentials to SDK
+Appacitive.Users.loginWithTwitter({
+  oauthtoken: {{twitterObj.oAuthToken}}, //mandatory
+  oauthtokensecret: {{twitterObj.oAuthTokenSecret}}, //mandatory
+  consumerKey: {{twitterObj.consumerKey}}, //optional
+  consumerSecret: {{twitterObj.consumerSecret}} //optional
+}).then(function(authResult){
+  //User logged-in successfully
 });
+
+// consumerKey and consumerSecret are optional, if they've
+// been configured on Appacitive Portal Social section 
+
+
+//As before the `authResult` parameter is the same.
+{
+    "token": "{{userAuthToken}}",
+    "user": Appacitive.User object
+}
 ```
 
 #### Link account with existing Appacitive user.
@@ -4255,15 +4343,19 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.User::linkFacebookAccount(successHandler, errorHandler);
+Appacitive.User::linkFacebook({{accessToken}});
 ```
 ``` javascript
 $$$Sample Request
+
+//Note: here, we consider that the user has already logged-in with facebook using Appacitive.Facebook.requestLogin method
+
+If you want to associate an existing loggedin Appacitive.User to a Facebook account, you can link it like so
+
 var user = Appacitive.User.currentUser();
-user.linkFacebookAccount(function(obj) {
-    console.dir(user.linkedAccounts);//You can access linked accounts of a user, using this field
-}, function(status, obj){
-    alert("Could not link FB account");
+user.linkFacebook(global.Appacitive.Facebook.accessToken()).then(function(obj) {
+  //You can access linked accounts of a user, using this field
+  console.dir(user.linkedAccounts()); 
 });
 
 ```
@@ -4321,8 +4413,26 @@ $$$Sample Response
   }
 }
 ```
+```javascript
+$$$Method
+Appacitive.User::linkTwitter({{twitterObj}})
+```
 ``` javascript
-Not supported
+$$$Sample Request
+Note: here, we consider that the user has already logged-in with twitter
+
+If you want to associate an existing loggedin Appacitive.User to a Twitter account, you can link it like so
+
+var user = Appacitive.User.currentUser();
+user.linkTwitter({
+  oauthtoken: {{twitterObj.oAuthToken}} ,
+  oauthtokensecret: {{twitterObj.oAuthTokenSecret}},
+  consumerKey: {{twitterObj.consumerKey}},
+  consumerSecret: {{twitterObj.consumerSecret}}
+}).then(function(obj) {
+  //You can access linked accounts of a user, using this field
+  console.dir(user.linkedAccounts()); 
+});
 ```
 
 #### Delink account with existing appacitive user.
@@ -4377,15 +4487,19 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.User::unlinkFacebookAccount(successHandler, errorHandler);
+Appacitive.User::unlink();
 ```
 ``` javascript
 $$$Sample Request
-Appacitive.Users.currentUser().unlinkFacebookAccount(function() {
-    alert("Facebook account delinked successfully");
-}, function(status){
-    alert("Could not delink facebook account");
+//specify account which needs to be delinked
+Appacitive.Users.current().unlink('facebook').then(function() {
+  alert("Facebook account delinked successfully");
 });
+
+Appacitive.Users.current().unlink('twitter').then(function() {
+  alert("Twitter account delinked successfully");
+});
+
 ```
 
 ### Authenticating a user
@@ -4393,19 +4507,54 @@ Appacitive.Users.currentUser().unlinkFacebookAccount(function() {
 To make user specific API calls to Appacitive, you need to authenticate the user to the Appacitive API and create a `session token` for the user every time he logs into your app.
 You will pass this `session token` as a HTTP header called `Appacitive-User-Auth`. The `user` object is also returned on a successful authentication call.
 
+!!!javascript
+Each instance of an app can have one logged in user at any given time. You can also explicitly set the accesstoken and tell the SDK to start using the access token.
+!!!
 
-``` javascript
-//Whenever you use the signup or login method, the user is stored in localStorage and can be retrieved using Appacitive.Users.currentUser().
+```javascript
+// the access token
+// var token = /* ... */
 
-//So, everytime your app opens, you just need to check this value, to be sure whether the user is logged-in or logged-out.
+// setting it in the SDK
+Appacitive.session.setUserAuthHeader(token);
+// now the sdk will send this token with all requests to the server
+// Access control has started
 
-var cUser = Appacitive.User.currentUser();
+// removing the auth token
+Appacitive.session.removeUserAuthHeader();
+// Access control has been disabled
+
+//Setting accessToken doesn't takes care of setting user associated for it. 
+//For that you need to set current user too.
+```
+
+!!!javascript
+**Current User**
+Whenever you use any signup or login method, the user is stored in localStorage and can be retrieved using `Appacitive.Users.current`.So, everytime your app opens, you just need to check this value, to be sure whether the user is logged-in or logged-out.
+!!!
+
+```javascript
+var cUser = Appacitive.User.current();
 if (cUser) {
     // user is logged in
 } else {
     // user is not logged in
 }
 
+//You can explicitly set the current user as
+
+var user = new Appacitive.User({
+    __id : '2121312'
+    username: 'john.doe@appacitive.com'
+    email: 'johndoe@appacitive.com',
+    firstname: 'John',
+    lastname: 'Doe'
+});
+
+Appacitive.Users.setCurrentUser(user, token);
+
+//Now current user points to `john.doe`
+console.log(Appacitive.Users.current().get('__id'));
 ```
 
 #### Authenticating user by username and password
@@ -4511,21 +4660,17 @@ $$$Sample Response
 }
 ```
 
-``` javascript
-//Login with username and password
-```
 ```javascript
 $$$Method
-Appacitive.Users.login("username", "password", successHandler, errorHandler);
+Appacitive.Users.login("{{username}}", "{{password}}");
 ```
 ``` javascript
 $$$Sample Request
-Appacitive.Users.login("username", "password", function (authResult) {
+//Login with username and password
+Appacitive.Users.login("{{username}}", "{{password}}").then(function (authResult) {
     // user has been logged in successfully
     conole.log(authResult.token);
     alert('Saved successfully, id: ' + authResult.user.get('__id'));
-}, function(status) {
-    // log in attempt failed
 });
 
 //The `authResult` is similar as given above.
@@ -4540,28 +4685,31 @@ Appacitive.Users.login("username", "password", function (authResult) {
 ```
 ```javascript
 $$$Method
-Appacitive.Users.signup(userDetails, successHandler, errorHandler);
+Appacitive.Users.signup(userDetails);
 ```
 ``` javascript
 $$$Sample Request
 // set the fields
 var userDetails = {
-    username: 'john.doe@appacitive.com',
-    password: /* password as string */,
-    email: 'johndoe@appacitive.com',
-    firstname: 'John',
-    lastname: 'Doe'
+  username: 'john.doe@appacitive.com',
+  password: /* password as string */,
+  email: 'johndoe@appacitive.com',
+  firstname: 'John',
+  lastname: 'Doe'
 };
 
 // now to create the user
-Appacitive.Users.signup(userDetails , function(authResult) {
-    conole.log(authResult.token);
-    alert('Saved successfully, id: ' + authResult.user.get('__id'));
-}, function(status) {
-    alert('An error occured while saving the user.');
+Appacitive.Users.signup(userDetails).then(function(authResult) {
+  conole.log(authResult.token);
+  alert('Saved successfully, id: ' + authResult.user.get('__id'));
 });
-```
 
+//The `authResult` is.
+{
+    "token": "{{userAuthToken}}",
+    "user": Appacitive.User object
+}
+```
 
 #### Authenticate with OAuth 2.0 access token
 
@@ -4638,17 +4786,36 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Users.loginWithFacebook(successHandler, errorHandler);
+Appacitive.Users.loginWithFacebook({{accessToken}});
 ```
 ``` javascript
 $$$Sample Request
-//  Authenticate user with facebook access token
-Appacitive.Users.loginWithFacebook(function (authResult) {
-    // authentication successful
-}, function(status) {
-    // authentication unsuccessful
-    // maybe incorrect credentials or maybe the user denied permissions
+//Login with facebook
+Appacitive.Facebook.requestLogin().then(function(fbResponse) {
+  var token = Appacitive.Facebook.accessToken();
+  console.log('Facebook login successfull with access token: ' 
+      + token);
+
+  // login with Appacitive
+  return Appacitive.Users.loginWithFacebook(token);
+
+}).then(function (authResult) {
+  // user has been successfully signed up and set as current user
+  // authresult contains the user and Appacitive-usertoken
+}, function(err) {
+  if (global.Appacitive.Facebook.accessToken()) {
+    // there was an error during facebook login
+  } else {
+    // there was an error during user login
+  }
 });
+
+
+//As before the `authResult` parameter is the same.
+{
+    "token": "{{userAuthToken}}",
+    "user": Appacitive.User object
+}
 ```
 
 #### Authenticate with a OAuth 1.0 access token
@@ -4707,24 +4874,29 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Users.authenticateUser(authRequest, successHandler, errorHandler);
+Appacitive.Users.loginWithTwitter(authRequest);
 ```
 ``` javascript
 $$$Sample Request
 //Authenticate user with twitter
-var authRequest = {
-    'type': 'twitter',
-    'oauthtoken': {oauthtoken},
-    'oauthtokensecret': {oauthtokensecret}
-}
+//Once you've logged-in with twitter, pass twitter credentials to SDK
+Appacitive.Users.loginWithTwitter({
+  oauthtoken: {{twitterObj.oAuthToken}}, //mandatory
+  oauthtokensecret: {{twitterObj.oAuthTokenSecret}}, //mandatory
+  consumerKey: {{twitterObj.consumerKey}}, //optional
+  consumerSecret: {{twitterObj.consumerSecret}} //optional
+}).then(function(authResult){
+  //User logged-in successfully
+});
 
-Appacitive.Users.authenticateUser(authRequest, function(authResult) { 
-   // user has been successfully signed up and set as current user
-   // authresult contains the user and Appacitive-usertoken
-   console.dir(authResult.user.id());
-}, function(status) {
-    alert('An error occured while saving the user.');
-}););
+// consumerKey and consumerSecret are optional, if they've
+// been configured on Appacitive Portal Social section 
+
+//As before the `authResult` parameter is the same.
+{
+    "token": "userAuthToken",
+    "user": Appacitive.User object
+}
 ```
 
 ### Retrieving users
@@ -4740,7 +4912,6 @@ The following three example illustrate retrieving the user in the three possible
 The same pattern applies for other calls like deleting the user or updating the user as well.
 
 #### Get User by Id
-
 
 ** Parameter **
 
@@ -4825,12 +4996,12 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.User::fetch(successHandler, errorHandler);
+Appacitive.User::fetch();
 ```
 ``` javascript
 $$$Sample Request
 var user = new Appacitive.User({ __id: '12345' });
-user.fetch(function (obj) {
+user.fetch().then(function (obj) {
     alert('Fetched user with id 12345');
 }, function(status, obj) {
     alert('Could not fetch user with id 12345');
@@ -4918,12 +5089,12 @@ var user = await Users.GetByUsernameAsync("john.doe");
 
 ``` javascript
 $$$Method
-Appacitive.Users.getUserByUsername('{{username}}', successHandler, errorHandler);
+Appacitive.Users.getUserByUsername('{{username}}');
 ```
 ``` javascript
 $$$Sample Request
 //fetch user by username
-Appacitive.Users.getUserByUsername("john.doe", function(user) {
+Appacitive.Users.getUserByUsername("john.doe").then(function(user) {
     alert('Fetched user with username ' + user.get('username'));
 }, function(status) {
     alert('Could not fetch user with username  john.doe');
@@ -5010,14 +5181,14 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Users.getUserByToken("{{usertoken}}", successHandler, errorHandler);
+Appacitive.Users.getUserByToken("{{usertoken}}");
 ```
 ``` javascript
 $$$Sample Request
 
 
 //fetch user by token
-Appacitive.Users.getUserByToken("asfa21sadas", function(user) {
+Appacitive.Users.getUserByToken("asfa21sadas").then(function(user) {
     alert('Fetched user with username ' + user.get('username'));
 }, function(status) {
     alert('Could not fetch user with usertoken');
@@ -5122,14 +5293,14 @@ await user.SaveAsync();
 ```
 ``` javascript
 $$$Method
-Appacitive.User::save(successHandler, errorHandler)
+Appacitive.User::save()
 ```
 ``` javascript
 $$$Sample Request
 //Update logged-in user
-var user = Appacitive.Users.currentUser();
+var user = Appacitive.Users.current();
 
-user.save(function(obj) {
+user.save().then(function(obj) {
   alert('User updated successfully!');
 }, function(status, obj) {
   alert('error while updating user!');
@@ -5148,16 +5319,16 @@ Appacitive.Object.findAll({
   filter: {Appacitive.Filter obj}, //optional  
   pageNumber: 1 ,   //optional: default is 1
   pageSize: 50,     //optional: default is 50
-  orderBy: '__id',  //optional: default is __utclastupdateddate
+  orderBy: '__id',  //optional
   isAscending: false  //optional: default is false
-}, successHandler, errorHandler)
+})
 ```
 ``` javascript
 $$$Sample Request
 Appacitive.Object.FindAll({
   type: 'user',
   fields: ["username", "firstname", "email"]
-}, function(users) {
+}).then(function(users) {
   //users is an array of Appacitive.User objects
   console.log("Users fetched");
 }, function(status) {
@@ -5236,12 +5407,12 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Users.deleteUser('{{id}}', successHandler, ErrorHandler);
+Appacitive.Users.deleteUser('{{id}}');
 ```
 ``` javascript
 $$$Sample Request
 //To delete a user with an `__id` of, say, 1000.
-Appacitive.Users.deleteUser('1000', function() {
+Appacitive.Users.deleteUser('1000').then(function() {
     // deleted successfully
 }, function(status) {
     // delete failed
@@ -5344,12 +5515,12 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Users.deleteCurrentUser(successHandler, ErrorHandler);
+Appacitive.Users.deleteCurrentUser();
 ```
 ``` javascript
 $$$Sample Request
 //You can delete the currently logged in user via a helper method.
-Appacitive.Users.deleteCurrentUser(function() {
+Appacitive.Users.deleteCurrentUser().then(function() {
     // delete successful
 }, function(status) {
     // delete failed
@@ -5414,20 +5585,13 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.User::checkin({
-  lat: {{latitude}},
-  lng: {{longitude}}
-}, successHandler, ErrorHandler);
+Appacitive.User::checkin({{Appacitive.GeoCoord}});
 ```
 ``` javascript
 $$$Sample Request
 //Change current users location
-Appacitive.Users.currentUser().checkin({
-    lat:18.57, lng: 75.55
-}, function() {
-    alert("Checked in successfully");
-}, function(status) {
-    alert("There was an error checking in");
+Appacitive.Users.currentUser().checkin(new Appacitive.GeoCoord(18.57, 75.55)).then(function() {
+  alert("Checked in successfully");
 });
 ```
 
@@ -5466,7 +5630,7 @@ var user = new Appacitive.User({
 Appacitive.Users.setCurrentUser(user, token);
 
 //Now current user points to `john.doe`
-console.log(Appacitive.Users.currentUser().get('__id'));
+console.log(Appacitive.Users.current().get('__id'));
 ```
 
 #### Validate session token
@@ -5523,26 +5687,26 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Users.validateCurrentUser(successHandler, validateAPI);
+Appacitive.Users.validateCurrentUser(validateAPI);
 ```
 ``` javascript
 $$$Sample Request
 // to check whether user is loggedin locally. This won't make any explicit apicall to validate user
-Appacitive.Users.validateCurrentUser(function(isValid) {
+Appacitive.Users.validateCurrentUser().then(function(isValid) {
     if (isValid) //user is logged in
 });
 
 // to check whether user is loggedin, explicitly making an apicall to validate usertoken
-Appacitive.Users.validateCurrentUser(function(isValid) {
+Appacitive.Users.validateCurrentUser(true).then(function(isValid) {
     if (isValid)  //user is logged in
     // This method also sets the current user for that token
-}, true); // set to true to validate usertoken making an apicall
+}); // set to true to validate usertoken making an apicall
 ```
 
 
 #### Invalidate session
 
-Yoy may want to invalidate a previously generated session token for a user at some point before its expiry.
+You may want to invalidate a previously generated session token for a user at some point before its expiry.
 
 ** Parameters **
 
@@ -5594,14 +5758,14 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.User::logout(callback);
+Appacitive.User::logout();
 ```
 ```javascript
 $$4Sample Request
-Appacitive.Users.currentUser().logout(function() {
+Appacitive.Users.current().logout().then(function() {
     // user is logged out   
     // this will now be null
-    var cUser = Appacitive.Users.currentUser();  
+    var cUser = Appacitive.Users.current();  
 });
 ```
 
@@ -5609,7 +5773,7 @@ Appacitive.Users.currentUser().logout(function() {
 
 Appacitive provides an intuitive password management and recovery protocol to app developers so that their users can recover or change their passwords safely if and when the need arises.
 
-#### Reset password
+#### Change password
 
 If a user of your app simply wants to change his/her password, it requires a simple HTTP call to Appacitive with the necessary details. This call is also available in all the SDKs.
 
@@ -5671,15 +5835,13 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.User::updatePassword('{oldPassword}','{newPassword}', successHandler, ErrorHandler);
+Appacitive.User::updatePassword('{oldPassword}','{newPassword}');
 ```
 ``` javascript
 $$$Sample Request
 //You can make this call only for a loggedin user
-Appacitive.Users.currentUser().updatePassword('dfd4f43','456dfabc', function() {
-    console.log("Password updated successfully"); 
-}, function(status) {
-    console.log("Failed to updated password for user");
+Appacitive.Users.current().updatePassword('{oldPassword}','{newPassword}').then(function(){
+  alert("Password updated successfully"); 
 });
 ```
 
@@ -5741,15 +5903,53 @@ $$$Sample Response
 
 ``` javascript
 $$$Method
-Appacitive.Users.sendResetPasswordEmail("{username}", "{subject for the mail}", successHandler, ErrorHandler);
+Appacitive.Users.sendResetPasswordEmail("{username}", "{subject for the mail}");
 ```
 ``` javascript
 $$$Sample Request
-//You can make this call only for a loggedin user
-Appacitive.Users.sendResetPasswordEmail("{username}", "{subject for the mail}", function() {
-    alert("Password reset mail sent successfully"); 
-}, function(status) {
-    alert("Failed to reset password for user");
+Appacitive.Users.sendResetPasswordEmail("{username}", "{subject for the mail}").then(function(){
+  alert("Password reset mail sent successfully"); 
+});
+```
+
+!!!javascript
+** Custom Reset Password **
+
+You can also create a custom reset password page or provide a custom reset password page URL from our management portal.
+
+On setting custom URL, the reset password link in the email will redirect user to that URL with a reset password token appended in the query string.
+!!!
+
+```javascript
+$$$Example
+```
+```javascript
+//consider your url is 
+http://help.appacitive.com
+
+//after user clicks on the link, he'll be redirected to this url
+http://help.appacitive.com?token=dfwfer43243tfdhghfog909043094
+```
+!!!javascript
+The token provided in url can then be used to change the password for that user.
+
+So basically, following flow can be utilized for reset password
+
+1. Validate token specified in URL
+2. If valid then allow the user to enter his new password and save it
+!!!
+```javascript
+$$$Sample
+```
+```javascript
+//validate token
+Appacitive.Users.validateResetPasswordToken(token).then(function(user) {
+  //token is valid and json user object is returned for that token
+});
+
+//reset password
+Appacitive.Users.resetPassword(token, newPassword).then(function() {
+  //password for user has been updated successfully
 });
 ```
 
@@ -5857,7 +6057,7 @@ $$$Sample Response
 
 ``` javascript
 $$$Method 
-Appacitive.Email.sendRawEmail(email, successHandler, errorHandler);
+Appacitive.Email.sendRawEmail(email);
 ```
 ``` javascript
 $$$Sample Request
@@ -5881,7 +6081,7 @@ var email = {
     ishtml: false
 };
 
-Appacitive.Email.sendRawEmail(email, function (email) {
+Appacitive.Email.sendRawEmail(email).then(function (email) {
     alert('Successfully sent.');
 }, function(status) {
     alert('Email sending failed.')
@@ -6058,7 +6258,7 @@ await NewEmail
 ```
 ``` javascript
 $$$Method 
-Appacitive.Email.sendTemplatedEmail(email, successHandler, errorHandler);
+Appacitive.Email.sendTemplatedEmail(email);
 ```
 ``` javascript
 $$$Sample Request
@@ -6087,7 +6287,7 @@ var email = {
     ishtml: false
 };
 
-Appacitive.Email.sendTemplatedEmail(email, function (email) {
+Appacitive.Email.sendTemplatedEmail(email).then(function (email) {
     alert('Successfully sent.');
 }, function(status) {
     alert('Email sending failed.')
@@ -6203,7 +6403,7 @@ $$$Sample Response
 var device = new Appacitive.Object('device');
 device.set('devicetype', 'ios');
 device.set('devicetoken', 'c6ae0529f4752a6a0d127900f9e7c');
-device.save(function(obj) {
+device.save).then(function(obj) {
   alert('new device registered successfully!');
 }, function(status, obj){
   alert('error while registering!');
@@ -6339,7 +6539,7 @@ $$$Sample Response
 
 ``` javascript
 $$$Method 
-Appacitive.Push.send(options, successHandler, errorHandler);
+Appacitive.Push.send(options);
 ```
 ``` javascript
 $$$Sample Request
@@ -6367,7 +6567,7 @@ var options = {
     "expireafter": "100000" // Expiry in seconds
 }
 
-Appacitive.Push.send(options, function(notification) {
+Appacitive.Push.send(options).then(function(notification) {
     alert('Push notification sent successfully');
 }, function(status) {
     alert('Sending Push Notification failed.');
@@ -6460,7 +6660,7 @@ $$$Sample Response
 
 ``` javascript
 $$$Method 
-Appacitive.Push.send(options, successHandler, errorHandler);
+Appacitive.Push.send(options);
 ```
 ``` javascript
 $$$Sample Request
@@ -6489,7 +6689,7 @@ var options = {
     "expireafter": "100000" // Expiry in seconds
 }
 
-Appacitive.Push.send(options, function(notification) {
+Appacitive.Push.send(options).then(function(notification) {
     alert('Push notification sent successfully');
 }, function(status) {
     alert('Sending Push Notification failed.');
@@ -6614,7 +6814,7 @@ $$$Sample Response
 
 ``` javascript
 $$$Method 
-Appacitive.Push.send(options, successHandler, errorHandler);
+Appacitive.Push.send(options);
 ```
 ``` javascript
 $$$Sample Request
@@ -6647,7 +6847,7 @@ var options = {
     "expireafter": "100000" // Expiry in seconds
 }
 
-Appacitive.Push.send(options, function(notification) {
+Appacitive.Push.send(options).then(function(notification) {
     alert('Push notification sent successfully');
 }, function(status) {
     alert('Sending Push Notification failed.');
@@ -6742,7 +6942,7 @@ $$$Sample Response
 
 ``` javascript
 $$$Method 
-Appacitive.Push.send(options, successHandler, errorHandler);
+Appacitive.Push.send(options);
 ```
 ``` javascript
 $$$Sample Request
@@ -6775,7 +6975,7 @@ var options = {
     "expireafter": "100000" // Expiry in seconds
 }
 
-Appacitive.Push.send(options, function(notification) {
+Appacitive.Push.send(options).then(function(notification) {
     alert('Push notification sent successfully');
 }, function(status) {
     alert('Sending Push Notification failed.');
@@ -7407,7 +7607,7 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.File::save(successHandler, ErrorHandler);
+Appacitive.File::save();
 ```
 ``` javascript
 $$$Sample File Objects
@@ -7464,13 +7664,13 @@ string uploadUrl = await upload.GetUploadUrlAsync(30);
 ``` javascript
 $$$Sample Request
 // save it on server
-file.save(function(url) {
+file.save).then(function(url) {
   alert('Download url is ' + url);
 }, function(err) {
   //alert("Error uploading file");
 });
 
-//After save, the successHandler callback gets a url in response which can be saved in your object and is also reflected in the file object. 
+//After save, the success callback gets a url in response which can be saved in your object and is also reflected in the file object. 
 //This url is basically a download url which you could be used to render it in your DOM.
 
 //file object after upload
@@ -7545,7 +7745,7 @@ var downloadUrl = await download.GetDownloadUrl(30);
 ```
 ```javascript
 $$$Method
-Appacitive.File::getDownloadUrl(successHandler, errorHandler)
+Appacitive.File::getDownloadUrl()
 ```
 ```javascript
 $$$Sample Request
@@ -7555,7 +7755,7 @@ var file = new Appacitive.File({
 });
 
 // call to get download url
-file.getDownloadUrl(function(url) {
+file.getDownloadUrl).then(function(url) {
     alert("Download url:" + url);
     $("#imgUpload").attr('src',file.url);
 }, function(err) {
