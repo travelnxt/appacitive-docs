@@ -12,6 +12,17 @@ function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
+function s4() {
+  return Math.floor((1 + Math.random()) * 0x10000)
+             .toString(16)
+             .substring(1);
+};
+
+function guid() {
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+         s4() + '-' + s4() + s4() + s4();
+}
+
 setTimeout(function() {
 
 	var transform = function(file) {
@@ -38,7 +49,7 @@ setTimeout(function() {
 
 		    	var html = $.html();
 
-		    	html = replaceAll('__RevisionNoGoesHere__', 'test', html);
+		    	html = replaceAll('__RevisionNoGoesHere__', guid(), html);
 
 		    	require('fs').writeFile(path.resolve(htmlFile), html, function(err, data) {
 		    		if (err) throw err;
