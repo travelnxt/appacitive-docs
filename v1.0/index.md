@@ -133,7 +133,7 @@ In the next few sections we briefly describe some of the basic terms used in App
 
 Objects
 -------
-Objects represent your data stored inside the Appacitive platform. Every object has a dedicated type. This type is mapped to the schema that you create via the designer in your management console. If we were to use conventional databases as a metaphor, then a type would correspond to a table and an object would correspond to one row inside that table.
+Objects represent your data stored inside the Appacitive platform. Every object is mapped to the `type` that you create via the designer in your management console. If we were to use conventional databases as a metaphor, then a type would correspond to a table and an object would correspond to one row inside that table.
 
 The object api allows you to store, retrieve and manage all the data that you store inside Appacitive. You can retrieve individual records or lists of records based on a specific filter criteria.
 
@@ -146,7 +146,7 @@ System generated properties are fields used for housekeeping and storing meta-in
 <dl>
   <dt>\__id</dt>
   <dd><span>Unique time-series strictly <a href="http://en.wikipedia.org/wiki/Monotonic_function">monotonically</a> increasing id automatically assigned by the system on creation. This is immutable.</span></dd>
-  <dt>\__schematype</dt>
+  <dt>\__type</dt>
   <dd><span>The type of the object as designed by you via the type designer.</span></dd>
   <dt>\__createdby</dt>
   <dd><span>The id of the user that created the object. Incase a user token is provided during creation, then the created by will use the id of the corresponding user. The client can alternatively also provide this in the request.</span></dd>
@@ -161,13 +161,13 @@ System generated properties are fields used for housekeeping and storing meta-in
   <dt>\__utclastupdateddate</dt>
   <dd><span>The timestamp of the time when the object was last updated, stored in ISO 8601 format with millisecond precision (YYYY-MM-DDTHH:MM:SS.MMMZ).</span></dd>
   <dt>\__attributes</dt>
-  <dd><span>List of key value pair values that can be stored with the object and are not validated by the schema definition.</span></dd>
+  <dd><span>List of key value pair values that can be stored with the object and are not validated by the type definition.</span></dd>
 </dl>
 
 
 ** User defined properties ** 
 
-User defined properties are fields defined by you via the schema designer. These are exposed as fields directly on the object.
+User defined properties are fields defined by you via the type designer. These are exposed as fields directly on the object.
 
 ``` rest
 $$$sample object 
@@ -207,7 +207,7 @@ score.SetAttribute("team_color", "blue");
 ```
 
 ``` javascript
-var score = new Appacitive.Article({ schema: 'score' });
+var score = new Appacitive.Object({ __type: 'score' });
 score.set('difficulty', 'normal');
 score.set('level', 10);
 score.set('score', 1400);
@@ -242,7 +242,7 @@ Appacitive.SDK.APObject.SaveAsync();
 ```
 ``` javascript
 $$$Method
-Appacitive.Article::save(successHandler, errorHandler);
+Appacitive.Object::save(successHandler, errorHandler);
 ```
 
 ``` rest
@@ -265,7 +265,7 @@ await post.SaveAsync();
 ```
 ``` javascript
 $$$Sample Request
-var post = new Appacitive.Article('post');
+var post = new Appacitive.Object('post');
 post.set('title', 'sample post');
 post.set('text', 'This is a sample post.');
 post.save(function(){
@@ -282,7 +282,7 @@ $$$Sample Response
     "__type": "post",
     "__createdby": "System",
     "__lastmodifiedby": "System",
-    "__schemaid": "23514020251304802",
+    "__typeid": "23514020251304802",
     "__revision": "1",
     "__tags": [],
     "__utcdatecreated": "2013-07-31T10:45:15.1832474Z",
@@ -357,10 +357,10 @@ $$$Sample Response
 {
   "object": {
     "__id": "33017891581461312",
-    "__schematype": "post",
+    "__type": "post",
     "__createdby": "System",
     "__lastmodifiedby": "System",
-    "__schemaid": "23514020251304802",
+    "__typeid": "23514020251304802",
     "__revision": "1",
     "__tags": [],
     "__utcdatecreated": "2013-07-31T10:45:15.1832474Z",
@@ -400,16 +400,16 @@ Console.WriteLine("Fetched post with title {0} and text {1}.",
 
 ``` javascript
 $$$Method
-Appacitive.Article.get({
-  schema: 'type',    //mandatory
+Appacitive.Object.get({
+  __type: 'type',    //mandatory
   id: 'objectId',   //mandatory
   fields: []         //optional
 }, successHandler, errorHandler);
 ```
 ``` javascript
 $$$Sample Request
-Appacitive.Article.get({ 
-    schema: 'post',
+Appacitive.Object.get({ 
+    __type: 'post',
     id: '33017891581461312',
     fields: ['title']
 }, function(post) {
@@ -421,7 +421,7 @@ Appacitive.Article.get({
 
 
 //Retrieve post by `fetch`
-var post = new Appacitive.Article('post');
+var post = new Appacitive.Object('post');
 post.id('33017891581461312');
 post.fields(['title','text']);
 
@@ -474,10 +474,10 @@ $$$Sample Response
   "objects": [
     {
       "__id": "33017891581461312",
-      "__schematype": "post",
+      "__type": "post",
       "__createdby": "System",
       "__lastmodifiedby": "System",
-      "__schemaid": "23514020251304802",
+      "__typeid": "23514020251304802",
       "__revision": "1",
       "__tags": [],
       "__utcdatecreated": "2013-07-31T10:45:15.1832474Z",
@@ -490,10 +490,10 @@ $$$Sample Response
     },
     {
       "__id": "33017891581461313",
-      "__schematype": "post",
+      "__type": "post",
       "__createdby": "System",
       "__lastmodifiedby": "System",
-      "__schemaid": "23514020251304802",
+      "__typeid": "23514020251304802",
       "__revision": "1",
       "__tags": [],
       "__utcdatecreated": "2013-07-31T10:45:15.1832474Z",
@@ -539,16 +539,16 @@ foreach( var post in posts )
 
 ``` javascript
 $$$Method
-Appacitive.Article.multiGet({
-  schema: 'type',   //mandatory
+Appacitive.Object.multiGet({
+  type: 'type',   //mandatory
   ids: [],          //mandatory
   fields: []        //optional
 }, successHandler, errorHandler);
 ```
 ``` javascript
 $$$Sample Request
-Appacitive.Article.multiGet({ 
-    schema: 'post',
+Appacitive.Object.multiGet({ 
+    type: 'post',
     ids: ["33017891581461312", "33017891581461313"],
     fields: ["title"]
 }, function(posts) { 
@@ -561,7 +561,7 @@ Appacitive.Article.multiGet({
 #### Retrieving only specific fields for an object
 
 The fields parameter allows you to pick and choose the exact properties that you want the system to return in the response.
-This applies to both user and system defined properties. The ``__id``,``__schematype`` or ``__relationtype`` fields cannot be filtered 
+This applies to both user and system defined properties. The ``__id``,``__type`` or ``__relationtype`` fields cannot be filtered 
 out using this and will always be returned. To select specific fields you need to pass a list of the fields that you want the system to return.
 
 ``` rest
@@ -582,7 +582,7 @@ $$$Sample Response
 {
   "object": {
     "__id": "33017891581461312",
-    "__schematype": "post",
+    "__type": "post",
     "title": "test",
     "text": "This is a test post."
   },
@@ -617,16 +617,16 @@ Console.WriteLine("Fetched post with title {0} and text {1}.",
 
 ``` javascript
 $$$Method
-Appacitive.Article.get({
-  schema: 'type',    //mandatory
+Appacitive.Object.get({
+  type: 'type',    //mandatory
   id: 'objectId',   //mandatory
   fields: []         //optional
 }, successHandler, errorHandler);
 ```
 ``` javascript
 $$$Sample Request
-Appacitive.Article.get({ 
-    schema: 'post',
+Appacitive.Object.get({ 
+    type: 'post',
     id: '33017891581461312',
     fields: ['title','text']
 }, function(obj) {
@@ -686,10 +686,10 @@ $$$Sample Response
 {
   "object": {
     "__id": "33017891581461312",
-    "__schematype": "post",
+    "__type": "post",
     "__createdby": "System",
     "__lastmodifiedby": "System",
-    "__schemaid": "23514020251304802",
+    "__typeid": "23514020251304802",
     // revision number incremented
     "__revision": "2",
     "__tags": [
@@ -754,11 +754,11 @@ of all the fields.
 
 ``` javascript
 $$$Method
-Appacitive.Article::save(successHandler, errorHandler);
+Appacitive.Object::save(successHandler, errorHandler);
 ```
 ``` javascript
 $$$Sample Request
-var post = new Appacitive.Article({ schema: 'post', __id: '33017891581461312' });
+var post = new Appacitive.Object({ __type: 'post', __id: '33017891581461312' });
 
 // Update properties
 post.set('title', 'updated title');
@@ -827,11 +827,11 @@ $$$Sample Response
 
 ``` javascript
 $$$Method
-Appacitive.Article::del(successHandler, errorHandler);
+Appacitive.Object::del(successHandler, errorHandler);
 ```
 ``` javascript
 $$$Sample Request
-/* Delete a single article */
+/* Delete a single object */
 player.del(function() {
     alert('Deleted successfully');
 }, function(status, obj) {
@@ -891,16 +891,16 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Article.multiDelete({
-  schema: 'type', //mandatory
+Appacitive.Object.multiDelete({
+  type: 'type', //mandatory
   ids: [], //mandatory
 },successHandler, errorHandler);
 ```
 ``` javascript
 $$$Sample Request
 /*  Delete multiple objects. */
-Appacitive.Article.multiDelete({    
-    schema: 'player', //mandatory
+Appacitive.Object.multiDelete({    
+    type: 'player', //mandatory
     ids: ["14696753262625025", "14696753262625026"], //mandatory
 }, function() { 
     //successfully deleted all objects
@@ -960,7 +960,7 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Article::del(successHandler, errorHandler, true);
+Appacitive.Object::del(successHandler, errorHandler, true);
 
 $$$Sample Request
 //Setting the third argument to true will delete its connections if they exist
@@ -1229,7 +1229,7 @@ $$$Sample Request
 curl -X PUT \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-Apikey: {Your api key}" \
--d '{"__endpointa":{"label":"score","object":{"__schematype":"score","points":"150"}},"__endpointb":{"label":"player","objectid":"123445678"}}' \
+-d '{"__endpointa":{"label":"score","object":{"__type":"score","points":"150"}},"__endpointb":{"label":"player","objectid":"123445678"}}' \
 https://apis.appacitive.com/connection/my_score
 
 ```
@@ -1245,7 +1245,7 @@ $$$Sample Response
       "objectid": "37529356194677342",
       "object": {
         "__id": "37529356194677342",
-        "__schematype": "score",
+        "__type": "score",
         "__createdby": "System",
         "__lastmodifiedby": "System",
         "__revision": "1",
@@ -1291,7 +1291,7 @@ $$$Sample Request
 // The my_score relation defines two endpoints "player" and "score" for this information.
 
 //Create an instance of an object of type score. 
-var score = new Appacitive.Article('score');
+var score = new Appacitive.Object('score');
 score.set('points', 150);
 
 // existing player object.
@@ -1355,7 +1355,7 @@ $$$Sample Request
 curl -X PUT \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-Apikey: {Your api key}" \
--d '{"__endpointa":{"label":"score","object":{"__schematype":"score","points":"150"}},"__endpointb":{"label":"player", "object":{"__schematype":"player","name":"sirius"}}}' \
+-d '{"__endpointa":{"label":"score","object":{"__type":"score","points":"150"}},"__endpointb":{"label":"player", "object":{"__type":"player","name":"sirius"}}}' \
 https://apis.appacitive.com/connection/my_score
 
 ```
@@ -1371,7 +1371,7 @@ $$$Sample Response
       "objectid": "37529356194677342",
       "object": {
         "__id": "37529356194677342",
-        "__schematype": "score",
+        "__type": "score",
         "__createdby": "System",
         "__lastmodifiedby": "System",
         "__revision": "1",
@@ -1387,7 +1387,7 @@ $$$Sample Response
       "objectid": "37529356194677889",
       "object": {
         "__id": "37529356194677889",
-        "__schematype": "player",
+        "__type": "player",
         "__createdby": "System",
         "__lastmodifiedby": "System",
         "__revision": "1",
@@ -1428,11 +1428,11 @@ $$$Sample Request
 // The my_score relation defines two endpoints "player" and "score" for this information.
 
 //Create an instance of an object of type score. 
-var score = new Appacitive.Article('score');
+var score = new Appacitive.Object('score');
 score.set('points', 150);
 
 //Create an instance of an object of type player. 
-var player = new Appacitive.Article('player');
+var player = new Appacitive.Object('player');
 player.set('name', 'sirius');
 
 var connection = new Appacitive.Connection({
@@ -1728,7 +1728,7 @@ then you can simply try and retrieve that connection by specifying the type as "
   <dt>objectBid</dt>
   <dd>required<br/><span>Id of objectB</span></dd>
   <dt>label</dt>
-  <dd>optional<br/><span>For a relation between same schema and different endpoint labels this becomes mandatory</span></dd>
+  <dd>optional<br/><span>For a relation between same type and different endpoint labels this becomes mandatory</span></dd>
 </dl>
 
 ** Response **
@@ -1778,7 +1778,7 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Connection.getBetweenArticlesForRelation({
+Appacitive.Connection.getBetweenObjectsForRelation({
   relation: 'type', //mandatory
   objectAId : 'objectAId', //mandatory
   objectBId : 'objectBId', //mandatory
@@ -1792,7 +1792,7 @@ $$$Sample Request
 var idForJohn = "22322";
 var idForJane = "33422";
 
-Appacitive.Connection.getBetweenArticlesForRelation({ 
+Appacitive.Connection.getBetweenObjectsForRelation({ 
     relation: "friend", 
     objectAId : idForJohn, 
     objectBId : idForJane
@@ -1807,13 +1807,13 @@ Appacitive.Connection.getBetweenArticlesForRelation({
     alert('Could not fetch, probably because of an incorrect id');
 });
 
-//For a relation between same schema and different endpoint labels
+//For a relation between same type and different endpoint labels
 //'label' parameter becomes mandatory for the get call
 
-//'friend' is the relation between user schema
+//'friend' is the relation between user type
 //and 'me' and 'you' are the endpoint labels
 
-Appacitive.Connection.getBetweenArticlesForRelation({ 
+Appacitive.Connection.getBetweenObjectsForRelation({ 
     relation: "friend", 
     objectAId : "22322", 
     objectBId : "33422",
@@ -2160,7 +2160,7 @@ $$$Sample Response
   "nodes": [
     {
       "__id": "40440013641645242",
-      "__schematype": "user",
+      "__type": "user",
       "username" : "john.doe",
       ...
       // Connection information is available in the __edge node. 
@@ -2173,7 +2173,7 @@ $$$Sample Response
     },
     {
       "__id": "30440013682145242",
-      "__schematype": "user",
+      "__type": "user",
       "username" : "jane.doe",
       ...
       "__edge": {
@@ -2196,7 +2196,7 @@ $$$Sample Response
 
 ``` javascript
 $$$Method
-Appacitive.Article::fetchConnectedArticles({
+Appacitive.Object::fetchConnectedObjects({
   relation: 'type', //mandatory
   label: 'label',   //optional
   returnEdge: true,  //optional: default is true
@@ -2211,9 +2211,9 @@ Appacitive.Article::fetchConnectedArticles({
 ``` javascript
 $$$Sample Request
 // Get all users who have visited San Francisco (city object with id 636523636) 
-var city = new Appacitive.Article({ __id : '636523636', schema : 'city');
+var city = new Appacitive.Object({ __id : '636523636', __type : 'city');
 
-city.fetchConnectedArticles({ 
+city.fetchConnectedObjects({ 
   relation : 'visitor', //mandatory
   label: 'visitor', // optional
   returnEdge: true, // set to false to stop returning connection
@@ -2231,7 +2231,7 @@ city.fetchConnectedArticles({
     alert("code:" + status.code + "\nmessage:" + status.message);
 });
 
-/* On success, city object is populated with a visitor property in its children. So, city.children.visitor will give you a list of all visitors of Appacitive.Article type. These objects also contain a connection property which consists of its link properties with jane.*/
+/* On success, city object is populated with a visitor property in its children. So, city.children.visitor will give you a list of all visitors of Appacitive.Object type. These objects also contain a connection property which consists of its link properties with jane.*/
 ```
 
 ``` csharp
@@ -2344,7 +2344,7 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Connection.getBetweenArticles({
+Appacitive.Connection.getBetweenObjects({
   objectAId : 'objectAId', //mandatory
   objectBId : 'objectBId', //mandatory
   fields: [],                //optional
@@ -2362,7 +2362,7 @@ $$$Sample Request
 var idForJohn = "22322";
 var idForJane = "33422";
 
-Appacitive.Connection.getBetweenArticles({ 
+Appacitive.Connection.getBetweenObjects({ 
     objectAId : idForJohn, 
     objectBId : idForJane,
 	  fields: ["__id"]
@@ -2573,13 +2573,13 @@ $$$Sample Response
   "objects": [
     {
       "__id": "33017891581461312",
-      "__schematype": "player",
+      "__type": "player",
       "firstname": "John",
       "lastname" : "Smith"
     },
     {
       "__id": "33017891581461313",
-      "__schematype": "player",
+      "__type": "player",
       "firstname": "John",
       "lastname" : "Doe"
     }
@@ -2604,7 +2604,7 @@ $$$Sample Request
 var filter = Appacitive.Filter.Property("firstname").equalTo("John");
 
 var query = new Appacitive.Queries.FindAllQuery(
-  schema: 'player', //mandatory 
+  type: 'player', //mandatory 
   //or relation: 'freinds'
   fields: [*],      //optional: returns all user fields only
   filter: filter,   //optional  
@@ -2616,7 +2616,7 @@ var query = new Appacitive.Queries.FindAllQuery(
 
 // success callback
 var successHandler = function(players) {
-  //`players` is `PagedList` of `Article`
+  //`players` is `PagedList` of `Object`
 
   console.log(players.total); //total records for query
   console.log(players.pageNumber); //pageNumber for this set of records
@@ -2836,7 +2836,7 @@ var greaterThanQuery = Query.Property("birthdate").IsGreaterThan(date);
 ```
 
 ### Geo queries
-You can specify a property type as a `geography` type for a given schema or relation. These properties are essential latitude-longitude pairs.
+You can specify a property type as a `geography` type for a given type or relation. These properties are essential latitude-longitude pairs.
 Such properties support geo queries based on a user defined radial or polygonal region on the map. These are extremely useful for making map based or location based searches.
 E.g., searching for a list of all restaurants within 20 miles of a given user's locations.
 
@@ -2848,7 +2848,7 @@ A radial search requires the following parameters.
 
 <dl>
   <dt>type</dt>
-  <dd>required<br/><span>The schema or relation type on which to apply the filter.
+  <dd>required<br/><span>The type or relation on which to apply the filter.
   <dt>property name</dt>
   <dd>required<br/><span>The name of the geography property on which to apply the filter.
   <dt>center geocode</dt>
@@ -2886,13 +2886,13 @@ $$$Sample Response
   "objects": [
     {
       "__id": "33017891581461312",
-      "__schematype": "hotel",
+      "__type": "hotel",
       "name": "Hotel BeachFront",
       "geocode" : "36.1749687195,-115.1372222900"
     },
     {
       "__id": "33017891581461313",
-      "__schematype": "hotel",
+      "__type": "hotel",
       "firstname": "Hotel SeaView",
       "lastname" : "36.1749687195,-115.1372222900023"
     }
@@ -2914,7 +2914,7 @@ var radialFilter = Appacitive.Filter.Property('location')
 
 //create query object
 var query = new Appacitive.Queries.FindAllQuery({
-  schema: 'hotel',
+  type: 'hotel',
   filter: radialFilter
 });
 
@@ -2940,7 +2940,7 @@ This is typically useful when you want a finer grained control on the shape of t
 
 <dl>
   <dt>type</dt>
-  <dd>required<br/><span>The schema or relation type on which to apply the filter.
+  <dd>required<br/><span>The type or relation on which to apply the filter.
   <dt>property name</dt>
   <dd>required<br/><span>The name of the geography property on which to apply the filter.
   <dt>geocodes</dt>
@@ -2978,13 +2978,13 @@ $$$Sample Response
   "objects": [
     {
       "__id": "33017891581461312",
-      "__schematype": "hotel",
+      "__type": "hotel",
       "name": "Hotel BeachFront",
       "geocode" : "36.1749687195,-114.1372222900"
     },
     {
       "__id": "33017891581461313",
-      "__schematype": "hotel",
+      "__type": "hotel",
       "firstname": "Hotel SeaView",
       "lastname" : "37.1749687195,-114.1372222900023"
     }
@@ -3011,7 +3011,7 @@ var polygonFilter = Appacitive.Filter.Property("location")
 
 //create query object
 var query = new Appacitive.Queries.FindAllQuery({
-  schema: 'hotel',
+  type: 'hotel',
   filter: polygonFilter
 });
 
@@ -3043,7 +3043,7 @@ For data of a given type, you can query for all records that are tagged with one
 ** Parameters ** 
 <dl>
   <dt>type</dt>
-  <dd>required<br/><span>The schema or relation type on which to search.
+  <dd>required<br/><span>The type or relation on which to search.
   <dt>tags</dt>
   <dd>required<br/><span>List of tags to be searched for.
 </dl>
@@ -3078,14 +3078,14 @@ $$$Sample Response
   "objects": [
     {
       "__id": "33017891581461312",
-      "__schematype": "message",
+      "__type": "message",
       "__tags": ["personal"],
       "title": "Personal message",
       "text": "This is a test personal message."
     },
     {
       "__id": "33017891581461313",
-      "__schematype": "message",
+      "__type": "message",
       "__tags": ["private","test"],
       "title": "Private message test",
       "text": "This is a test private message."
@@ -3116,7 +3116,7 @@ var tagFilter = Appacitive.Filter
 
 //create the query
 var query = new Appacitvie.Filter.FindAllQuery({
-  schema: 'message',
+  type: 'message',
   filter: tagFilter
 });
 
@@ -3135,7 +3135,7 @@ An alternative variation of the above tag based search allows you to query for a
 ** Parameters ** 
 <dl>
   <dt>type</dt>
-  <dd>required<br/><span>The schema or relation type on which to search.
+  <dd>required<br/><span>The type or relation on which to search.
   <dt>tags</dt>
   <dd>required<br/><span>List of tags to be searched for.
 </dl>
@@ -3169,7 +3169,7 @@ $$$Sample Response
   "objects": [
     {
       "__id": "33017891581124312",
-      "__schematype": "message",
+      "__type": "message",
       "__tags": ["personal", "test"],
       "title": "Personal test message",
       "text": "This is a test personal message."
@@ -3200,7 +3200,7 @@ var tagFilter = Appacitive.Filter
 
 //create the query
 var query = new Appacitvie.Filter.FindAllQuery({
-  schema: 'message',
+  type: 'message',
   filter: tagFilter
 });
 
@@ -3222,7 +3222,7 @@ how each search term should be used. This is detailed below.
 ** Parameters ** 
 <dl>
   <dt>type</dt>
-  <dd>required<br/><span>The schema or relation type on which to search.
+  <dd>required<br/><span>The type or relation on which to search.
   <dt>free text terms</dt>
   <dd>required<br/><span>List of free text terms to search for.
 </dl>
@@ -3263,13 +3263,13 @@ $$$Sample Response
   "objects": [
     {
       "__id": "38705090736030853",
-      "__schematype": "photo",
+      "__type": "photo",
       "url": "http://www.photosparis.com/images/paris_black_and_white_night/paris_champs_elysees_3_bwn.jpg",
       "description": "Champs Elysees"
     },
     {
       "__id": "38705134668218897",
-      "__schematype": "photo",
+      "__type": "photo",
       "url": "http://www.photosparis.com/images/paris_black_and_white/paris_parc_palais_royal_bw.jpg",
       "description": "Parc Palais Royale"
     }
@@ -3292,7 +3292,7 @@ $$$Sample Response
 ```javascript
 //create the query
 var query = new Appacitvie.Filter.FindAllQuery({
-  schema: 'message',
+  type: 'message',
   freeText: 'champs palais'
 });
 
@@ -3333,7 +3333,7 @@ $$$Sample Response
   "objects": [
     {
       "__id": "38705319445135958",
-      "__schematype": "photo",
+      "__type": "photo",
       "__tags": [
         "florence",
         "italy"
@@ -3360,7 +3360,7 @@ $$$Sample Response
 ```javascript
 //create a query
 var query = new Appacitive.Queries.findAllQuery({
-  schema: 'photo',
+  type: 'photo',
   pageSize: 30, //default: 50
   pageNumber: 4, //default: 1
   orderBy: '__id', //default: __utclastupdateddate
@@ -3378,7 +3378,7 @@ query.isAscending(false);
 
 // success callback
 var successHandler = function(photos) {
-  //`photos` is `PagedList` of `Article`
+  //`photos` is `PagedList` of `Object`
 
   console.log(photos.total); //total records for query
   console.log(photos.pageNumber); //pageNumber for this set of records
@@ -3422,7 +3422,7 @@ var complexFilter =
       );
 //create query object
 var query = new Appacitive.Queries.FindAllQuery({
-  schema: 'player'
+  type: 'player'
 });
 
 //set filter in query
@@ -3660,12 +3660,12 @@ query.fetch(function(results) {
 User management
 ======
 
-Users represent your apps' users. Appacitive provides API(s) to store and manage details and data about your users out of the box through an inbuilt schema called `user`.
+Users represent your apps' users. Appacitive provides API(s) to store and manage details and data about your users out of the box through an inbuilt type called `user`.
 
 Users
 ------------
 
-This inbuilt schema `user` behaves just like any other schema created by you with added features like authentication, location tracking, password management, session management and third-party social integration using OAuth 1.0 or OAuth 2.0.
+This inbuilt type `user` behaves just like any other type created by you with added features like authentication, location tracking, password management, session management and third-party social integration using OAuth 1.0 or OAuth 2.0.
 
 `Note` : While working with user API(s) you need to pass an additional HTTP header called `Appacitive-User-Auth` with its value set to a valid user `session token` generated for that user.
 
@@ -3673,8 +3673,8 @@ This inbuilt schema `user` behaves just like any other schema created by you wit
 
 ** System generated properties ** 
 
-The `user` object contains all the `system defined properties` that you would find in an object of any schema like `__id`, `__schematype`, `__createdby`, `__lastmodifiedby`, `__utcdatecreated`, `__utclastupdateddate`, `__revision`, `__tags` and `__attributes`.  
-It also has some additional `pre-defined` properties to provide the added user management features, and you can also add more properties to the `user` schema the same way you would add properties to any other schema using the management portal. 
+The `user` object contains all the `system defined properties` that you would find in an object of any type like `__id`, `__type`, `__createdby`, `__lastmodifiedby`, `__utcdatecreated`, `__utclastupdateddate`, `__revision`, `__tags` and `__attributes`.  
+It also has some additional `pre-defined` properties to provide the added user management features, and you can also add more properties to the `user` type the same way you would add properties to any other type using the management portal. 
 
 The additional pre-defined properties are as follows.
 
@@ -3709,10 +3709,10 @@ The additional pre-defined properties are as follows.
 $$$sample object 
 {
   "__id": "34889377044890389",
-  "__schematype": "user",
+  "__type": "user",
   "__createdby": "System",
   "__lastmodifiedby": "System",
-  "__schemaid": "34888670844153416",
+  "__typeid": "34888670844153416",
   "__revision": "1",
   "__tags": ["tall", "male"],
   "__utcdatecreated": "2013-08-21T02:31:42.8498473Z",
@@ -3789,10 +3789,10 @@ $$$Sample Response
 {
   "user": {
     "__id": "34889981737698423",
-    "__schematype": "user",
+    "__type": "user",
     "__createdby": "System",
     "__lastmodifiedby": "System",
-    "__schemaid": "34888670847828365",
+    "__typeid": "34888670847828365",
     "__revision": "1",
     "__tags": [
       "male"
@@ -3945,10 +3945,10 @@ $$$Sample Response
 {
   "user": {
     "__id": "34889981737698423",
-    "__schematype": "user",
+    "__type": "user",
     "__createdby": "System",
     "__lastmodifiedby": "System",
-    "__schemaid": "34888670847828365",
+    "__typeid": "34888670847828365",
     "__revision": "1",
     "__tags": [
       "newuser"
@@ -4017,10 +4017,10 @@ $$$Sample Response
 {
   "user": {
     "__id": "34889981737698423",
-    "__schematype": "user",
+    "__type": "user",
     "__createdby": "System",
     "__lastmodifiedby": "System",
-    "__schemaid": "34888670847828365",
+    "__typeid": "34888670847828365",
     "__revision": "1",
     "__tags": [
       "newuser"
@@ -4125,10 +4125,10 @@ $$$Sample Response
 {
   "user": {
     "__id": "34889981737698423",
-    "__schematype": "user",
+    "__type": "user",
     "__createdby": "System",
     "__lastmodifiedby": "System",
-    "__schemaid": "34888670847828365",
+    "__typeid": "34888670847828365",
     "__revision": "1",
     "__utcdatecreated": "2013-08-21T02:41:19.5142397Z",
     "__utclastupdateddate": "2013-08-21T02:41:19.5142397Z",
@@ -4481,10 +4481,10 @@ $$$Sample Response
   "token": "SThEdVFBc01ZRlR0N2ZEajRjNGV6UjhDREU1UWNxVURsK0E4bmZUQmYyOVdnbVlIdFhHQjZ6dlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa29LMWowMkg1c0trMXZxemFCS2dTaTNJaVpNRlBNKzdSZ3Y5OGlvT2hoRkMzd3dmTU5qcGtNRDN4R0Fzd3JwaU5jTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==",
   "user": {
     "__id": "34912447775245454",
-    "__schematype": "user",
+    "__type": "user",
     "__createdby": "System",
     "__lastmodifiedby": "System",
-    "__schemaid": "34888670847828365",
+    "__typeid": "34888670847828365",
     "__revision": "1",
     "__tags": [],
     "__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
@@ -4607,10 +4607,10 @@ $$$Sample Response
   "token": "SThEdVFBc01ZRlR0N2ZEajRjNGV6UjhDREU1UWNxVURsK0E4bmZUQmYyOVdnbVlIdFhHQjZ6dlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa29LMWowMkg1c0trMXZxemFCS2dTaTNJaVpNRlBNKzdSZ3Y5OGlvT2hoRkMzd3dmTU5qcGtNRDN4R0Fzd3JwaU5jTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==",
   "user": {
     "__id": "34912447775245454",
-    "__schematype": "user",
+    "__type": "user",
     "__createdby": "System",
     "__lastmodifiedby": "System",
-    "__schemaid": "34888670847828365",
+    "__typeid": "34888670847828365",
     "__revision": "1",
     "__tags": [],
     "__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
@@ -4676,10 +4676,10 @@ $$$Sample Response
   "token": "SThEdVFBc01ZRlR0N2ZEajRjNGV6UjhDREU1UWNxVURsK0E4bmZUQmYyOVdnbVlIdFhHQjZ6dlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa29LMWowMkg1c0trMXZxemFCS2dTaTNJaVpNRlBNKzdSZ3Y5OGlvT2hoRkMzd3dmTU5qcGtNRDN4R0Fzd3JwaU5jTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==",
   "user": {
     "__id": "34912447775245454",
-    "__schematype": "user",
+    "__type": "user",
     "__createdby": "System",
     "__lastmodifiedby": "System",
-    "__schemaid": "34888670847828365",
+    "__typeid": "34888670847828365",
     "__revision": "1",
     "__tags": [],
     "__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
@@ -4794,10 +4794,10 @@ $$$Sample Response
 {
   "user": {
     "__id": "34912447775245454",
-    "__schematype": "user",
+    "__type": "user",
     "__createdby": "System",
     "__lastmodifiedby": "System",
-    "__schemaid": "34888670847828365",
+    "__typeid": "34888670847828365",
     "__revision": "1",
     "__tags": [],
     "__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
@@ -4882,10 +4882,10 @@ $$$Sample Response
 {
   "user": {
     "__id": "34912447775245454",
-    "__schematype": "user",
+    "__type": "user",
     "__createdby": "System",
     "__lastmodifiedby": "System",
-    "__schemaid": "34888670847828365",
+    "__typeid": "34888670847828365",
     "__revision": "1",
     "__tags": [],
     "__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
@@ -4979,10 +4979,10 @@ $$$Sample Response
 {
   "user": {
     "__id": "34912447775245454",
-    "__schematype": "user",
+    "__type": "user",
     "__createdby": "System",
     "__lastmodifiedby": "System",
-    "__schemaid": "34888670847828365",
+    "__typeid": "34888670847828365",
     "__revision": "1",
     "__tags": [],
     "__utcdatecreated": "2013-08-21T08:38:24.0000000Z",
@@ -5080,10 +5080,10 @@ $$$Sample Response
 {
   "user": {
     "__id": "34889981737698423",
-    "__schematype": "user",
+    "__type": "user",
     "__createdby": "System",
     "__lastmodifiedby": "System",
-    "__schemaid": "34888670847828365",
+    "__typeid": "34888670847828365",
     "__revision": "2",
     "__tags": [
       "coffee.lover",
@@ -5142,8 +5142,8 @@ Searching for users follows all the same filtering principles as searching for o
 
 ``` javascript
 $$$Method
-Appacitive.Article.findAll({
-  schema: 'user', //mandatory
+Appacitive.Object.findAll({
+  type: 'user', //mandatory
   fields: [],       //optional
   filter: {Appacitive.Filter obj}, //optional  
   pageNumber: 1 ,   //optional: default is 1
@@ -5154,8 +5154,8 @@ Appacitive.Article.findAll({
 ```
 ``` javascript
 $$$Sample Request
-Appacitive.Article.FindAll({
-  schema: 'user',
+Appacitive.Object.FindAll({
+  type: 'user',
   fields: ["username", "firstname", "email"]
 }, function(users) {
   //users is an array of Appacitive.User objects
@@ -6168,10 +6168,10 @@ $$$Sample Response
 {
   "device": {
     "__id": "40632379999653094",
-    "__schematype": "device",
+    "__type": "device",
     "__createdby": "System",
     "__lastmodifiedby": "System",
-    "__schemaid": "38812996656563683",
+    "__typeid": "38812996656563683",
     "__revision": "1",
     "__tags": [
       "tag1"
@@ -6200,7 +6200,7 @@ $$$Sample Response
 ```
 
 ```javascript
-var device = new Appacitive.Article('device');
+var device = new Appacitive.Object('device');
 device.set('devicetype', 'ios');
 device.set('devicetoken', 'c6ae0529f4752a6a0d127900f9e7c');
 device.save(function(obj) {
