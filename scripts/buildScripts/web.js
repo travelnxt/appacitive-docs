@@ -4,6 +4,14 @@ var cheerio = require('cheerio');
 var path = require('path')
 var Flatdoc = require('./flatdoc.js');
 
+function replaceAll(find, replace, str) {
+  return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+}
+
+function escapeRegExp(str) {
+  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
 setTimeout(function() {
 
 	var transform = function(file) {
@@ -28,7 +36,11 @@ setTimeout(function() {
 		    	$('[role~="flatdoc-menu"]', root).html(el['menu']);	
 		    	$('script[id~="scriptFlatdocReady"]').html('$(function(){ $(document).trigger("flatdoc:ready") });');
 
-		    	require('fs').writeFile(path.resolve(htmlFile), $.html(), function(err, data) {
+		    	var html = $.html();
+
+		    	html = replaceAll('__RevisionNoGoesHere__', 'test', html);
+
+		    	require('fs').writeFile(path.resolve(htmlFile), html, function(err, data) {
 		    		if (err) throw err;
 
   					console.log(htmlFile + " saved");
