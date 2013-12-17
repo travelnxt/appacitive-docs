@@ -259,7 +259,7 @@ body.no-literate .content pre > code { -webkit-overflow-scrolling: touch; }
         body:not(.no-literate) .content > h3, body:not(.no-literate) .content > div > h3,
         body:not(.no-literate) .content > h4, body:not(.no-literate) .content > div > h4 { clear: both; width: 96%; }
         body:not(.no-literate) .content > pre,
-        body:not(.no-literate) .content > blockquote, body:not(.no-literate) .content > div > blockquote { width: 380px; padding: 10px 5px 4px 20px; float: right; clear: right; -ms-word-wrap: break-word; word-wrap: break-word; }
+        body:not(.no-literate) .content > blockquote, body:not(.no-literate) .content > div > blockquote { width: 380px; padding: 10px 5px 4px 20px; float: right; clear: right; -ms-word-wrap: break-word; word-wrap: break-word;white-space: pre-wrap }
             body:not(.no-literate) .content > pre + p, body:not(.no-literate) .content div > pre + p,
             body:not(.no-literate) .content > blockquote + p, body:not(.no-literate) .content > div > blockquote + p,
             body:not(.no-literate) .content > pre + ul, body:not(.no-literate) .content div > pre + p,
