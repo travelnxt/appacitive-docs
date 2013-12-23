@@ -143,6 +143,20 @@ App.Initialize(Net45.WindowsHost.Instance,
                    "{Your api key}", 
                     Environment.Live);
 ```
+``` python
+@requires_authorization
+def somefunc(param1='', param2=0):
+    r'''A docstring'''
+    if param1 > param2: # interesting
+        print 'Gre\'ater'
+    return (param2 - param1 + 1) or None
+
+class SomeClass:
+    pass
+
+>>> message = '''interpreter
+... prompt'''
+```
 ``` rest
 // The header information includes the api key and the environment (sandbox in this example)
 curl -X GET \
