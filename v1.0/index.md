@@ -143,20 +143,7 @@ App.Initialize(Net45.WindowsHost.Instance,
                    "{Your api key}", 
                     Environment.Live);
 ```
-``` python
-@requires_authorization
-def somefunc(param1='', param2=0):
-    r'''A docstring'''
-    if param1 > param2: # interesting
-        print 'Gre\'ater'
-    return (param2 - param1 + 1) or None
 
-class SomeClass:
-    pass
-
->>> message = '''interpreter
-... prompt'''
-```
 ``` rest
 // The header information includes the api key and the environment (sandbox in this example)
 curl -X GET \
@@ -4240,6 +4227,16 @@ var user = new User
 };
 await user.SaveAsync();
 ```
+``` python
+//Create a User
+user = AppacitiveUser()
+user.username = 'john.doe'
+user.firstname = 'John'
+user.email = 'john.doe@appacitive.com'
+user.password = 'p@ssw0rd'
+
+response = user.create()
+```
 
 The `__createdby` and `__lastmodifiedby` properties are set to `System`. They will be set to a user id if you use another user's `session token` to perform actions on this user.
 The `__revision` is initially set to 1 when the user is created. This number gets incremented by 1 everytime you perform a successful update operation on the user object.
@@ -4943,6 +4940,23 @@ var creds = new UsernamePasswordCredentials("username", "password")
 var userSession = await App.LoginAsync(credentials);
 var user = userSession.LoggedInUser;  //Logged in user
 ```
+``` python
+//Authenticating user by `username` and `password`
+user = AppacitiveUser()
+user.username = 'john.doe'
+user.firstname = 'John'
+user.email = 'john.doe@appacitive.com'
+user.password = 'p@ssw0rd'
+
+response = user.create()
+
+response = AppacitiveUser.authenticate_user('john.doe', 'p@ssw0rd', expiry=60 * 15)
+logged_in_user = response.user
+token = response.token
+
+# Another way of autenticating the user
+response = user.authenticate('p@ssw0rd')
+```
 ``` rest
 $$$Method
 POST https://apis.appacitive.com/user/authenticate
@@ -5420,6 +5434,12 @@ $$$Sample Response
 var user = await Users.GetByUsernameAsync("john.doe");
 ```
 
+``` python
+//Get User by `username`
+response = AppacitiveUser.get_by_username('john.doe')
+user = response.user
+```
+
 ``` javascript
 $$$Method
 Appacitive.Users.getUserByUsername('{{username}}');
@@ -5463,6 +5483,11 @@ The `useridtype` query string parameter is set to `token`.
 ``` csharp
 //  Get logged in User
 var loggedInUser = await Users.GetLoggedInUserAsync();
+```
+``` python
+//  Get logged in User
+response = AppacitiveUser.get_logged_in_user()
+user = response.user
 ```
 ``` rest
 $$$Method
@@ -5624,6 +5649,18 @@ user.FirstName = "jane";
 user.Set<string>("city", "New York"); 
 await user.SaveAsync();
 ```
+
+``` python
+# Get the user which needs to be updated
+response = AppacitiveUser.get_by_id('65464576879867989')
+user = response.user
+# Update certain properties
+user = AppacitiveUser()
+user.firstname = 'Jane'
+user.set_property('city', 'New York')
+
+update_response = user.update()
+```
 ``` javascript
 $$$Method
 Appacitive.User::save()
@@ -5676,6 +5713,17 @@ var query = BooleanOperator.Or(new[]{
                           Query.Property("lastname").Like("*" + token + "*")
                  });
 var users = await Users.FindAllAsync(query.ToString());
+```
+
+``` python
+firstname_filter = PropertyFilter.like('firstname', '*john*')
+lastname_filter = PropertyFilter.like('lastname', '*john*')
+
+query = AppacitiveQuery()
+query.filter = BooleanOperator.or_query([firstname_filter, lastname_filter])
+
+response = AppacitiveUser.find(query)
+users = response.users
 ```
 
 ### Deleting a user
@@ -5751,6 +5799,9 @@ Appacitive.Users.deleteUser('1000').then(function() {
     // delete failed
 });
 ```
+``` python
+user.delete(delete_connections=False)
+```
 
 #### Delete user by username
 
@@ -5800,7 +5851,9 @@ $$$Sample Response
 ``` javascript
 $$$NOT SUPPORTED
 ```
-
+``` python
+response = AppacitiveUser.delete_by_username('john.doe', delete_connections=False)
+```
 #### Delete user by user token
 
 Here you can delete a user by his session token. 
@@ -5858,6 +5911,10 @@ Appacitive.Users.deleteCurrentUser().then(function() {
 }, function(status) {
     // delete failed
 });
+```
+
+``` python
+response = AppacitiveUser.delete_logged_in_user(delete_connections=False)
 ```
 
 ### Location Tracking
@@ -5927,7 +5984,9 @@ Appacitive.Users.currentUser().checkin(new Appacitive.GeoCoord(18.57, 75.55)).th
   alert("Checked in successfully");
 });
 ```
-
+``` python
+response = user.checkin(10.10, 20.20)
+```
 ### Session Management
 
 
@@ -5965,7 +6024,10 @@ Appacitive.Users.setCurrentUser(user, token);
 //Now current user points to `john.doe`
 console.log(Appacitive.Users.current().get('__id'));
 ```
-
+```  python
+ApplicationContext.set_logged_in_user(user)
+ApplicationContext.set_user_token(token)
+```
 #### Validate session token
 
 Once you create a session `token` for a user using one of the aunthenticating mechanisms, you may want to validate whether the token is a valid token or not in subsequent api calls.
@@ -6035,7 +6097,10 @@ Appacitive.Users.validateCurrentUser(true).then(function(isValid) {
     // This method also sets the current user for that token
 }); // set to true to validate usertoken making an apicall
 ```
-
+``` python
+AppacitiveUser.authenticate_user('username', 'password')
+response = AppacitiveUser.validate_session()
+```
 
 #### Invalidate session
 
@@ -6100,6 +6165,10 @@ Appacitive.Users.current().logout().then(function() {
     // this will now be null
     var cUser = Appacitive.Users.current();  
 });
+```
+``` python
+AppacitiveUser.authenticate_user('username', 'password')
+response = AppacitiveUser.invalidate_session()
 ```
 
 ### Password Management
@@ -6177,7 +6246,11 @@ Appacitive.Users.current().updatePassword('{oldPassword}','{newPassword}').then(
   alert("Password updated successfully"); 
 });
 ```
-
+``` python
+response = AppacitiveUser.get_by_username('john.doe')
+user = response.user
+update_pwd_response = user.update_password('old_password', 'new_password')
+```
 
 #### Forgot password
 
@@ -6244,7 +6317,9 @@ Appacitive.Users.sendResetPasswordEmail("{username}", "{subject for the mail}").
   alert("Password reset mail sent successfully"); 
 });
 ```
-
+``` python
+response = AppacitiveUser.send_reset_password_email('username', 'email subject')
+```
 !!!javascript
 ** Custom Reset Password **
 
@@ -6448,7 +6523,15 @@ await NewEmail
 
 
 ```
- 
+``` python
+response = AppacitiveEmail.send_raw_email(['sathley@appacitive.com'], 'hello from py sdk', 'Wazza!', smtp={
+        "username": "sathley@appacitive.com",
+		"password": "########",
+		"host": "smtp.gmail.com",
+		"port": 465,
+		"enablessl": True
+    }, from_email='sathley@appacitive.com')
+```
 Sending a templated email
 ------------
 
@@ -6626,7 +6709,9 @@ Appacitive.Email.sendTemplatedEmail(email).then(function (email) {
     alert('Email sending failed.')
 });
 ```
-
+``` python
+response = AppacitiveEmail.send_templated_email(to=['sathley@appacitive.com'],subject='Subject', template_name='template_name', template_fillers={}, cc=[], bcc=[])
+```
 Push
 =======
 Push is a great way to send timely and relevant targetted messages to users of your app and enhance their overall experience and keep them informed of the latest developements on your app.
@@ -6744,6 +6829,26 @@ device.save).then(function(obj) {
 ```
 
 ```csharp
+
+Device device = new Device(DeviceType.iOS)
+            {
+                DeviceToken = "c6ae0529f4752a6a0d127900f9e7c",
+                Location = new Geocode(10,10),
+            };
+            device.Channels.Add("channel1");
+            device.Channels.Add("channel2");
+            await device.SaveAsync();
+``` 
+
+```python
+device = AppacitiveDevice()
+device.devicetoken = 'c6ae0529f4752a6a0d127900f9e7c'
+device.devicetype = 'ios'
+
+device.channels = ['channel1', 'channel2']
+
+response = device.register()
+```
 
 Device device = new Device(DeviceType.iOS)
             {
@@ -6937,7 +7042,10 @@ await PushNotification
       .SendAsync();
 
 ```
-
+``` python
+response = AppacitivePushNotification.broadcast(data={}, platform_options={}, expire_after=None)
+push_id = response.id
+```
 ###Sending a Query based Push
 
 You can send a push depending on certain filters.
@@ -7994,6 +8102,12 @@ var upload = new FileUpload("image/jpeg");
 string uploadUrl = await upload.GetUploadUrlAsync(30);
 //Custom logic to upload file
 ```
+
+``` python
+response = AppacitiveFile.get_upload_url('image/png', 'my_selfie', expires=15)
+url = response.url
+file_id = response.id
+```
 ``` javascript
 $$$Sample Request
 // save it on server
@@ -8095,7 +8209,10 @@ file.getDownloadUrl).then(function(url) {
     alert("Downloading file");
 });
 ```
-
+``` python
+response = AppacitiveFile.get_download_url('my_selfie',  expires=15)
+download_url = response.url
+```
 You can now download the file by making a GET request to the `pre-signed` download `url` in the response object. 
 No additional headers are required. For more details, refer to <a href="http://aws.amazon.com/documentation/s3/">Amazon S3 documentation</a>. 
 Url is valid for 1 minute by default, but if you want to increase the expiry time set the `expires` query string parameter while retreiving the download url. 
@@ -8139,7 +8256,9 @@ $$$Sample Response
   }
 }
 ```
-
+``` python
+response = AppacitiveFile.delete_file('my_selfie')
+```
 Update a file
 --------------
 You can update a previously uploaded file for your app by using it's unique file name and re-uploading another file in its place.
