@@ -257,11 +257,23 @@ score.set('score', 1400);
 score.attr('is_first_time_user', 'true');
 score.attr('team_color', 'blue');
 
-// Add Tage
+// Add Tags
 score.addTag("amateur");
 score.addtag("unverified")
 ```
 
+``` python
+score = AppacitiveObject('score')
+score.set_property('difficulty', 'normal')
+score.set_property('level', 10)
+score.set_property('score', 1400)
+
+score.set_attribute('is_first_time_user', 'true')
+score.set_attribute('team_color', 'blue')
+
+score.add_tag('amateur')
+score.add_tags(['unverified', 'right_handed'])
+```
 
 ### Create a new object
 
@@ -290,6 +302,10 @@ Appacitive.SDK.APObject.SaveAsync();
 ``` javascript
 $$$Method
 Appacitive.Object::save();
+```
+
+``` python
+response = score.create()
 ```
 
 ``` rest
@@ -328,6 +344,22 @@ post.save().then(function(){
 }, function(status){
   alert('error while saving!');
 });
+```
+
+``` python
+post = AppacitiveObject('post')
+post.set_property('title', 'Python Programming Language')
+post.set_property('text', 'Python is a programming language that lets you work more quickly and integrate your systems more effectively.')
+
+post.set_attribute('is_verified', 'false')
+
+post.add_tag('intro')
+post.add_tags(['python', 'technology'])
+
+response = post.create()
+
+# response object contains the status of the create call
+# if successful, populates the post object with system-defined properties like __id, __createdBy etc.
 ```
 ``` rest
 $$$Sample Response
@@ -451,6 +483,17 @@ Console.WriteLine("Fetched post with title {0} and text {1}.",
   post.Get<string>("title"),
   post.Get<string>("text")
   );
+```
+``` python
+$$$Method
+@classmethod
+def get(cls, object_type, object_id, fields=None):
+)
+```
+``` python
+$$$Sample Request
+post = AppacitiveObject.get('post', '33017891581461312')
+print 'Fetched post with title %s and text %s' % (post.get_property('title'), post.get_property('text'))
 ```
 
 ``` javascript
@@ -592,6 +635,20 @@ foreach( var post in posts )
 }
 ```
 
+``` python
+$$$Method
+@classmethod
+def multi_get(cls, object_type, object_ids, fields=None):
+```
+``` python
+$$$Sample Request
+object_ids = ['33017891581461312', '33017891581461313']
+posts = AppacitiveObject.multi_get('post', object_ids)
+
+for post in posts:
+    print 'Fetched post with title %s and text %s' % (post.get_property('title'), post.get_property('text'))    
+```
+
 ``` javascript
 $$$Method
 Appacitive.Object.multiGet({
@@ -668,6 +725,18 @@ Console.WriteLine("Fetched post with title {0} and text {1}.",
   post.Get<string>("title"),
   post.Get<string>("text")
   );
+```
+
+``` python
+$$$Method
+@classmethod
+def get(cls, object_type, object_id, fields=None):
+```
+``` python
+$$$Sample Request
+fields_to_fetch = ['text', 'title']
+post = AppacitiveObject.get('post', '33017891581461312', fields_to_fetch)
+print 'Fetched post with title %s and text %s' % (post.get_property('title'), post.get_property('text'))
 ```
 
 ``` javascript
@@ -806,7 +875,33 @@ $$$Note
 After the save, the existing post object would be updated with the latest values
 of all the fields.
 ```
+``` python
+$$$Method
+def update(self, with_revision=False):
+```
+``` python
+$$$Sample Request
 
+response = AppacitiveObject.get('post', '33017891581461312')
+post = response.object
+post = AppacitiveObject()
+post.set_property('title', 'updated title')
+post.set_property('text', 'This is updated text for the post.')
+
+post.set_attribute('topic', 'programming')
+post.remove_attribute('technology')
+
+post.add_tags(['tagA', 'tagB'])
+post.remove_tag('tagC')
+
+response = post.update()
+```
+``` python
+$$$Note
+After the save, the existing post object would be updated with the latest values
+of all the fields.
+The response to the update call will contain the status of the update request.
+```
 ``` javascript
 $$$Method
 Appacitive.Object::save();
@@ -899,6 +994,11 @@ player.destroy().then(function() {
 await APObjects.DeleteAsync("player", "123456678809");
 ```
 
+``` python
+/* Delete a single object */
+response = post.delete()
+```
+
 #### Delete multiple objects
 Incase you want to delete multiple objects, simply pass a comma separated list of the ids of the objects that you want to delete.
 Do note that all the objects should be of the same type and must not be connected with any other objects.
@@ -968,6 +1068,11 @@ Appacitive.Object.multiDelete({
 var ids = new [] { "14696753262625025", "14696753262625026" };
 await APObjects.MultiDeleteAsync("player", ids);
 ```
+``` python
+/*  Delete multiple objects. */
+object_ids = ['14696753262625025', '14696753262625026']
+response = AppacitiveObject.multi_delete('player', object_ids)
+```
 #### Delete with Connection
 
 There are scenarios where you might want to delete an object irrespective of existing connections. To do this in the delete operation, you need to explicitly indicate that you want to delete any existing connectons as well. This will cause the delete operation to delete any existing connections along with the specified object.
@@ -1030,7 +1135,11 @@ player.destroy(true).then(function() {
 var deleteConnection = true;
 await APObjects.DeleteAsync("friend", "123456678809", deleteConnection);
 ```
-
+``` python
+/* Single Delete with connected objects */
+post = AppacitiveObject.get('post', '9312344456678809')
+response = post.delete_with_connections()
+```
 
 Connections
 ------------
@@ -1127,6 +1236,10 @@ $$$sample object
                     .FromExistingObject("employee", "21317231283123")
                     .ToExistingObject("employer", "716238712836");
     conn.Set<DateTime>("joining_date", new DateTime(2012,1,1));
+```
+``` python
+conn = AppacitiveConnection('employment').from_created_object_id('employee', 8768521317231283123).to_created_object_id('employer', 2543637146238712836)
+conn.set_property('joining_date', datetime.datetime.today())
 ```
 ### Create a new connection
 
@@ -1260,7 +1373,13 @@ var connection = APConnection
                     .ToExistingObject("reviewer", "123445678");
 await connection .SaveAsync();
 ```
-
+``` python
+//`review` is relation name, 
+//`reviewer` and `hotel` are the endpoint labels
+connection = AppacitiveConnection('reviewed').from_created_object_id('reviewer', 8768521317231283123).to_created_object_id('hotel', 4543637146238712836)
+connection.set_property('joining_date', datetime.datetime.today())
+response  = connection.create()
+```
 
 #### Create a connection between a new and existing object.
 
@@ -1389,7 +1508,24 @@ await connection.SaveAsync();
 // The id of the score object should now be set since it has also been created on the server.
 var scoreId = score.Id;
 ```
+``` python
+/* Will create a new my_score connection between 
+    - existing player object with id 12344567823432 and 
+    - new score object which will also be created when the connection is created.
+*/ The my_score relation defines two endpoints "player" and "score" for this information.
 
+//Create an instance of object of type score
+score = AppacitiveObject('score')
+score.set_property('points', 150)
+
+conn = AppacitiveConnection('my_scores').from_created_object_id('player', 12344567823432).to_new_object('score', score)
+response = conn.create()
+
+// The id of the score object should now be set since it has also been created on the server.
+
+score_id = response.connection.id
+
+```
 
 #### Create a connection between two new objects.
 
@@ -1522,17 +1658,36 @@ score.Set("points", 150);
 
 //Create an instance of object of type player
 var player = new APObject("player");
-score.Set("name", "sirius");
+player.Set("name", "sirius");
 
 var connection = APConnection
                     .New("my_scores")
-                    .FromExistingObject("player", player)
+                    .FromNewObject("player", player)
                     .ToNewObject("score", score);
 await connection .SaveAsync();
 
 // The ids of the score and player objects will now be available.
 var scoreId = score.Id;
 var playerId = player.Id;
+```
+``` python
+/* Will create a new my_score connection between 
+    - existing player object with id 123445678 and 
+    - new score object, which will also be created when the connection is created.
+  The my_score relation defines two endpoints "player" and "score" for this information.
+*/ 
+
+score = AppacitiveObject('score')
+score.set_property('points', 150)
+
+player = AppacitiveObject('player')
+player.set_property('name', 'sirius')
+
+conn = AppacitiveConnection('my_scores').from_new_object('player', player).to_new_object('score', score)
+response = conn.create()
+
+score_id = response.connection.endpoint_a.object_id
+player_id = response.connection.endpoint_b.object_id
 ```
 ### Retrieve an existing connection
 
@@ -1630,7 +1785,11 @@ Appacitive.Connection.get({
 //Single connection by connection id
 var conn = await APConnections.GetAsync("review", "33017891581461312");
 ```
-
+``` python
+//Single connection by connection id
+response = AppacitiveConnection.get('review', 33017891581461312)
+conn = response.connection
+```
 #### Retrieve multiple connections by id
 
 Returns a list of multiple existing connections from the system. To get a list of connections you 
@@ -1744,7 +1903,19 @@ foreach( var review in reviewed )
     );
 }
 ```
-
+``` python
+$$$Method
+@classmethod
+def multi_get(cls, object_type, object_ids, fields=None):
+```
+``` python
+$$$Sample Request
+connection_ids = ['33017891581461312', '33017891581461313']
+response = AppacitiveConnection.multi_get('reviewed', connection_ids)
+reviewed = response.connections
+for review in reviewed:
+    print 'Fetched reviewed with id %s' % review.get_property('id')
+```
 ``` javascript
 $$$Method
 Appacitive.Connection.multiGet({
@@ -1886,6 +2057,11 @@ Appacitive.Connection.getBetweenObjectsForRelation({
 var connection2 = await APConnections.GetAsync("reivew", 
                                        "22322", "33422");
 ```
+``` python
+//Single connection by endpoint object ids
+response = AppacitiveConnection.find_by_objects('22322', '33422', relation='review')
+conn = response.connection
+```
 
 ### Update a connection
 
@@ -2010,6 +2186,14 @@ var connection = await APConnections.GetAsync("review", "1234345");
 connection.Set<string>("description", "good hotel");
 await connection.SaveAsync();
 ```
+``` python
+//Get the connection object and update the description
+response = AppacitiveConnection.get('review', '1234345')
+connection = response.connection
+connection = AppacitiveConnection()
+connection.set_property('description', 'Good Hotel.')
+response = connection.update(with_revision=False)
+```
 
 ### Delete a connection
 You can delete a connection by simply providing the type of the connection along with it's id.
@@ -2075,7 +2259,12 @@ review.destroy().then(function() {
 ``` csharp
 /* delete review connection with id 123123 */
 await APConnections.DeleteAsync("review", "123345");
-
+```
+``` python
+/* delete review connection with id 123123 */
+response = AppacitiveConnection.get('review', '123345')
+connection = response.connection
+delete_response = connection.delete()
 ```
 
 #### Delete multiple connections
@@ -2149,6 +2338,12 @@ Appacitive.Connection.multiDelete({
 
 var ids = new [] {"40438996554377032", "40440007982449139", "40440007982449139"};
 await APConnections.MultiDeleteAsync("review", ids);
+```
+``` python
+/* delete review connections with ids 40438996554377032, 40440007982449139 & 40440007982449139 */
+
+connection_ids = ['40438996554377032', '40440007982449139', '40440007982449139']
+response = AppacitiveConnection.multi_delete('review', connection_ids)
 ```
 
 ### Querying connections
@@ -2298,6 +2493,9 @@ city.fetchConnectedObjects({
 var city = new APObject("city", "636523636");
 var visitors = await city.GetConnectedObjectsAsync("visitor");
 ```
+``` python
+TBD
+```
 
 #### Retrieve all connections between two endpoints
 
@@ -2436,6 +2634,11 @@ Appacitive.Connection.getBetweenObjects({
     alert('Could not fetch, probably because of incorrect id's');
 });
 
+```
+
+``` python
+response = AppacitiveConnection.find_by_objects(object_id_1='22322', object_id_2='33422', relation=None, fields=None)
+connections = response.connections
 ```
 
 #### Retrieve all inter-connections between one and many endpoints
@@ -2591,6 +2794,10 @@ Appacitive.Connection.getInterconnects({
 }, function(status, obj) {
     alert('Could not fetch, probably because of incorrect id's);
 });
+
+```
+``` python
+$$$ Sample Request
 
 ```
 
