@@ -2798,7 +2798,17 @@ Appacitive.Connection.getInterconnects({
 ```
 ``` python
 $$$ Sample Request
+id_for_John = '22322'
+id_for_Jane = '33422'
+id_for_Tarzan = '44522'
+id_for_House1 = '55622'
+id_for_House2 = '66722'
 
+object_a_id = id_for_John
+object_b_ids = [id_for_Jane, id_for_Tarzan, id_for_House1, id_for_House2]
+
+interconnects_response = AppacitiveConnection.find_interconnects(object_a_id, object_b_ids, fields=None)
+connections = interconnects_response.connections
 ```
 
 
@@ -2917,6 +2927,15 @@ while (true)
       break;
      results = await results.NextPageAsync();
 }
+```
+``` python
+//Build the query
+query = AppacitiveQuery()
+query.filter = PropertyFilter.is_equal_to('firstname', 'John')
+
+response = AppacitiveObject.find('player', query)
+
+objects = response.objects
 ```
 ### Conventions for REST api
 
@@ -3109,6 +3128,21 @@ var date = DateTime.UtcNow.AddYears(-30);
 var greaterThanQuery = Query.Property("birthdate").IsGreaterThan(date);
 ```
 
+``` python
+///Samples
+
+//First name like "oh"
+like_filter = PropertyFilter.like('firstname', 'oh')
+
+//First name starts with "jo"
+starts_with_filter = PropertyFilter.starts_with('firstname', 'Jo')
+
+//Between two dates
+between_dates_filter = PropertyFilter.between('birthdate', datetime.date(1980, 1, 1), datetime.date.today())
+
+//Greater than a date
+greater_than_filter = PropertyFilter.is_greater_than('birthdate', datetime.date(1970, 1, 1))
+```
 ### Geo queries
 You can specify a property type as a `geography` type for a given type or relation. These properties are essential latitude-longitude pairs.
 Such properties support geo queries based on a user defined radial or polygonal region on the map. These are extremely useful for making map based or location based searches.
@@ -3204,6 +3238,14 @@ var radialQuery = Query
                     .Property("location")
                     .WithinCircle(center, 10.0M, DistanceUnit.Miles);
 var hotels = await APObjects.FindAllAsync( "hotel", radialQuery);
+```
+``` python
+//Search for hotels near Las Vegas in a radius of 10 miles
+centre = '361749687195, -115.1372222900'
+radial_query = PropertyFilter.within_circle('location', centre, '10 mi')
+
+response = AppacitiveObject.find('hotel', radial_query)
+hotels = response.articles
 ```
 
 #### Polygon Search
@@ -3305,6 +3347,20 @@ var geocodes = new[] { pt1, pt2, pt3, pt4 };
 var polygonQuery = Query.Property("location").WithinPolygon(geocodes);
 ```
 
+``` python
+//Search for hotel which is between 4 co-ordinates
+pt1 = '36.1749687195, -115.1372222900'
+pt2 = '34.1749687195, -116.1372222900'
+pt3 = '35.1749687195, -114.1372222900'
+pt4 = '36.1749687195, -114.1372222900'
+
+geo_codes = [pt1, pt2, pt3, pt4]
+
+polygon_query = PropertyFilter.within_polygon('location', geo_codes)
+response = AppacitiveObject.find('hotel', polygon_query)
+hotels = response.objects
+```
+
 ### Tag based queries
 
 The Appacitive platform provides inbuilt support for tagging on all data (objects, connections, users and devices).
@@ -3381,6 +3437,14 @@ var query = Query
               .Tags
               .MatchOneOrMore("personal", "private");
 var messages = await APObjects.FindAllAsync( "message", query );
+```
+``` python
+// Get all messages tagged with tags personal or private.
+tags_to_match = ['personal', 'private']
+tag_query = TagFilter.match_one_or_more(tags_to_match)
+
+response = AppacitiveObject.find('message', tag_query)
+messages = response.objects
 ```
 ```javascript
 //create the filter 
@@ -3465,6 +3529,14 @@ var query = Query
               .Tags
               .MatchAll("personal", "test");
 var messages = await APObjects.FindAllAsync( "message", query );
+```
+``` python
+// Get all messages tagged with tags personal and test
+vtags_to_match = ['personal', 'test']
+tag_query = TagFilter.match_all(tags_to_match)
+
+response = AppacitiveObject.find('message', tag_query)
+messages = response.objects
 ```
 ```javascript
 //create the filter 
@@ -3576,7 +3648,15 @@ query.freeText('champs palais');
 //call fetch
 query.fetch();
 ```
+``` python
+free_text_tokens = ['champs', 'Palais']
 
+query = AppacitiveQuery()
+query.free_text_tokens = free_text_tokens
+
+response = AppacitiveObject.find('photo', query)
+photos = response.objects
+```
 ### Sorting and paging
 
 All search queries on the platform return a paginated response. You can specify the page number and page size of the result set that you want returned. By default, the page size for results is `20`. This is capped to a max value of `200` for performance reasons. 
@@ -3730,6 +3810,17 @@ var complexQuery = Query.And(new[]{
                                   DistanceUnit.Miles)
           });
 ```
+``` python
+//Use of `And` and `Or` operators
+centre = '36.1749687195, -115.1372222900'
+
+complex_query = AppacitiveQuery()
+filter1 = PropertyFilter.starts_with('firstname', 'Jo')
+filter2 = PropertyFilter.like('lastname', '*oe*')
+
+filter3 = PropertyFilter.within_circle('location', centre, '10 km')
+complex_query.filter = BooleanOperator.and_query([BooleanOperator.or_query([filter1, filter2])], filter3)
+```
 
 Graph Search
 ------------
@@ -3812,6 +3903,16 @@ $$$Sample Response
 var filterQueryName = "sample_filter";
 var placeholderFillers = new Dictionary<string, string> { { "key1", "value1" }, { "key2", "value2" } };
 var results = await Graph.Filter(filterQueryName, placeholderFillers);
+```
+```python
+filter_query_name = 'sample_filter'
+place_holder_fillers = {
+    'key1': 'value1',
+    'key2': 'value2'
+}
+
+response = AppacitiveGraphSearch.filter(filter_query_name, place_holder_fillers)
+ids = response.ids
 ```
 ```javascript
 $$$Method
@@ -3905,6 +4006,17 @@ var projectQueryName = "sample_project";
 var rootIds = new List<string>() { "34912447775245454", "34322447235528474", "34943243891025029" };
 var placeholderFillers = new Dictionary<string, string> { { "key1", "value1" }, { "key2", "value2" } };
 var result = await Graph.Project(projectQueryName, rootIds, placeholderFillers);
+```
+```python
+projection_query_name = 'sample_project'
+root_ids = ['34912447775245454', '34322447235528474', '34943243891025029']
+place_holder_fillers = {
+    'key1': 'value1',
+    'key2': 'value2'
+}
+
+response = AppacitiveGraphSearch.project(projection_query_name, root_ids, place_holder_fillers)
+nodes = response.nodes
 ```
 ```javascript
 $$$Method
