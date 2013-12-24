@@ -2918,7 +2918,7 @@ while (true)
 ``` python
 //Build the query
 query = AppacitiveQuery()
-query.filter = PropertyFilter.is_equal_to('firstname', 'John')
+query.filter = PropertyFilter('firstname').is_equal_to('John')
 
 response = AppacitiveObject.find('player', query)
 
@@ -3119,16 +3119,16 @@ var greaterThanQuery = Query.Property("birthdate").IsGreaterThan(date);
 ///Samples
 
 //First name like "oh"
-like_filter = PropertyFilter.like('firstname', 'oh')
+like_filter = PropertyFilter('firstname').like('*oh*')
 
 //First name starts with "jo"
-starts_with_filter = PropertyFilter.starts_with('firstname', 'Jo')
+starts_with_filter = PropertyFilter(''firstname').starts_with('Jo')
 
 //Between two dates
-between_dates_filter = PropertyFilter.between('birthdate', datetime.date(1980, 1, 1), datetime.date.today())
+between_dates_filter = PropertyFilter('birthdate').between(datetime.date(1980, 1, 1), datetime.date.today())
 
 //Greater than a date
-greater_than_filter = PropertyFilter.is_greater_than('birthdate', datetime.date(1970, 1, 1))
+greater_than_filter = PropertyFilter('birthdate').is_greater_than(datetime.date(1970, 1, 1))
 ```
 ### Geo queries
 You can specify a property type as a `geography` type for a given type or relation. These properties are essential latitude-longitude pairs.
@@ -3229,7 +3229,7 @@ var hotels = await APObjects.FindAllAsync( "hotel", radialQuery);
 ``` python
 //Search for hotels near Las Vegas in a radius of 10 miles
 centre = '361749687195, -115.1372222900'
-radial_query = PropertyFilter.within_circle('location', centre, '10 mi')
+radial_query = PropertyFilter('location').within_circle(centre, '10 mi')
 
 response = AppacitiveObject.find('hotel', radial_query)
 hotels = response.articles
@@ -3343,7 +3343,7 @@ pt4 = '36.1749687195, -114.1372222900'
 
 geo_codes = [pt1, pt2, pt3, pt4]
 
-polygon_query = PropertyFilter.within_polygon('location', geo_codes)
+polygon_query = PropertyFilter('location').within_polygon(geo_codes)
 response = AppacitiveObject.find('hotel', polygon_query)
 hotels = response.objects
 ```
@@ -3428,7 +3428,7 @@ var messages = await APObjects.FindAllAsync( "message", query );
 ``` python
 // Get all messages tagged with tags personal or private.
 tags_to_match = ['personal', 'private']
-tag_query = TagFilter.match_one_or_more(tags_to_match)
+tag_query = TagFilter().match_one_or_more(tags_to_match)
 
 response = AppacitiveObject.find('message', tag_query)
 messages = response.objects
@@ -3520,7 +3520,7 @@ var messages = await APObjects.FindAllAsync( "message", query );
 ``` python
 // Get all messages tagged with tags personal and test
 vtags_to_match = ['personal', 'test']
-tag_query = TagFilter.match_all(tags_to_match)
+tag_query = TagFilter().match_all(tags_to_match)
 
 response = AppacitiveObject.find('message', tag_query)
 messages = response.objects
@@ -3802,10 +3802,10 @@ var complexQuery = Query.And(new[]{
 centre = '36.1749687195, -115.1372222900'
 
 complex_query = AppacitiveQuery()
-filter1 = PropertyFilter.starts_with('firstname', 'Jo')
-filter2 = PropertyFilter.like('lastname', '*oe*')
+filter1 = PropertyFilter('firstname').starts_with('Jo')
+filter2 = PropertyFilter('lastname').like('*oe*')
 
-filter3 = PropertyFilter.within_circle('location', centre, '10 km')
+filter3 = PropertyFilter('location').within_circle(centre, '10 km')
 complex_query.filter = BooleanOperator.and_query([BooleanOperator.or_query([filter1, filter2])], filter3)
 ```
 
