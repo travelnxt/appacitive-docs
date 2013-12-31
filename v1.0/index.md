@@ -475,7 +475,7 @@ Console.WriteLine("Fetched post with title {0} and text {1}.",
 $$$Method
 @classmethod
 def get(cls, object_type, object_id, fields=None):
-)
+
 ```
 ``` python
 $$$Sample Request
