@@ -5134,7 +5134,7 @@ var loggedInUser = await Users.GetLoggedInUserAsync();
 ```
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/user/me?useridtype=token&token={user token}
+GET https://apis.appacitive.com/user/me
 ```
 ``` rest
 $$$Sample Request
@@ -5144,7 +5144,7 @@ curl -X POST \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/user/me?useridtype=token&token=K2liWXVlSHZ0elNESUloTFlLRE5EQ2lzWXZtM0FFL0JxYW01WTBtVFlmTHZ6aHFMaWtEKzRUdlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa2kvekJpTUZGYyt2ZEFTVi9mbGdNN2xRaEZuWUJidVByR3lFMkZlTzNrRHV3cldVUFRNbFA5M3B6NFN5Rkd3K1dNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==
+https://apis.appacitive.com/user/me
 ```
 ``` rest
 $$$Sample Response
@@ -5660,7 +5660,7 @@ Once you create a session `token` for a user using one of the aunthenticating me
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/user/validate?userToken={user session token}
+POST https://apis.appacitive.com/user/validate
 ```
 ``` rest
 $$$Sample Request
@@ -5670,7 +5670,7 @@ curl -X POST \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/user/validate?userToken=RlYzRlcxY3lsRDlqYUpmQlNha0IwcTJRTXJDYVd6QWZOMlVPR0JWSmNhbTgyWVZxSTVnTmkvR1N0MXJMZm1nZGZCYWNZVk40eEZ4dTB3V3NBOFNVa3FUSEdQZVBTZDBWazJFUW03R0dZQVc5MjdZZmtGRFd1Q092enpTSUpQSWI1VEpqV2xsUUU0U3dIZGcwVTdZTkdNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==```
+https://apis.appacitive.com/user/validate```
 
 ``` rest
 $$$Sample Response
@@ -5731,7 +5731,7 @@ You may want to invalidate a previously generated session token for a user at so
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/user/invalidate?userToken={user session token}
+POST https://apis.appacitive.com/user/invalidate
 ```
 ``` rest
 $$$Sample Request
@@ -5741,7 +5741,7 @@ curl -X POST \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/user/invalidate?userToken=RlYzRlcxY3lsRDlqYUpmQlNha0IwcTJRTXJDYVd6QWZOMlVPR0JWSmNhbTgyWVZxSTVnTmkvR1N0MXJMZm1nZGZCYWNZVk40eEZ4dTB3V3NBOFNVa3FUSEdQZVBTZDBWazJFUW03R0dZQVc5MjdZZmtGRFd1Q092enpTSUpQSWI1VEpqV2xsUUU0U3dIZGcwVTdZTkdNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==
+https://apis.appacitive.com/user/invalidate
 ```
 
 ``` rest
