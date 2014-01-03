@@ -79,7 +79,7 @@ $$$Status object
    }
 }
 ```
-!!!javascript
+!!!javascript!
 ** Conventions **
 
 1. The javascript SDK is an async library and all data calls are async. Most calls have a signature like 
@@ -2780,12 +2780,13 @@ The table below shows a list of supported logical operators corresponding to the
 | Operator        | Numbers      | Strings      | DateTime     | Text         | Geography    | Boolean      |
 |:---------------:|:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|
 | ** == **        | Yes          | Yes          | Yes          | No           | No           | Yes 
-| ** != **        | Yes          | Yes          | Yes          | No           | No           | Yes 
+| ** <> **        | Yes          | Yes          | Yes          | No           | No           | Yes 
 | ** > **         | Yes          | No           | Yes          | No           | No           | No 
 | ** >= **        | Yes          | No           | Yes          | No           | No           | No 
 | ** < **         | Yes          | No           | Yes          | No           | No           | No 
 | ** <= **        | Yes          | No           | Yes          | No           | No           | No 
 | ** like **      | No           | Yes          | No           | Yes          | No           | No 
+| ** match **      | No           | Yes          | No           | Yes          | No           | No 
 | ** between **   | Yes          | No           | Yes          | No           | No           | No 
 
 `NOTE`: The `between` operator is inclusive at both ends.
