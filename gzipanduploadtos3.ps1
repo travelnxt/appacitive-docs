@@ -32,8 +32,8 @@ $onedayrfc1123 = ((Get-Date).AddSeconds(86400)).ToString('r')
 
 
 # Delete current deployment
-"Emptying current bucket contents"
-python $s3cmdpath -r -f del s3://$s3bucket
+#"Emptying current bucket contents"
+#python $s3cmdpath -r -f del s3://$s3bucket
 
 # Upload files to S3
 $workingdir = [regex]::Escape((Get-Location).ToString()) #Escapes any special characters that may interfere with RegEx matching
@@ -45,27 +45,27 @@ foreach($file in $files)
   {
     ".html" 
 	  {
-	    python $s3cmdpath put --no-progress --acl-public --no-preserve --add-header="Cache-Control:public, max-age=$oneday, must-revalidate" --add-header="Content-Encoding:gzip" --mime-type="text/html; charset=utf-8" $file.FullName $s3path
+	    python $s3cmdpath sync --no-progress --acl-public --no-preserve --add-header="Cache-Control:public, max-age=$oneday, must-revalidate" --add-header="Content-Encoding:gzip" --mime-type="text/html; charset=utf-8" $file.FullName $s3path
 		break
 	  }
 	".js"
       {
-        python $s3cmdpath put --no-progress --acl-public --no-preserve --add-header="Cache-Control:public, max-age=$oneweek" --add-header="Content-Encoding:gzip" --mime-type="application/javascript" $file.FullName $s3path
+        python $s3cmdpath sync --no-progress --acl-public --no-preserve --add-header="Cache-Control:public, max-age=$oneweek" --add-header="Content-Encoding:gzip" --mime-type="application/javascript" $file.FullName $s3path
 		break
 	  }
 	".css"
 	  {
-	    python $s3cmdpath put --no-progress --acl-public --no-preserve --add-header="Cache-Control:public, max-age=$oneweek" --add-header="Content-Encoding:gzip" --mime-type="text/css" $file.FullName $s3path
+	    python $s3cmdpath sync --no-progress --acl-public --no-preserve --add-header="Cache-Control:public, max-age=$oneweek" --add-header="Content-Encoding:gzip" --mime-type="text/css" $file.FullName $s3path
 		break  
 	  }
 	".xml"
 	  {
-	    python $s3cmdpath put --no-progress --acl-public --no-preserve --add-header="Cache-Control:public, max-age=$onemonth" --add-header="Content-Encoding:gzip" --mime-type="application/xml" $file.FullName $s3path
+	    python $s3cmdpath sync --no-progress --acl-public --no-preserve --add-header="Cache-Control:public, max-age=$onemonth" --add-header="Content-Encoding:gzip" --mime-type="application/xml" $file.FullName $s3path
 		break	  
       }
 	".md"
 	  {
-	    python $s3cmdpath put --no-progress --acl-public --no-preserve --add-header="Cache-Control:public, max-age=$oneday" --add-header="Content-Encoding:gzip" --mime-type="text/plain" $file.FullName $s3path
+	    python $s3cmdpath sync --no-progress --acl-public --no-preserve --add-header="Cache-Control:public, max-age=$oneday" --add-header="Content-Encoding:gzip" --mime-type="text/plain" $file.FullName $s3path
 		break	  
     }
 	".ps1"
@@ -74,7 +74,7 @@ foreach($file in $files)
 	  }
 	default
 	  {
-	    python $s3cmdpath put --no-progress --acl-public --no-preserve --add-header="Cache-Control:public, max-age=$onemonth" $file.FullName $s3path
+	    python $s3cmdpath sync --no-progress --acl-public --no-preserve --add-header="Cache-Control:public, max-age=$onemonth" $file.FullName $s3path
 		break	  
        }
 	}
@@ -82,6 +82,6 @@ foreach($file in $files)
 
 # Replace index.html with short expire time
 Write-Host "Setting short expiry time for" $indexdoc
-python $s3cmdpath put --no-progress --acl-public --no-preserve --add-header="Cache-Control:public, max-age=$oneday, must-revalidate" --add-header="Expires:$onedayrfc1123"  --add-header="Content-Encoding:gzip" --mime-type="text/html; charset=utf-8" $indexdoc s3://$s3bucket/$indexdoc
+python $s3cmdpath sync --no-progress --acl-public --no-preserve --add-header="Cache-Control:public, max-age=$oneday, must-revalidate" --add-header="Expires:$onedayrfc1123"  --add-header="Content-Encoding:gzip" --mime-type="text/html; charset=utf-8" $indexdoc s3://$s3bucket/$indexdoc
 
 
