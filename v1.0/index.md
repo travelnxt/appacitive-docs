@@ -6308,13 +6308,21 @@ Android     : http://developer.android.com/google/gcm/index.html
 
 Windows Phone : http://msdn.microsoft.com/en-us/library/hh221549.aspx
 
-Registering the devices
-------------
+Devices
+-------
 
-You need to give Appacitive an info about the device on which you want to send the push notfication, i.e. the device type (ios, android etc), device token etc.
-Below you can see the call to register the device
+Appacitive provides you with a rich set of device management apis. A pre-created type called `device` is contained in every new application.
+You should create a new object of this type everytime your app is installed on a new device. A device object has a device-type which could be `ios`, `android`, `wp7`, `wp75` or `wp8`.
+Also, every device object has a unique device token. Additionally a device object could contain other properties like the ones mentioned in the next section or created by you. With this you are ready to control the push and device management aspect of your app with ease.
 
-** Parameter **
+
+### Registering a device
+
+You need to provide Appacitive with info about the device on which you might want to send push notfications later. This info minimally includes the device type (ios, android etc.) and device token.
+More pre-defined properties are available in the device type for your benefit. You can also add any additional property(s) you might need in your applicaion, just like creating properties in any other type.
+
+
+** Parameters **
 
 <dl>
   <dt>devicetype</dt>
@@ -6422,6 +6430,425 @@ Device device = new Device(DeviceType.iOS)
             device.Channels.Add("channel2");
             await device.SaveAsync();
 ``` 
+### Retrieve an existing device
+The Appacitive platform supports retrieving single or multiple devices. All device object retrievals on the platform
+are done purely on the basis of the id of the device object. You can also fine tune the exact list of fields that 
+you want to be returned. This will allow for fine tuning the size of the message incase you are on a 
+low bandwidth connection.
+
+The different scenarios for device retrieval are detailed in the sections below.
+
+#### Retrieve a single device
+
+Returns an existing device object from the system. To retrieve an existing device object, you will need to provide its
+ system defined id.
+
+** Parameters ** 
+
+<dl>
+  <dt>id</dt>
+  <dd>required<br/><span>The system generated id for the object</span></dd>
+  <dt>fields</dt>
+  <dd>optional<br/><span>List of properties to be returned.</span></dd>
+</dl>
+
+** Response **
+
+Returns the existing device object matching the given id.
+In case of an error, the `status` object contains details of the failure.
+
+``` rest
+$$$Method
+GET https://apis.appacitive.com/object/device/{id}?fields={comma separated list of fields}
+```
+``` rest
+$$$Sample Request
+//Get object of type device with id 33017891581461312
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+https://apis.appacitive.com/object/device/33017891581461312
+```
+``` rest
+$$$Sample Response
+{
+  "object": {
+    "__id": "33017891581461312",
+    "__type": "device",
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__typeid": "23514020251304802",
+    "__revision": "1",
+    "__tags": [],
+    "__utcdatecreated": "2013-07-31T10:45:15.1832474Z",
+    "__utclastupdateddate": "2013-07-31T10:45:15.1832474Z",
+    "devicetype": "ios",
+	"location": "18.534064,73.899551",
+	"devicetoken": "12345",
+	"channels": [
+		"HR"
+	],
+	"badge": "100",
+	"isactive": "false",
+    "__attributes": {
+      "has_verified": "false"
+    }
+  },
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "1febaadd-f889-4b47-b1f9-cdeb63b6f937",
+    "additionalmessages": []
+  }
+}
+```
+``` csharp
+
+```
+``` csharp
+$$$Sample Request
+
+```
+
+``` javascript
+$$$Method
+
+```
+``` javascript
+$$$Sample Request
+
+```
+
+#### Retrieve multiple devices 
+
+Returns a list of multiple existing device objects from the system. To get a list of device objects you 
+must provide a list of device ids to retrieve devices for.
+
+** Parameters ** 
+
+<dl>
+  <dt>id list</dt>
+  <dd>required<br/><span>Comma separated list of object ids to retrieve.</span></dd>
+  <dt>fields</dt>
+  <dd>optional<br/><span>List of properties to be returned.</span></dd>
+</dl>
+
+** Response **
+
+Returns an array of device objects corresponding to the given id list. 
+In case of an error, the `status` object contains details of the failure.
+
+`NOTE` : Please note that providing the same id multiple times will not return duplicates.
+
+``` rest
+$$$Method
+GET https://apis.appacitive.com/object/device/multiget/{comma separated ids}?fields={comma separated list of fields}
+```
+``` rest
+$$$Sample Request
+//Get object of type device with id 33017891581461312 and 33017891581461313
+curl -X GET \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+https://apis.appacitive.com/object/device/multiget/33017891581461312,33017891581461313
+```
+``` rest
+$$$Sample Response
+{
+  "objects": [
+    {
+      "__id": "33017891581461312",
+      "__type": "post",
+      "__createdby": "System",
+      "__lastmodifiedby": "System",
+      "__typeid": "23514020251304802",
+      "__revision": "1",
+      "__tags": [],
+      "__utcdatecreated": "2013-07-31T10:45:15.1832474Z",
+      "__utclastupdateddate": "2013-07-31T10:45:15.1832474Z",
+      "devicetype": "ios",
+	  "location": "18.534064,73.899551",
+	  "devicetoken": "12345",
+	  "channels": [
+	    	"HR"
+	  ],
+	  "badge": "100",
+      "__attributes": {
+        "has_verified": "false"
+      }
+    },
+    {
+      "__id": "33017891581461313",
+      "__type": "post",
+      "__createdby": "System",
+      "__lastmodifiedby": "System",
+      "__typeid": "23514020251304802",
+      "__revision": "1",
+      "__tags": [],
+      "__utcdatecreated": "2013-07-31T10:45:15.1832474Z",
+      "__utclastupdateddate": "2013-07-31T10:45:15.1832474Z",
+      "devicetype": "android",
+	  "location": "18.534064,73.899551",
+	  "devicetoken": "54321",
+	  "channels": [
+	    	"Sales"
+	  ],
+	  "badge": "150",
+      "__attributes": {
+        "has_verified": "false"
+      }
+    }
+  ],
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "1febaadd-f889-4b47-b1f9-cdeb63b6f937",
+    "additionalmessages": []
+  }
+}
+```
+
+``` csharp
+$$$Method
+
+```
+``` csharp
+$$$Sample Request
+
+```
+
+``` javascript
+$$$Method
+
+```
+``` javascript
+$$$Sample Request
+
+```
+### Update a device
+
+To update an existing device object, you need to provide the id of the device object
+along with the list of updates that are to be made. As the Appacitive platform supports partial updates,
+and update only needs the information that has actually changed.
+
+** Parameters ** 
+
+<dl>
+  <dt>id</dt>
+  <dd>required<br/><span>The system generated id of the object</span></dd>
+  <dt>object updates</dt>
+  <dd>required<br/><span>Theobject with the fields to be updated.</span></dd>
+  <dt>revision</dt>
+  <dd>optional<br/><span>The revision of the object. Incase the revision does not match on the server, the call will fail.</span></dd>
+</dl>
+
+** Response **
+
+Returns the updated device object.
+In case of an error, the `status` object contains details of the failure.
+
+
+``` rest
+$$$Method
+POST https://apis.appacitive.com/device/{id}?revision={current revision}
+```
+``` rest
+$$$Sample Request
+// Will update the device object with id 33017891581461312
+// Updates include
+// - device token and type fields
+// - adding a new attribute called topic
+// - adding and removing tags.
+
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d '{ "devicetype": "wp8", "devicetoken": "987654", "__attributes" : { "topic" : "testing" }, "__addtags" : ["tagA", "tagB"], "__removetags" : ["tagC"]}' \
+https://apis.appacitive.com/object/post/33017891581461312
+```
+``` rest
+$$$Sample Response
+{
+  "object": {
+    "__id": "33017891581461312",
+    "__type": "device",
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__typeid": "23514020251304802",
+    // revision number incremented
+    "__revision": "2",
+    "__tags": [
+      // newly added tags
+      "tagA",
+      "tagB"
+    ],
+    "__utcdatecreated": "2013-07-31T10:45:15.1832474Z",
+    "__utclastupdateddate": "2013-08-06T20:47:19.8779616Z",
+    // updated properties
+    "devicetype": "wp8",
+    "devicetoken": "987654",
+    "__attributes": {
+      // existing attribute
+      "has_verified": "false",
+      // newly added attribute
+      "topic": "testing"
+    }
+  },
+  "status": {
+    "code": "200",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "363556a8-3786-4b6c-8dd0-e627b9205e65",
+    "additionalmessages": []
+  }
+}
+```
+
+``` csharp
+$$$Method
+
+```
+``` csharp
+$$$Sample Request
+
+```
+``` csharp
+$$$Note
+
+```
+
+``` javascript
+$$$Method
+
+```
+``` javascript
+$$$Sample Request
+
+```
+
+
+### Delete a device
+
+You can delete existing device objects by simply providing the object id of the device that you want to delete.
+This operation will fail if the device object has existing connections with other objects.
+
+** Parameters ** 
+
+<dl>
+  <dt>id</dt>
+  <dd>required<br/><span>The system generated id for the object</span></dd>
+</dl>
+
+** Response **
+
+Returns successful `status` object.
+In case of an error, the `status` object contains details of the failure.
+
+
+``` rest
+$$$Method
+DELETE https://apis.appacitive.com/device/{id}
+```
+``` rest
+$$$Sample Request
+// Will delete the device object with the id 123456678809
+
+curl -X DELETE \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Appacitive-Apikey: {Your api key}" \
+https://apis.appacitive.com/device/123456678809
+
+```
+``` rest
+$$$Sample Response
+{
+  "code": "200",
+  "message": "Successful",
+  "faulttype": null,
+  "version": null,
+  "referenceid": "d8740cfc-f669-443c-9d6d-f3204fd65ab3",
+  "additionalmessages": []
+}
+```
+
+``` javascript
+$$$Method
+
+```
+``` javascript
+$$$Sample Request
+
+```
+``` csharp
+/* Delete a single device object */
+
+```
+
+
+#### Delete device with Connection
+
+There are scenarios where you might want to delete a device object irrespective of existing connections. To do this in the delete operation, you need to explicitly indicate that you want to delete any existing connectons as well. This will cause the delete operation to delete any existing connections along with the specified device object.
+
+`NOTE`: This override is not available when deleting multiple objects in a single operation.
+
+** Parameters ** 
+
+<dl>
+  <dt>id</dt>
+  <dd>required<br/><span>The system generated id for the object</span></dd>
+</dl>
+
+** Response **
+
+Returns successful `status` object.
+In case of an error, the `status` object contains details of the failure.
+
+
+``` rest
+$$$Method
+DELETE https://apis.appacitive.com/device/{id}?deleteconnections=true
+```
+``` rest
+$$$Sample Request
+// Will delete the device object of type player with the id 123456678809
+curl -X DELETE \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Appacitive-Apikey: {Your api key}" \
+https://apis.appacitive.com/device/123456678809?deleteconnections=true
+
+```
+``` rest
+$$$Sample Response
+{
+  "code": "200",
+  "message": "Successful",
+  "faulttype": null,
+  "version": null,
+  "referenceid": "d8740cfc-f669-443c-9d6d-f3204fd65ab3",
+  "additionalmessages": []
+}
+```
+``` javascript
+$$$Method
+
+
+$$$Sample Request
+
+```
+``` csharp
+/* Single Delete with connected objects */
+
+```
+
+### Searching for devices
+
+Device search works exactly the same as any object search. 
 
 Push message anatomy
 ------------
@@ -6480,6 +6907,8 @@ You can see the anatomy of the Push message that you will need to send to the Ap
         }
      }
 ```
+
+
 
 Sending a Push message
 ------------
