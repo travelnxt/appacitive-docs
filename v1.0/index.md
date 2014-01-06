@@ -143,6 +143,7 @@ App.Initialize(Net45.WindowsHost.Instance,
                    "{Your api key}", 
                     Environment.Live);
 ```
+
 ``` rest
 // The header information includes the api key and the environment (sandbox in this example)
 curl -X GET \
@@ -150,7 +151,9 @@ curl -X GET \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 https://apis.appacitive.com/object/device/find/all
 ```
-
+``` python
+Add your API-Key and environemt details in the Django style settings.py file.
+```
 Data
 =======
 In the next few sections we briefly describe some of the basic terms used in Appacitive like objects, connections, users, files etc.
@@ -243,11 +246,23 @@ score.set('score', 1400);
 score.attr('is_first_time_user', 'true');
 score.attr('team_color', 'blue');
 
-// Add Tage
+// Add Tags
 score.addTag("amateur");
 score.addtag("unverified")
 ```
 
+``` python
+score = AppacitiveObject('score')
+score.set_property('difficulty', 'normal')
+score.set_property('level', 10)
+score.set_property('score', 1400)
+
+score.set_attribute('is_first_time_user', 'true')
+score.set_attribute('team_color', 'blue')
+
+score.add_tag('amateur')
+score.add_tags(['unverified', 'right_handed'])
+```
 
 ### Create a new object
 
@@ -276,6 +291,10 @@ Appacitive.SDK.APObject.SaveAsync();
 ``` javascript
 $$$Method
 Appacitive.Object::save();
+```
+
+``` python
+score.create()
 ```
 
 ``` rest
@@ -314,6 +333,22 @@ post.save().then(function(){
 }, function(status){
   alert('error while saving!');
 });
+```
+
+``` python
+post = AppacitiveObject('post')
+post.set_property('title', 'Python Programming Language')
+post.set_property('text', 'Python is a programming language that lets you work more quickly and integrate your systems more effectively.')
+
+post.set_attribute('is_verified', 'false')
+
+post.add_tag('intro')
+post.add_tags(['python', 'technology'])
+
+post.create()
+
+# response object contains the status of the create call
+# if successful, populates the post object with system-defined properties like __id, __createdBy etc.
 ```
 ``` rest
 $$$Sample Response
@@ -437,6 +472,17 @@ Console.WriteLine("Fetched post with title {0} and text {1}.",
   post.Get<string>("title"),
   post.Get<string>("text")
   );
+```
+``` python
+$$$Method
+@classmethod
+def get(cls, object_type, object_id, fields=None):
+
+```
+``` python
+$$$Sample Request
+post = AppacitiveObject.get('post', '33017891581461312')
+print 'Fetched post with title %s and text %s' % (post.get_property('title'), post.get_property('text'))
 ```
 
 ``` javascript
@@ -578,6 +624,20 @@ foreach( var post in posts )
 }
 ```
 
+``` python
+$$$Method
+@classmethod
+def multi_get(cls, object_type, object_ids, fields=None):
+```
+``` python
+$$$Sample Request
+object_ids = ['33017891581461312', '33017891581461313']
+posts = AppacitiveObject.multi_get('post', object_ids)
+
+for post in posts:
+    print 'Fetched post with title %s and text %s' % (post.get_property('title'), post.get_property('text'))    
+```
+
 ``` javascript
 $$$Method
 Appacitive.Object.multiGet({
@@ -654,6 +714,18 @@ Console.WriteLine("Fetched post with title {0} and text {1}.",
   post.Get<string>("title"),
   post.Get<string>("text")
   );
+```
+
+``` python
+$$$Method
+@classmethod
+def get(cls, object_type, object_id, fields=None):
+```
+``` python
+$$$Sample Request
+fields_to_fetch = ['text', 'title']
+post = AppacitiveObject.get('post', '33017891581461312', fields_to_fetch)
+print 'Fetched post with title %s and text %s' % (post.get_property('title'), post.get_property('text'))
 ```
 
 ``` javascript
@@ -792,7 +864,32 @@ $$$Note
 After the save, the existing post object would be updated with the latest values
 of all the fields.
 ```
+``` python
+$$$Method
+def update(self, with_revision=False):
+```
+``` python
+$$$Sample Request
 
+post = AppacitiveObject.get('post', '33017891581461312')
+
+post.set_property('title', 'updated title')
+post.set_property('text', 'This is updated text for the post.')
+
+post.set_attribute('topic', 'programming')
+post.remove_attribute('technology')
+
+post.add_tags(['tagA', 'tagB'])
+post.remove_tag('tagC')
+
+post.update()
+```
+``` python
+$$$Note
+After the save, the existing post object would be updated with the latest values
+of all the fields.
+
+```
 ``` javascript
 $$$Method
 Appacitive.Object::save();
@@ -885,6 +982,11 @@ player.destroy().then(function() {
 await APObjects.DeleteAsync("player", "123456678809");
 ```
 
+``` python
+/* Delete a single object */
+post.delete()
+```
+
 #### Delete multiple objects
 Incase you want to delete multiple objects, simply pass a comma separated list of the ids of the objects that you want to delete.
 Do note that all the objects should be of the same type and must not be connected with any other objects.
@@ -954,6 +1056,11 @@ Appacitive.Object.multiDelete({
 var ids = new [] { "14696753262625025", "14696753262625026" };
 await APObjects.MultiDeleteAsync("player", ids);
 ```
+``` python
+/*  Delete multiple objects. */
+object_ids = ['14696753262625025', '14696753262625026']
+AppacitiveObject.multi_delete('player', object_ids)
+```
 #### Delete with Connection
 
 There are scenarios where you might want to delete an object irrespective of existing connections. To do this in the delete operation, you need to explicitly indicate that you want to delete any existing connectons as well. This will cause the delete operation to delete any existing connections along with the specified object.
@@ -1016,7 +1123,11 @@ player.destroy(true).then(function() {
 var deleteConnection = true;
 await APObjects.DeleteAsync("friend", "123456678809", deleteConnection);
 ```
-
+``` python
+/* Single Delete with connected objects */
+post = AppacitiveObject.get('post', '9312344456678809')
+post.delete_with_connections()
+```
 
 Connections
 ------------
@@ -1113,6 +1224,10 @@ $$$sample object
                     .FromExistingObject("employee", "21317231283123")
                     .ToExistingObject("employer", "716238712836");
     conn.Set<DateTime>("joining_date", new DateTime(2012,1,1));
+```
+``` python
+conn = AppacitiveConnection('employment').from_created_object_id('employee', 8768521317231283123).to_created_object_id('employer', 2543637146238712836)
+conn.set_property('joining_date', datetime.datetime.today())
 ```
 ### Create a new connection
 
@@ -1246,7 +1361,13 @@ var connection = APConnection
                     .ToExistingObject("reviewer", "123445678");
 await connection .SaveAsync();
 ```
-
+``` python
+//`review` is relation name, 
+//`reviewer` and `hotel` are the endpoint labels
+connection = AppacitiveConnection('reviewed').from_existing_object_id('reviewer', 8768521317231283123).to_existing_object_id('hotel', 4543637146238712836)
+connection.set_property('joining_date', datetime.datetime.today())
+connection.create()
+```
 
 #### Create a connection between a new and existing object.
 
@@ -1375,7 +1496,23 @@ await connection.SaveAsync();
 // The id of the score object should now be set since it has also been created on the server.
 var scoreId = score.Id;
 ```
+``` python
+/* Will create a new my_score connection between 
+    - existing player object with id 12344567823432 and 
+    - new score object which will also be created when the connection is created.
+*/ The my_score relation defines two endpoints "player" and "score" for this information.
 
+//Create an instance of object of type score
+score = AppacitiveObject('score')
+score.set_property('points', 150)
+
+conn = AppacitiveConnection('my_scores').from_existing_object_id('player', 12344567823432).to_new_object('score', score)
+conn.create()
+
+// The id of the score object should now be set since it has also been created on the server.
+
+score_id = score.id
+```
 
 #### Create a connection between two new objects.
 
@@ -1508,17 +1645,36 @@ score.Set("points", 150);
 
 //Create an instance of object of type player
 var player = new APObject("player");
-score.Set("name", "sirius");
+player.Set("name", "sirius");
 
 var connection = APConnection
                     .New("my_scores")
-                    .FromExistingObject("player", player)
+                    .FromNewObject("player", player)
                     .ToNewObject("score", score);
 await connection .SaveAsync();
 
 // The ids of the score and player objects will now be available.
 var scoreId = score.Id;
 var playerId = player.Id;
+```
+``` python
+/* Will create a new my_score connection between 
+    - existing player object with id 123445678 and 
+    - new score object, which will also be created when the connection is created.
+  The my_score relation defines two endpoints "player" and "score" for this information.
+*/ 
+
+score = AppacitiveObject('score')
+score.set_property('points', 150)
+
+player = AppacitiveObject('player')
+player.set_property('name', 'sirius')
+
+conn = AppacitiveConnection('my_scores').from_new_object('player', player).to_new_object('score', score)
+conn.create()
+
+score_id = response.connection.endpoint_a.object_id
+player_id = player.id
 ```
 ### Retrieve an existing connection
 
@@ -1616,7 +1772,10 @@ Appacitive.Connection.get({
 //Single connection by connection id
 var conn = await APConnections.GetAsync("review", "33017891581461312");
 ```
-
+``` python
+//Single connection by connection id
+conn = AppacitiveConnection.get('review', 33017891581461312)
+```
 #### Retrieve multiple connections by id
 
 Returns a list of multiple existing connections from the system. To get a list of connections you 
@@ -1730,7 +1889,18 @@ foreach( var review in reviewed )
     );
 }
 ```
-
+``` python
+$$$Method
+@classmethod
+def multi_get(cls, object_type, object_ids, fields=None):
+```
+``` python
+$$$Sample Request
+connection_ids = ['33017891581461312', '33017891581461313']
+reviewed = AppacitiveConnection.multi_get('reviewed', connection_ids)
+for review in reviewed:
+    print 'Fetched reviewed with id %s' % review.get_property('id')
+```
 ``` javascript
 $$$Method
 Appacitive.Connection.multiGet({
@@ -1872,6 +2042,10 @@ Appacitive.Connection.getBetweenObjectsForRelation({
 var connection2 = await APConnections.GetAsync("reivew", 
                                        "22322", "33422");
 ```
+``` python
+//Single connection by endpoint object ids
+conn = AppacitiveConnection.find_by_objects('22322', '33422', relation='review')
+```
 
 ### Update a connection
 
@@ -1996,6 +2170,12 @@ var connection = await APConnections.GetAsync("review", "1234345");
 connection.Set<string>("description", "good hotel");
 await connection.SaveAsync();
 ```
+``` python
+//Get the connection object and update the description
+connection = AppacitiveConnection.get('review', '1234345')
+connection.set_property('description', 'Good Hotel.')
+connection.update(with_revision=False)
+```
 
 ### Delete a connection
 You can delete a connection by simply providing the type of the connection along with it's id.
@@ -2061,7 +2241,11 @@ review.destroy().then(function() {
 ``` csharp
 /* delete review connection with id 123123 */
 await APConnections.DeleteAsync("review", "123345");
-
+```
+``` python
+/* delete review connection with id 123123 */
+connection = AppacitiveConnection.get('review', '123345')
+connection.delete()
 ```
 
 #### Delete multiple connections
@@ -2135,6 +2319,12 @@ Appacitive.Connection.multiDelete({
 
 var ids = new [] {"40438996554377032", "40440007982449139", "40440007982449139"};
 await APConnections.MultiDeleteAsync("review", ids);
+```
+``` python
+/* delete review connections with ids 40438996554377032, 40440007982449139 & 40440007982449139 */
+
+connection_ids = ['40438996554377032', '40440007982449139', '40440007982449139']
+AppacitiveConnection.multi_delete('review', connection_ids)
 ```
 
 ### Querying connections
@@ -2284,6 +2474,9 @@ city.fetchConnectedObjects({
 var city = new APObject("city", "636523636");
 var visitors = await city.GetConnectedObjectsAsync("visitor");
 ```
+``` python
+TBD
+```
 
 #### Retrieve all connections between two endpoints
 
@@ -2422,6 +2615,10 @@ Appacitive.Connection.getBetweenObjects({
     alert('Could not fetch, probably because of incorrect id's');
 });
 
+```
+
+``` python
+connections = AppacitiveConnection.find_by_objects(object_id_1='22322', object_id_2='33422', relation=None, fields=None)
 ```
 
 #### Retrieve all inter-connections between one and many endpoints
@@ -2579,6 +2776,19 @@ Appacitive.Connection.getInterconnects({
 });
 
 ```
+``` python
+$$$ Sample Request
+id_for_John = '22322'
+id_for_Jane = '33422'
+id_for_Tarzan = '44522'
+id_for_House1 = '55622'
+id_for_House2 = '66722'
+
+object_a_id = id_for_John
+object_b_ids = [id_for_Jane, id_for_Tarzan, id_for_House1, id_for_House2]
+
+connections = AppacitiveConnection.find_interconnects(object_a_id, object_b_ids, fields=None)
+```
 
 
 Querying Data
@@ -2696,6 +2906,13 @@ while (true)
       break;
      results = await results.NextPageAsync();
 }
+```
+``` python
+//Build the query
+query = AppacitiveQuery()
+query.filter = PropertyFilter('firstname').is_equal_to('John')
+
+players = AppacitiveObject.find('player', query)
 ```
 ### Conventions for REST api
 
@@ -2889,6 +3106,21 @@ var date = DateTime.UtcNow.AddYears(-30);
 var greaterThanQuery = Query.Property("birthdate").IsGreaterThan(date);
 ```
 
+``` python
+///Samples
+
+//First name like "oh"
+like_filter = PropertyFilter('firstname').like('*oh*')
+
+//First name starts with "jo"
+starts_with_filter = PropertyFilter(''firstname').starts_with('Jo')
+
+//Between two dates
+between_dates_filter = PropertyFilter('birthdate').between(datetime.date(1980, 1, 1), datetime.date.today())
+
+//Greater than a date
+greater_than_filter = PropertyFilter('birthdate').is_greater_than(datetime.date(1970, 1, 1))
+```
 ### Geo queries
 You can specify a property type as a `geography` type for a given type or relation. These properties are essential latitude-longitude pairs.
 Such properties support geo queries based on a user defined radial or polygonal region on the map. These are extremely useful for making map based or location based searches.
@@ -2984,6 +3216,14 @@ var radialQuery = Query
                     .Property("location")
                     .WithinCircle(center, 10.0M, DistanceUnit.Miles);
 var hotels = await APObjects.FindAllAsync( "hotel", radialQuery);
+```
+``` python
+//Search for hotels near Las Vegas in a radius of 10 miles
+centre = '361749687195, -115.1372222900'
+radial_query = PropertyFilter('location').within_circle(centre, '10 mi')
+
+response = AppacitiveObject.find('hotel', radial_query)
+hotels = response.articles
 ```
 
 #### Polygon Search
@@ -3085,6 +3325,19 @@ var geocodes = new[] { pt1, pt2, pt3, pt4 };
 var polygonQuery = Query.Property("location").WithinPolygon(geocodes);
 ```
 
+``` python
+//Search for hotel which is between 4 co-ordinates
+pt1 = '36.1749687195, -115.1372222900'
+pt2 = '34.1749687195, -116.1372222900'
+pt3 = '35.1749687195, -114.1372222900'
+pt4 = '36.1749687195, -114.1372222900'
+
+geo_codes = [pt1, pt2, pt3, pt4]
+
+polygon_query = PropertyFilter('location').within_polygon(geo_codes)
+hotels = AppacitiveObject.find('hotel', polygon_query)
+```
+
 ### Tag based queries
 
 The Appacitive platform provides inbuilt support for tagging on all data (objects, connections, users and devices).
@@ -3161,6 +3414,13 @@ var query = Query
               .Tags
               .MatchOneOrMore("personal", "private");
 var messages = await APObjects.FindAllAsync( "message", query );
+```
+``` python
+// Get all messages tagged with tags personal or private.
+tags_to_match = ['personal', 'private']
+tag_query = TagFilter().match_one_or_more(tags_to_match)
+
+messages = AppacitiveObject.find('message', tag_query)
 ```
 ```javascript
 //create the filter 
@@ -3245,6 +3505,13 @@ var query = Query
               .Tags
               .MatchAll("personal", "test");
 var messages = await APObjects.FindAllAsync( "message", query );
+```
+``` python
+// Get all messages tagged with tags personal and test
+tags_to_match = ['personal', 'test']
+tag_query = TagFilter().match_all(tags_to_match)
+
+messages = AppacitiveObject.find('message', tag_query)
 ```
 ```javascript
 //create the filter 
@@ -3356,7 +3623,14 @@ query.freeText('champs palais');
 //call fetch
 query.fetch();
 ```
+``` python
+free_text_tokens = ['champs', 'Palais']
 
+query = AppacitiveQuery()
+query.free_text_tokens = free_text_tokens
+
+photos = AppacitiveObject.find('photo', query)
+```
 ### Sorting and paging
 
 All search queries on the platform return a paginated response. You can specify the page number and page size of the result set that you want returned. By default, the page size for results is `20`. This is capped to a max value of `200` for performance reasons. 
@@ -3510,6 +3784,17 @@ var complexQuery = Query.And(new[]{
                                   DistanceUnit.Miles)
           });
 ```
+``` python
+//Use of `And` and `Or` operators
+centre = '36.1749687195, -115.1372222900'
+
+complex_query = AppacitiveQuery()
+filter1 = PropertyFilter('firstname').starts_with('Jo')
+filter2 = PropertyFilter('lastname').like('*oe*')
+
+filter3 = PropertyFilter('location').within_circle(centre, '10 km')
+complex_query.filter = BooleanOperator.and_query([BooleanOperator.or_query([filter1, filter2])], filter3)
+```
 
 Graph Search
 ------------
@@ -3592,6 +3877,15 @@ $$$Sample Response
 var filterQueryName = "sample_filter";
 var placeholderFillers = new Dictionary<string, string> { { "key1", "value1" }, { "key2", "value2" } };
 var results = await Graph.Filter(filterQueryName, placeholderFillers);
+```
+```python
+filter_query_name = 'sample_filter'
+place_holder_fillers = {
+    'key1': 'value1',
+    'key2': 'value2'
+}
+
+ids = AppacitiveGraphSearch.filter(filter_query_name, place_holder_fillers)
 ```
 ```javascript
 $$$Method
@@ -3685,6 +3979,16 @@ var projectQueryName = "sample_project";
 var rootIds = new List<string>() { "34912447775245454", "34322447235528474", "34943243891025029" };
 var placeholderFillers = new Dictionary<string, string> { { "key1", "value1" }, { "key2", "value2" } };
 var result = await Graph.Project(projectQueryName, rootIds, placeholderFillers);
+```
+```python
+projection_query_name = 'sample_project'
+root_ids = ['34912447775245454', '34322447235528474', '34943243891025029']
+place_holder_fillers = {
+    'key1': 'value1',
+    'key2': 'value2'
+}
+
+nodes = AppacitiveGraphSearch.project(projection_query_name, root_ids, place_holder_fillers)
 ```
 ```javascript
 $$$Method
@@ -3907,6 +4211,16 @@ var user = new User
     Password = "p@ssw0rd"
 };
 await user.SaveAsync();
+```
+``` python
+//Create a User
+user = AppacitiveUser()
+user.username = 'john.doe'
+user.firstname = 'John'
+user.email = 'john.doe@appacitive.com'
+user.password = 'p@ssw0rd'
+
+user.create()
 ```
 
 The `__createdby` and `__lastmodifiedby` properties are set to `System`. They will be set to a user id if you use another user's `session token` to perform actions on this user.
@@ -4611,6 +4925,23 @@ var creds = new UsernamePasswordCredentials("username", "password")
 var userSession = await App.LoginAsync(credentials);
 var user = userSession.LoggedInUser;  //Logged in user
 ```
+``` python
+//Authenticating user by `username` and `password`
+user = AppacitiveUser()
+user.username = 'john.doe'
+user.firstname = 'John'
+user.email = 'john.doe@appacitive.com'
+user.password = 'p@ssw0rd'
+
+user.create()
+
+response = AppacitiveUser.authenticate_user('john.doe', 'p@ssw0rd', expiry=60 * 15)
+logged_in_user = response.user
+token = response.token
+
+# Another way of autenticating the user
+response = user.authenticate('p@ssw0rd')
+```
 ``` rest
 $$$Method
 POST https://apis.appacitive.com/user/authenticate
@@ -5088,6 +5419,11 @@ $$$Sample Response
 var user = await Users.GetByUsernameAsync("john.doe");
 ```
 
+``` python
+//Get User by `username`
+user = AppacitiveUser.get_by_username('john.doe')
+```
+
 ``` javascript
 $$$Method
 Appacitive.Users.getUserByUsername('{{username}}');
@@ -5131,6 +5467,10 @@ The `useridtype` query string parameter is set to `token`.
 ``` csharp
 //  Get logged in User
 var loggedInUser = await Users.GetLoggedInUserAsync();
+```
+``` python
+//  Get logged in User
+user = AppacitiveUser.get_logged_in_user()
 ```
 ``` rest
 $$$Method
@@ -5292,6 +5632,19 @@ user.FirstName = "jane";
 user.Set<string>("city", "New York"); 
 await user.SaveAsync();
 ```
+
+``` python
+# Get the user which needs to be updated
+user = AppacitiveUser.get_by_id('65464576879867989')
+
+
+# Update certain properties
+user = AppacitiveUser()
+user.firstname = 'Jane'
+user.set_property('city', 'New York')
+
+user.update()
+```
 ``` javascript
 $$$Method
 Appacitive.User::save()
@@ -5344,6 +5697,16 @@ var query = BooleanOperator.Or(new[]{
                           Query.Property("lastname").Like("*" + token + "*")
                  });
 var users = await Users.FindAllAsync(query.ToString());
+```
+
+``` python
+firstname_filter = PropertyFilter.like('firstname', '*john*')
+lastname_filter = PropertyFilter.like('lastname', '*john*')
+
+query = AppacitiveQuery()
+query.filter = BooleanOperator.or_query([firstname_filter, lastname_filter])
+
+users = AppacitiveUser.find(query)
 ```
 
 ### Deleting a user
@@ -5419,6 +5782,9 @@ Appacitive.Users.deleteUser('1000').then(function() {
     // delete failed
 });
 ```
+``` python
+user.delete(delete_connections=False)
+```
 
 #### Delete user by username
 
@@ -5468,7 +5834,9 @@ $$$Sample Response
 ``` javascript
 $$$NOT SUPPORTED
 ```
-
+``` python
+AppacitiveUser.delete_by_username('john.doe', delete_connections=False)
+```
 #### Delete user by user token
 
 Here you can delete a user by his session token. 
@@ -5526,6 +5894,10 @@ Appacitive.Users.deleteCurrentUser().then(function() {
 }, function(status) {
     // delete failed
 });
+```
+
+``` python
+AppacitiveUser.delete_logged_in_user(delete_connections=False)
 ```
 
 ### Location Tracking
@@ -5595,7 +5967,9 @@ Appacitive.Users.currentUser().checkin(new Appacitive.GeoCoord(18.57, 75.55)).th
   alert("Checked in successfully");
 });
 ```
-
+``` python
+user.checkin(10.10, 20.20)
+```
 ### Session Management
 
 
@@ -5633,7 +6007,10 @@ Appacitive.Users.setCurrentUser(user, token);
 //Now current user points to `john.doe`
 console.log(Appacitive.Users.current().get('__id'));
 ```
-
+```  python
+ApplicationContext.set_logged_in_user(user)
+ApplicationContext.set_user_token(token)
+```
 #### Validate session token
 
 Once you create a session `token` for a user using one of the aunthenticating mechanisms, you may want to validate whether the token is a valid token or not in subsequent api calls.
@@ -5703,7 +6080,10 @@ Appacitive.Users.validateCurrentUser(true).then(function(isValid) {
     // This method also sets the current user for that token
 }); // set to true to validate usertoken making an apicall
 ```
-
+``` python
+AppacitiveUser.authenticate_user('username', 'password')
+AppacitiveUser.validate_session()
+```
 
 #### Invalidate session
 
@@ -5768,6 +6148,10 @@ Appacitive.Users.current().logout().then(function() {
     // this will now be null
     var cUser = Appacitive.Users.current();  
 });
+```
+``` python
+AppacitiveUser.authenticate_user('username', 'password')
+AppacitiveUser.invalidate_session()
 ```
 
 ### Password Management
@@ -5845,7 +6229,10 @@ Appacitive.Users.current().updatePassword('{oldPassword}','{newPassword}').then(
   alert("Password updated successfully"); 
 });
 ```
-
+``` python
+user = AppacitiveUser.get_by_username('john.doe')
+user.update_password('old_password', 'new_password')
+```
 
 #### Forgot password
 
@@ -5912,7 +6299,9 @@ Appacitive.Users.sendResetPasswordEmail("{username}", "{subject for the mail}").
   alert("Password reset mail sent successfully"); 
 });
 ```
-
+``` python
+AppacitiveUser.send_reset_password_email('username', 'email subject')
+```
 !!!javascript
 ** Custom Reset Password **
 
@@ -6116,7 +6505,15 @@ await NewEmail
 
 
 ```
- 
+``` python
+AppacitiveEmail.send_raw_email(['sathley@appacitive.com'], 'hello from py sdk', 'Wazza!', smtp={
+        "username": "sathley@appacitive.com",
+		"password": "########",
+		"host": "smtp.gmail.com",
+		"port": 465,
+		"enablessl": True
+    }, from_email='sathley@appacitive.com')
+```
 Sending a templated email
 ------------
 
@@ -6294,7 +6691,9 @@ Appacitive.Email.sendTemplatedEmail(email).then(function (email) {
     alert('Email sending failed.')
 });
 ```
-
+``` python
+AppacitiveEmail.send_templated_email(to=['sathley@appacitive.com'],subject='Subject', template_name='template_name', template_fillers={}, cc=[], bcc=[])
+```
 Push
 =======
 Push is a great way to send timely and relevant targetted messages to users of your app and enhance their overall experience and keep them informed of the latest developements on your app.
@@ -6850,6 +7249,26 @@ $$$Sample Request
 
 Device search works exactly the same as any object search. 
 
+```python
+device = AppacitiveDevice()
+device.devicetoken = 'c6ae0529f4752a6a0d127900f9e7c'
+device.devicetype = 'ios'
+
+device.channels = ['channel1', 'channel2']
+
+device.register()
+```
+
+Device device = new Device(DeviceType.iOS)
+            {
+                DeviceToken = "c6ae0529f4752a6a0d127900f9e7c",
+                Location = new Geocode(10,10),
+            };
+            device.Channels.Add("channel1");
+            device.Channels.Add("channel2");
+            await device.SaveAsync();
+``` 
+
 Push message anatomy
 ------------
 You can see the anatomy of the Push message that you will need to send to the Appacitive API
@@ -7034,7 +7453,9 @@ await PushNotification
       .SendAsync();
 
 ```
-
+``` python
+push_id = AppacitivePushNotification.broadcast(data={}, platform_options={}, expire_after=None)
+```
 ###Sending a Query based Push
 
 You can send a push depending on certain filters.
@@ -8091,6 +8512,12 @@ var upload = new FileUpload("image/jpeg");
 string uploadUrl = await upload.GetUploadUrlAsync(30);
 //Custom logic to upload file
 ```
+
+``` python
+response = AppacitiveFile.get_upload_url('image/png', 'my_selfie', expires=15)
+url = response.url
+file_id = response.id
+```
 ``` javascript
 $$$Sample Request
 // save it on server
@@ -8192,7 +8619,10 @@ file.getDownloadUrl).then(function(url) {
     alert("Downloading file");
 });
 ```
-
+``` python
+response = AppacitiveFile.get_download_url('my_selfie',  expires=15)
+download_url = response.url
+```
 You can now download the file by making a GET request to the `pre-signed` download `url` in the response object. 
 No additional headers are required. For more details, refer to <a href="http://aws.amazon.com/documentation/s3/">Amazon S3 documentation</a>. 
 Url is valid for 1 minute by default, but if you want to increase the expiry time set the `expires` query string parameter while retreiving the download url. 
@@ -8236,7 +8666,9 @@ $$$Sample Response
   }
 }
 ```
-
+``` python
+AppacitiveFile.delete_file('my_selfie')
+```
 Update a file
 --------------
 You can update a previously uploaded file for your app by using it's unique file name and re-uploading another file in its place.
