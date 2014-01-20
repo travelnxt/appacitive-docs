@@ -1651,6 +1651,8 @@ Also includes:
                         token = this.token.text;
                         var lang = this.token.lang;
 
+                        lang = lang.replace('!','');
+
                         lang = $.trim(lang);
                         token = marked(token);
                         token = $(token).html();
