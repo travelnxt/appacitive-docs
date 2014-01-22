@@ -7278,7 +7278,7 @@ device.channels = ['channel1', 'channel2']
 
 device.register()
 ```
-
+``` csharp
 Device device = new Device(DeviceType.iOS)
             {
                 DeviceToken = "c6ae0529f4752a6a0d127900f9e7c",
