@@ -5137,7 +5137,8 @@ window.fbAsyncInit = function() {
 Appacitive.Facebook.requestLogin().then(function(fbResponse) {
   var token = Appacitive.Facebook.accessToken();
 
-  console.log('Facebook login successfull with access token: ' + token);
+  console.log('Facebook login successfull with access token: '
+     + token);
 
   // signup with Appacitive
   return Appacitive.Users.loginWithFacebook(token);
