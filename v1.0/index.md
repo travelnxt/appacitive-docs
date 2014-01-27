@@ -151,6 +151,12 @@ curl -X GET \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 https://apis.appacitive.com/object/device/find/all
 ```
+
+
+``` ios
+[Appacitive initWithAPIKey:@"{Your API Key}"];
+```
+
 ``` python
 Add your API-Key and environemt details in the Django style settings.py file.
 ```
@@ -250,6 +256,14 @@ score.attr('team_color', 'blue');
 score.addTag("amateur");
 score.addtag("unverified")
 ```
+``` ios
+APObject *score = [[APObject alloc] initWithTypeName:@"score"];
+[score addPropertyWithKey:@"difficulty" value:@"normal"];
+[score addPropertyWithKey:@"level" value:@"10"];
+[score addPropertyWithKey:@"score" value:@1400];
+[score addAttributeWithKey:@"isFirstTimeUser" value:@"true"];
+[score addAttributeWithKey:@"hasVerified" value:@"false"];
+```
 
 ``` python
 score = AppacitiveObject('score')
@@ -293,6 +307,13 @@ $$$Method
 Appacitive.Object::save();
 ```
 
+``` ios
+$$$Method 
+//APObject instance method
+saveObjectWithSuccessHandler:failureHandler
+```
+
+
 ``` python
 score.create()
 ```
@@ -335,27 +356,33 @@ post.save().then(function(){
 });
 ```
 
-``` python
-# create a new object for type 'post'
-post = AppacitiveObject('post')
+``` ios
+$$$Sample Request
+APObject *post = [[APObject alloc] initWithTypeName:@"post"];
+[post addAttributeWithKey:@"title" value:@"sample post"];
+[post addAttributeWithKey:@"text" value:@"This is a sample post"];
+[post saveObjectWithSuccessHandler:^(NSDictionary *result){
+		NSLog(@"Object saved successfully!");
+	}failureHandler:^(APError *error){
+		NSLog(@"Error occurred: %@",[error description]);
+	}];
+```
 
-# set two of its properties 'title' & 'text'
+
+``` python
+post = AppacitiveObject('post')
 post.set_property('title', 'Python Programming Language')
 post.set_property('text', 'Python is a programming language that lets you work more quickly and integrate your systems more effectively.')
 
-# add an key-value pair attribute to the object
 post.set_attribute('is_verified', 'false')
 
-# add a few tags to the object
 post.add_tag('intro')
 post.add_tags(['python', 'technology'])
 
-# create the object on appacitive
 post.create()
 
-# response json contains the status of the create call
-# if the call fails for any reason, this method raises an AppacitiveError exception with the exception details
-# if successful, populates the 'post' object with system-defined properties like __id, __createdBy etc., user defined properties, attributes and tags.
+# response object contains the status of the create call
+# if successful, populates the post object with system-defined properties like __id, __createdBy etc.
 ```
 ``` rest
 $$$Sample Response
@@ -392,6 +419,11 @@ $$$Sample Response
 ``` javascript
 //The response callback would be invoked with the object updated with system properties.
 //A unique identifier called __id is generated and is stored in the post object. You can access it directly using id().
+```
+``` ios
+//If successful, the successBlock will be executed, all the system properties of the object will be populated and the block paramater "result" will contain the response from the save call.
+
+//If unsuccessful, the failureBlock will be executed and the block parameter "error" will contain an APError object. Call the description method on the error object to get the details of the error.
 ```
 
 ### Retrieve an existing object
@@ -486,9 +518,29 @@ $$$Method
 def get(cls, object_type, object_id, fields=None):
 
 ```
+``` ios
+$$$Method
+//APObject instance method
+fetchWithSuccessHandler:failureHandler:
+```
+
+``` ios
+$$$Sample Request
+APObject *post = [[APObject alloc] initWithTypeName:@"post"];
+[post fetchWithSuccessHandler:^(){
+	NSLog(@"post title:%@, post text:%@",[object getTitle],[object getText]);
+}failureHandler:^(APError *error) {
+	NSLog(@"Error occurred: %@",[error description]);
+}];
+
+//If successful, the successBlock will be executed and all the properties of the object will be populated.
+
+//If unsuccessful, the failureBlock will be executed and the block parameter "error" will contain an APError object. Call the description method on the error object to get the details of the error.
+
+```
+
 ``` python
 $$$Sample Request
-# fetch an object of type 'post' and id 33017891581461312 from appacitive
 post = AppacitiveObject.get('post', '33017891581461312')
 print 'Fetched post with title %s and text %s' % (post.get_property('title'), post.get_property('text'))
 ```
@@ -632,6 +684,24 @@ foreach( var post in posts )
 }
 ```
 
+``` ios
+$$$Method
+//APObject class method
+fetchObjectsWithObjectIds:typeName:successHandler:failureHandler:
+```
+
+``` ios
+$$$Sample Request
+NSArray *objectIdList = [[NSArray alloc] initWithObjects:@"33017891581461312",@"33017891581461313", nil];
+[APObject fetchObjectsWithObjectIds:objectIdList typeName:@"post" 
+            successHandler:^(NSArray *objects){ 
+              NSLog("%@ number of objects fetched.", [objects count]);
+            } failureHandler:^(APError *error) {
+                NSLog(@"Error occurred: %@",[error description]); 
+            }];
+```
+
+
 ``` python
 $$$Method
 @classmethod
@@ -639,7 +709,6 @@ def multi_get(cls, object_type, object_ids, fields=None):
 ```
 ``` python
 $$$Sample Request
-# fetch two objects of type 'post' with ids 33017891581461312 and 33017891581461313 from appacitive in a single call.
 object_ids = ['33017891581461312', '33017891581461313']
 posts = AppacitiveObject.multi_get('post', object_ids)
 
@@ -706,7 +775,22 @@ $$$Sample Response
   }
 }
 ```
+``` ios
+$$$Method
+//APObject instance method
+fetchWithQueryString:successHandler:failureHandler:
+```
+``` ios
+$$$Sample Request
+NSString *fields = [APQuery queryWithFields:[NSArray arrayWithObjects:@"text",@"title",nil]];
 
+APObject *post = [[APObject alloc]initWithTypeName:@"post"];
+ [post fetchWithQueryString:queryString successHandler:^(){
+      NSLog(@"post title:%@, post text:%@",[object getTitle],[object getText]);
+    }failureHandler:^(APError *error){
+      NSLog(@"Error occurred: %@",[error description]);
+    }];
+```
 ``` csharp
 $$$Method
 public static async Task<APObject> Appacitive.SDK.APObjects.GetAsync(
@@ -732,8 +816,6 @@ def get(cls, object_type, object_id, fields=None):
 ```
 ``` python
 $$$Sample Request
-# fetch only a few fields of an object of type 'post' from appacitive by its id
-# this method helps to reduce the payload of the response from the server
 fields_to_fetch = ['text', 'title']
 post = AppacitiveObject.get('post', '33017891581461312', fields_to_fetch)
 print 'Fetched post with title %s and text %s' % (post.get_property('title'), post.get_property('text'))
@@ -843,6 +925,39 @@ $$$Sample Response
   }
 }
 ```
+``` ios
+$$$Method
+//APObject instance method
+updateObjectWithSuccessHandler:failureHandler:
+```
+``` ios
+$$$Sample Request
+// Incase the object is not already retrieved from the system, 
+// simply create a new instance of an object with the id. 
+// This creates a "handle" to the object on the client
+// without actually retrieving the data from the server.
+// Simply update the fields that you want to update and call the update method on the object.
+
+// This will simply create a handle or reference to the existing object.
+APObject *post = [[APObject alloc] initWithTypeName:@"post" objecId:@"33017891581461312"];
+//Update properties
+[post updatePropertyWithKey:@"title" value:@"UpdatedTitle"];
+[post updatePropertyWithKey:@"text" :@ "This is updated text for the post."];
+// Add a new attribute
+[post addAttributeWithKey:@"topic" value:@"testing"];
+// Add/remove tags
+[post addTag:@"tagA"];
+[post removeTag:@"tabC"];
+[post updateWithSuccessHandler:^(){
+  NSLog(@"post title:%@, post text:%@",[object getTitle],[object getText]);
+}failureHandler:^(APError *error){
+  NSLog(@"Error occurred: %@",[error description]);
+}];
+```
+``` ios
+$$$Note
+If the operation is successful, then the existing post object would be updated with the new values.
+```
 
 ``` csharp
 $$$Method
@@ -881,27 +996,26 @@ def update(self, with_revision=False):
 ```
 ``` python
 $$$Sample Request
-# fetch an object of type 'post' with id 33017891581461312 from appacitive
+
 post = AppacitiveObject.get('post', '33017891581461312')
 
-# modify two its properties 'title' and 'text'
 post.set_property('title', 'updated title')
 post.set_property('text', 'This is updated text for the post.')
 
-# add or update an attribute on that object
 post.set_attribute('topic', 'programming')
-# remove an existing attribute from the object
 post.remove_attribute('technology')
 
-# add a couple of tags to the object
 post.add_tags(['tagA', 'tagB'])
-# remove a tag from the object
 post.remove_tag('tagC')
-# send your changes to appacitive
-post.update()
-# object of type 'post' has now been successfully updated on appacitive
-```
 
+post.update()
+```
+``` python
+$$$Note
+After the save, the existing post object would be updated with the latest values
+of all the fields.
+
+```
 ``` javascript
 $$$Method
 Appacitive.Object::save();
@@ -989,16 +1103,30 @@ player.destroy().then(function() {
 });
 
 ```
+``` ios
+$$$Method
+//APObject instance method
+deleteObjectWithSuccessHandler:failureHandler:
+```
+``` ios
+$$$Sample Request
+
+[post deleteObjectWithSuccessHandler:^(){
+  NSLog(@"Object deleted!");
+}failureHandler:^(APError *error){
+  NSLog(@"Error occurred: %@",[error description]);
+}];
+```
+
+
 ``` csharp
 /* Delete a single object */
 await APObjects.DeleteAsync("player", "123456678809");
 ```
 
 ``` python
-# Delete a single object 
-# the variable post holds an object of type 'post' which is already present on appacitive
+/* Delete a single object */
 post.delete()
-
 ```
 
 #### Delete multiple objects
@@ -1065,14 +1193,26 @@ Appacitive.Object.multiDelete({
     alert("code:" + err.code + "\nmessage:" + err.message);
 });
 ```
+``` ios
+$$$Method
+//APObjects class method
+deleteObjectsWithIds:typeName:successHandler:failureHandler:
+```
+``` ios
+$$$Sample Request
+[APObjects deleteObjectsWithIds:@["14696753262625025",@"14696753262625026"] typeName:@"player" successHandler:^(){
+  NSLog(@"player objects deleted!");
+}failureHandler:^(APError *error){
+  NSLog(@"Error occurred: %@",[error description]);
+}];
+```
 ``` csharp
 /*  Delete multiple objects. */
 var ids = new [] { "14696753262625025", "14696753262625026" };
 await APObjects.MultiDeleteAsync("player", ids);
 ```
 ``` python
-#  Delete multiple objects. 
-# delete multiple objects of type 'post' in a single call
+/*  Delete multiple objects. */
 object_ids = ['14696753262625025', '14696753262625026']
 AppacitiveObject.multi_delete('player', object_ids)
 ```
@@ -1133,16 +1273,28 @@ player.destroy(true).then(function() {
     alert('Delete failed')
 }); 
 ```
+``` ios
+$$$Method
+//APObject instance method
+deleteObjectWithConnectingConnectionsSuccessHandler:failureHandler:
+```
+``` ios
+$$$Sample Request
+APObject *friend = [[APObject alloc] initWithTypeName:@"friend" objectId:@"123456678809"]; 
+[friend deleteObjectWithConnectingConnectionsSuccessHandler:^(){
+  NSLog(@"friend object deleted with its connections!");
+}failureHandler:^(APError *error){
+  NSLog(@"Error occurred: %@",[error description]);
+}];
+```
 ``` csharp
 /* Single Delete with connected objects */
 var deleteConnection = true;
 await APObjects.DeleteAsync("friend", "123456678809", deleteConnection);
 ```
 ``` python
-# Single Delete with connected objects 
-# fetch an object of type 'post' from appacitive with id 9312344456678809
+/* Single Delete with connected objects */
 post = AppacitiveObject.get('post', '9312344456678809')
-# delete the object along with all connections from this object or to this object
 post.delete_with_connections()
 ```
 
@@ -1243,9 +1395,7 @@ $$$sample object
     conn.Set<DateTime>("joining_date", new DateTime(2012,1,1));
 ```
 ``` python
-# assemble a connection of relation type 'employment' from an existing object of type 'employee' and id 8768521317231283123 to another existing object of type 'employer' with id 2543637146238712836
-conn = AppacitiveConnection('employment').from_existing_object_id('employee', 8768521317231283123).to_existing_object_id('employer', 2543637146238712836)
-# set a property called 'joining_date' for that connection
+conn = AppacitiveConnection('employment').from_created_object_id('employee', 8768521317231283123).to_created_object_id('employer', 2543637146238712836)
 conn.set_property('joining_date', datetime.datetime.today())
 ```
 ### Create a new connection
@@ -1364,6 +1514,24 @@ connection.save().then(function (obj) {
     alert('error while saving!');
 });
 ```
+``` ios
+$$$Method
+//APConncetion instance method
+createConnectionWithObjectA:objectB:successHandler:failureHandler:
+```
+``` ios
+$$$Sample Request
+//`review` is relation name, 
+//`reviewer` and `hotel` are the endpoint labels
+APObject *reviewer = [[APObject alloc] initWithTypeName:@"reviewer" objectId:@"123445678"];
+APObject *hotel = [[APObject alloc] initWithTypeName:@"hotel" objectId:@"987654321"];
+APConnection *connection = [[APConnection alloc] initWithRelationtType:@"review"];
+[connection createConnectionWithObjectA:reviewer objectB:hotel successHandler^() {
+  NSLog(@"Connection created!");
+}failureHandler:^(APError *error){
+  NSLog(@"Error occurred: %@",[error description]);
+}];
+```
 ``` csharp
 //`review` is relation name, 
 //`reviewer` and `hotel` are the endpoint labels
@@ -1381,12 +1549,10 @@ var connection = APConnection
 await connection .SaveAsync();
 ```
 ``` python
-
-# assemble a connection of relation type 'reviewed' from an existing object of type 'reviewer' and id 8768521317231283123 to another existing object of type 'hotel' with id 4543637146238712836
+//`review` is relation name, 
+//`reviewer` and `hotel` are the endpoint labels
 connection = AppacitiveConnection('reviewed').from_existing_object_id('reviewer', 8768521317231283123).to_existing_object_id('hotel', 4543637146238712836)
-# set a property called 'joining_date' to today's date. This property has already been created by you through the management portal on the relation
 connection.set_property('joining_date', datetime.datetime.today())
-# create the connection on appacitive
 connection.create()
 ```
 
@@ -1498,6 +1664,29 @@ connection.save().then(function (obj) {
     alert('error while saving!');
 });
 ```
+``` ios
+$$$Method
+//APConncetion instance method
+createConnectionWithObjectAId:objectB:labelA:labelB:successHandler:failureHandler:
+```
+``` ios
+$$$Sample Request
+/* Will create a new myScore connection between 
+- existing player object with id 123445678 and 
+- new score object which will be created along with the connection.
+*/ The myScore relation defines two endpoints "player" and "score" for this information.
+
+//Create an instance of object of type score
+APObject *score = [[APObject alloc] initWithTypeName:@"score"];
+[score addPropertyWithKey:@"points" value:@"150"];
+
+APConnection *connection = [[APConnection alloc] initWithRelationtType:@"myScore"];
+[connection createConnectionWithObjectAId:123445678 objectB:score labelA:@"player" labelB:@"score" successHandler^() {
+  NSLog(@"Connection created!");
+}failureHandler:^(APError *error){
+  NSLog(@"Error occurred: %@",[error description]);
+}];
+```
 ``` csharp
 /* Will create a new my_score connection between 
     - existing player object with id 123445678 and 
@@ -1518,18 +1707,19 @@ await connection.SaveAsync();
 var scoreId = score.Id;
 ```
 ``` python
-# Will create a new 'my_score' connection between 
-#    an existing 'player' object with id 12344567823432 and 
-#    a new 'score' object which will also be created when the connection is created.
-# The 'my_score' relation has two endpoints 'player' and 'score'
+/* Will create a new my_score connection between 
+    - existing player object with id 12344567823432 and 
+    - new score object which will also be created when the connection is created.
+*/ The my_score relation defines two endpoints "player" and "score" for this information.
 
+//Create an instance of object of type score
 score = AppacitiveObject('score')
 score.set_property('points', 150)
 
 conn = AppacitiveConnection('my_scores').from_existing_object_id('player', 12344567823432).to_new_object('score', score)
 conn.create()
 
-# The id of the score object will now be set since it has also been created on appacitive.
+// The id of the score object should now be set since it has also been created on the server.
 
 score_id = score.id
 ```
@@ -1652,6 +1842,35 @@ connection.save().then(function (obj) {
     alert('error while saving!');
 });
 ```
+
+``` ios
+$$$Method
+//APConncetion instance method
+createConnectionWithObjectA:objectB:labelA:labelB:successHandler:failureHandler:
+```
+``` ios
+$$$Sample Request
+/* Will create a new myScore connection between 
+- new player object which will be created along with the connection.
+- new score object which will be created along with the connection.
+*/ The myScore relation defines two endpoints "player" and "score" for this information.
+
+//Create an instance of object of type score
+APObject *score = [[APObject alloc] initWithTypeName:@"score"];
+[score addPropertyWithKey:@"points" value:@"150"];
+
+//Create an instance of object of type player
+APObject *score = [[APObject alloc] initWithTypeName:@"player"];
+[score addPropertyWithKey:@"points" value:@"150"];
+
+APConnection *connection = [[APConnection alloc] initWithRelationtType:@"myScore"];
+[connection createConnectionWithObjectA:player objectB:score labelA:@"player" labelB:@"score" successHandler^() {
+  NSLog(@"Connection created!");
+}failureHandler:^(APError *error){
+  NSLog(@"Error occurred: %@",[error description]);
+}];
+```
+
 ``` csharp
 /* Will create a new my_score connection between 
     - existing player object with id 123445678 and 
@@ -1678,11 +1897,11 @@ var scoreId = score.Id;
 var playerId = player.Id;
 ```
 ``` python
-# Will create a new 'my_score' connection between 
-#    an existing 'player' object with id 123445678 and 
-#    a new 'score' object, which will also be created when the connection is created.
-#  The 'my_score' relation has two endpoints 'player' and 'score'.
-
+/* Will create a new my_score connection between 
+    - existing player object with id 123445678 and 
+    - new score object, which will also be created when the connection is created.
+  The my_score relation defines two endpoints "player" and "score" for this information.
+*/ 
 
 score = AppacitiveObject('score')
 score.set_property('points', 150)
@@ -1788,12 +2007,27 @@ Appacitive.Connection.get({
     alert('Could not fetch, probably because of an incorrect id');
 });
 ```
+
+``` ios
+$$$Method
+//APConncetions class method
+fetchConnectionWithRelationType:objectId:successHandler:failureHandler:
+```
+``` ios
+$$$Sample Request
+[APConnections fetchConnectionWithRelationType:@"review" objectId:@"33017891581461312" successHandler^(NSArray objects) {
+  NSLog(@"Connection fetched:%@",[[objects lastObject] description]);
+}failureHandler:^(APError *error){
+  NSLog(@"Error occurred: %@",[error description]);
+}];
+```
+
 ``` csharp
 //Single connection by connection id
 var conn = await APConnections.GetAsync("review", "33017891581461312");
 ```
 ``` python
-# Single connection by connection id
+//Single connection by connection id
 conn = AppacitiveConnection.get('review', 33017891581461312)
 ```
 #### Retrieve multiple connections by id
@@ -1888,6 +2122,21 @@ $$$Sample Response
     "additionalmessages": []
   }
 }
+```
+
+``` ios
+$$$Method
+//APConncetions class method
+fetchConnectionsWithRelationType:objectIds:successHandler:failureHandler:
+```
+``` ios
+$$$Sample Request
+[APConnections fetchConnectionsWithRelationType:@"review" objectIds:@[@"33017891581461312",@"33017891581461313"] successHandler^(NSArray objects) {
+  for(APConnection *connection in objects)
+  	NSLog(@"Connection fetched:%@",[connection description]);
+}failureHandler:^(APError *error){
+  NSLog(@"Error occurred: %@",[error description]);
+}];
 ```
 
 ``` csharp
@@ -2057,13 +2306,29 @@ Appacitive.Connection.getBetweenObjectsForRelation({
 });
 
 ```
+
+``` ios
+$$$Method
+//APConncetions class method
+searchAllConnectionsWithRelationType:fromObjectId:toObjectId:successHandler:failureHandler:
+```
+``` ios
+$$$Sample Request
+[APConnections searchAllConnectionsWithRelationType:@"review" fromObjectId:@"33017891581461312" toObjectId:@"33017891581461313" successHandler^(NSArray objects) {
+  for(APConnection *connection in objects)
+  	NSLog(@"Connection fetched:%@",[connection description]);
+}failureHandler:^(APError *error){
+  NSLog(@"Error occurred: %@",[error description]);
+}];
+```
+
 ``` csharp
 //Single connection by endpoint object ids
 var connection2 = await APConnections.GetAsync("reivew", 
                                        "22322", "33422");
 ```
 ``` python
-# Single connection by endpoint object ids
+//Single connection by endpoint object ids
 conn = AppacitiveConnection.find_by_objects('22322', '33422', relation='review')
 ```
 
@@ -2184,6 +2449,24 @@ Appacitive.Connection.get({
     alert('Could not fetch, probably because of an incorrect id');
 });
 ```
+``` ios
+$$$Method
+//APConnection instance method
+updateConnectionWithSuccessHandler:failureHandler:
+```
+``` ios
+$$$Sample Request
+[APConnections fetchConnectionWithRelationType:@"review" objectId:@"12345" successHandler:^(NSArray objects) {
+	APConnection *review = [objects lastObject];
+	[connection updatePropertyWithKey:@"description" value:@"good hotel"];
+	[connection updateConnectionWithSuccessHandler:^() {
+		NSLog(@"Connection updated! New Description:%@",[connection.properties valueForKey:@"description"]);
+	} failureHandler:^(APError *error) {
+		NSLog(@"Error occurred: %@",[error description]);
+	}];
+}];
+```
+
 ``` csharp
 //Get the connection object and update the description
 var connection = await APConnections.GetAsync("review", "1234345");
@@ -2191,7 +2474,7 @@ connection.Set<string>("description", "good hotel");
 await connection.SaveAsync();
 ```
 ``` python
-# Get the connection object and update the description
+//Get the connection object and update the description
 connection = AppacitiveConnection.get('review', '1234345')
 connection.set_property('description', 'Good Hotel.')
 connection.update(with_revision=False)
@@ -2258,12 +2541,29 @@ review.destroy().then(function() {
 });
 
 ```
+``` ios
+$$$Method
+//APConnection instance method
+deleteConnectionWithSuccessHandler:failureHandler:
+```
+``` ios
+$$$Sample Request
+[APConnections fetchConnectionWithRelationType:@"review" objectId:@"12345" successHandler:^(NSArray objects) {
+	APConnection *review = [objects lastObject];
+	[connection deleteConnectionWithSuccessHandler:^() {
+		NSLog(@"Connection deleted"]);
+	} failureHandler:^(APError *error) {
+		NSLog(@"Error occurred: %@",[error description]);
+	}];
+}];
+```
+
 ``` csharp
 /* delete review connection with id 123123 */
 await APConnections.DeleteAsync("review", "123345");
 ```
 ``` python
-# delete review connection with id 123123 
+/* delete review connection with id 123123 */
 connection = AppacitiveConnection.get('review', '123345')
 connection.delete()
 ```
@@ -2334,6 +2634,21 @@ Appacitive.Connection.multiDelete({
     alert("code:" + status.code + "\nmessage:" + status.message);
 });
 ```
+
+``` ios
+$$$Method
+//APConnections class method
+deleteConnectionsWithRelationType:objectIds:successHandler:failureHandler:
+```
+``` ios
+$$$Sample Request
+[APConnections deleteConnectionsWithRelationType:@"review" objectIds:@[@"40438996554377032",@"40440007982449139",@"40440007982449139"] successHandler:^() {
+	NSLog(@"Connection deleted"]);
+} failureHandler:^(APError *error) {
+	NSLog(@"Error occurred: %@",[error description]);
+}];
+```
+
 ``` csharp
 /* delete review connections with ids 40438996554377032, 40440007982449139 & 40440007982449139 */
 
@@ -2341,7 +2656,7 @@ var ids = new [] {"40438996554377032", "40440007982449139", "40440007982449139"}
 await APConnections.MultiDeleteAsync("review", ids);
 ```
 ``` python
-# delete review connections with ids 40438996554377032, 40440007982449139 & 40440007982449139 
+/* delete review connections with ids 40438996554377032, 40440007982449139 & 40440007982449139 */
 
 connection_ids = ['40438996554377032', '40440007982449139', '40440007982449139']
 AppacitiveConnection.multi_delete('review', connection_ids)
@@ -2487,6 +2802,20 @@ city.fetchConnectedObjects({
 });
 
 /* On success, city object is populated with a visitor property in its children. So, city.children.visitor will give you a list of all visitors of Appacitive.Object type. These objects also contain a connection property which consists of its link properties with jane.*/
+```
+
+``` ios
+$$$Method
+//APConnections class method
+deleteConnectionsWithRelationType:objectIds:successHandler:failureHandler:
+```
+``` ios
+$$$Sample Request
+[APConnections deleteConnectionsWithRelationType:@"review" objectIds:@[@"40438996554377032",@"40440007982449139",@"40440007982449139"] successHandler:^() {
+	NSLog(@"Connection deleted"]);
+} failureHandler:^(APError *error) {
+	NSLog(@"Error occurred: %@",[error description]);
+}];
 ```
 
 ``` csharp
@@ -2636,6 +2965,23 @@ Appacitive.Connection.getBetweenObjects({
 });
 
 ```
+``` ios
+$$$Method
+//APConnections class method
+searchAllConnectionsFromObjectId:toObjectId: successHandler:failureHandler:
+```
+``` ios
+$$$Sample Request
+[APConnections searchAllConnectionsFromObjectId:@"22322" toObjectId:@"33422" 
+successHandler:^(NSArray *objects) {
+	NSLog(@"Connections fetched:%@"]);
+  for(APConnection *conn in objects)
+		NSLog(@"%@ ",[conn description])
+} failureHandler:^(APError *error) {
+	NSLog(@"Error occurred: %@",[error description]);
+}];
+```
+
 
 ``` python
 connections = AppacitiveConnection.find_by_objects(object_id_1='22322', object_id_2='33422', relation=None, fields=None)
@@ -2796,6 +3142,22 @@ Appacitive.Connection.getInterconnects({
 });
 
 ```
+``` ios
+$$$Method
+//APConnections class method
+searchAllConnectionsFromObjectId:toObjectIds: successHandler:failureHandler:
+```
+``` ios
+$$$Sample Request
+[APConnections searchAllConnectionsFromObjectId:@"22322" toObjectIds:@[@"33422", @"44522", @"55622", @"66722"] 
+successHandler:^(NSArray *objects) {
+	NSLog(@"Connections fetched:%@"]);
+  for(APConnection *conn in objects)
+		NSLog(@"%@ ",[conn description]);
+} failureHandler:^(APError *error) {
+	NSLog(@"Error occurred: %@",[error description]);
+}];
+```
 ``` python
 $$$ Sample Request
 id_for_John = '22322'
@@ -2910,6 +3272,20 @@ var successHandler = function(players) {
 // make a call
 query.fetch().then(succcessHandler);
 ```
+``` ios
+//Build the query
+APQuery *query = [[APQuery queryExpressionWithProperty:@"firstName"] isEqualTo:@"John"]
+
+//`objects` is `PagedList` of `APObject`
+[APObject searchAllObjectsWithTypeName:@"player" withQueryString:[query stringForm] 
+	successHandler:^(NSArray *objects) {
+	NSLog(@"Objects fetched:%@"]);
+  for(APConnection *obj in objects)
+		NSLog(@"%@ ",[obj description]);
+} failureHandler:^(APError *error) {
+	NSLog(@"Error occurred: %@",[error description]);
+}];
+```
 ``` csharp
 //Build the query
 var query = Query.Property("firstname").Equals("John");
@@ -2928,10 +3304,10 @@ while (true)
 }
 ```
 ``` python
-# build the query
+//Build the query
 query = AppacitiveQuery()
 query.filter = PropertyFilter('firstname').is_equal_to('John')
-# fire the query
+
 players = AppacitiveObject.find('player', query)
 ```
 ### Conventions for REST api
@@ -2970,7 +3346,9 @@ https://apis.appacitive.com/user/find/all?query=@group_name=='developers'
 ``` javascript
 // Not applicable as this is handled inside the SDK.
 ```
-
+``` ios
+// Not applicable as this is handled inside the SDK.
+```
 ``` csharp
 // Not applicable as this is handled inside the SDK.
 ```
@@ -2993,7 +3371,9 @@ sent in a specific format. The details of the formatting are provided below for 
 ``` javascript
 // Not applicable as this is handled inside the SDK.
 ```
-
+``` ios
+// Not applicable as this is handled inside the SDK.
+```
 ``` csharp
 // Not applicable as this is handled inside the SDK.
 ```
@@ -3126,19 +3506,39 @@ var date = DateTime.UtcNow.AddYears(-30);
 var greaterThanQuery = Query.Property("birthdate").IsGreaterThan(date);
 ```
 
-``` python
-# Samples
+``` ios
+///Samples
 
-# First name like "oh"
+//First name like "oh"
+APQuery *likeQuery = [[APQuery queryExpressionWithProperty:@"firstname"] isLike@"oh"];
+
+//First name starts with "jo"
+APQuery *startWithQuery = [[APQuery queryExpressionWithProperty:@"firstname"] startsWith@"jo"];
+
+//Between two dates
+NSDate *startDate = [NSDate dateByAddingTimeInterval:NSTimeIntervalSince1970-30];
+NSDate *endDate = [NSDate dateByAddingTimeInterval:NSTimeIntervalSince1970-20];
+APQuery *betweenDatesQuery = [[APQuery queryExpressionWithProperty@"birthdate"] isBetweenDates:startDate and:endDate];
+
+//Greater than a date
+NSDate *date = [NSDate dateByAddingTimeInterval:NSTimeIntervalSince1970-30];
+APQuery *greaterThanQuery = [[APQuery queryExpressionWithProperty@"birthdate"] isGreaterThanDate:date];
+```
+
+
+``` python
+///Samples
+
+//First name like "oh"
 like_filter = PropertyFilter('firstname').like('*oh*')
 
-# First name starts with "jo"
+//First name starts with "jo"
 starts_with_filter = PropertyFilter(''firstname').starts_with('Jo')
 
-# Between two dates
+//Between two dates
 between_dates_filter = PropertyFilter('birthdate').between(datetime.date(1980, 1, 1), datetime.date.today())
 
-# Greater than a date
+//Greater than a date
 greater_than_filter = PropertyFilter('birthdate').is_greater_than(datetime.date(1970, 1, 1))
 ```
 ### Geo queries
@@ -3237,8 +3637,20 @@ var radialQuery = Query
                     .WithinCircle(center, 10.0M, DistanceUnit.Miles);
 var hotels = await APObjects.FindAllAsync( "hotel", radialQuery);
 ```
+``` ios
+CLLocation *lasVegas = [[CLLocation alloc] initWithLatitude:361749687195 longitude:-115.1372222900];
+NSString *radialQuery = [APQuery queryWithRadialSearchForProperty:@"location" nearLocation:lasVegas withinRaduis:[NSNumber numberWithInt:10] usingDistanceMetric:kMiles];
+[APObject searchAllObjectsWithTypeName:@"hotel" withQueryString:radialQuery 
+	successHandler:^(NSArray *objects) {
+		NSLog(@"Hotels found:-");
+		for(APObject *hotel in objects)
+			NSLog(@"%d \n", [hotel description]);
+	}failureHandler:^(APError *error) {
+		NSLog(@"Error occurred:", [error description]);
+	}];
+```
 ``` python
-# search for hotels near Las Vegas in a radius of 10 miles
+//Search for hotels near Las Vegas in a radius of 10 miles
 centre = '361749687195, -115.1372222900'
 radial_query = PropertyFilter('location').within_circle(centre, '10 mi')
 
@@ -3344,9 +3756,26 @@ var pt4 = new Geocode(36.1749687195M, -114.1372222900M);
 var geocodes = new[] { pt1, pt2, pt3, pt4 };
 var polygonQuery = Query.Property("location").WithinPolygon(geocodes);
 ```
+``` ios
+CLLocation *vertex1 = [[CLLocation alloc] initWithLatitude:36.1749687195 longitude:-115.1372222900];
+CLLocation *vertex2 = [[CLLocation alloc] initWithLatitude:34.1749687195 longitude:-116.1372222900];
+CLLocation *vertex3 = [[CLLocation alloc] initWithLatitude:35.1749687195 longitude:-114.1372222900];
+CLLocation *vertex4 = [[CLLocation alloc] initWithLatitude:36.1749687195 longitude:-114.1372222900];
+NSArray *polyCoords = [NSArray arrayWithObjects:vertex1, vertex2, vertex3, vertex4, nil];
 
+NSString *polygonSearch = [APQuery queryWithPolygonSearchForProperty:@"location" withPolygonCoordinates:polyCoords];
+
+[APObject searchAllObjectsWithTypeName:@"hotel" withQueryString:polygonSearch
+	successHandler:^(NSArray *objects) {
+	NSLog(@"Hotels Found:-");
+	for(APObject *hotel in objects)
+		NSLog(@"%@ \n", [hotel description]);
+	} failureHandler:^(APError *error) {
+		NSLog(@"Error occurred: %@", [error description]);
+	}];
+```
 ``` python
-# search for hotel which is between 4 co-ordinates
+//Search for hotel which is between 4 co-ordinates
 pt1 = '36.1749687195, -115.1372222900'
 pt2 = '34.1749687195, -116.1372222900'
 pt3 = '35.1749687195, -114.1372222900'
@@ -3428,6 +3857,21 @@ $$$Sample Response
   }
 }
 ```
+``` ios
+// Get all messages tagged with tags personal or private.
+NSArray *tags = [NSArray arrayWithObjects:@"personal", @"private", nil];
+    
+NSString *tagQuery = [APQuery queryWithSearchUsingOneOrMoreTags:tags];
+
+[APObject searchAllObjectsWithTypeName:@"messages" withQueryString:tagQuery
+	successHandler:^(NSArray *objects) {
+	NSLog(@"Messages with 'personal', 'private' tags found:-");
+	for(APObject *message in objects)
+		NSLog(@"%@ \n", [message description]);
+	} failureHandler:^(APError *error) {
+		NSLog(@"Error occurred: %@", [error description]);
+	}];
+```
 ``` csharp
 // Get all messages tagged with tags personal or private.
 var query = Query
@@ -3436,7 +3880,7 @@ var query = Query
 var messages = await APObjects.FindAllAsync( "message", query );
 ```
 ``` python
-# fetch all messages tagged with tags personal or private.
+// Get all messages tagged with tags personal or private.
 tags_to_match = ['personal', 'private']
 tag_query = TagFilter().match_one_or_more(tags_to_match)
 
@@ -3519,6 +3963,21 @@ $$$Sample Response
   }
 }
 ```
+``` ios
+// Get all messages tagged with tags personal and test
+NSArray *tags = [NSArray arrayWithObjects:@"personal", @"test", nil];
+    
+NSString *tagQuery = [APQuery queryWithSearchUsingAllTags:tags];
+
+[APObject searchAllObjectsWithTypeName:@"messages" withQueryString:tagQuery
+	successHandler:^(NSArray *objects) {
+	NSLog(@"Messages with 'personal' and 'test' tags found:-");
+	for(APObject *message in objects)
+		NSLog(@"%@ \n", [message description]);
+	} failureHandler:^(APError *error) {
+		NSLog(@"Error occurred: %@", [error description]);
+	}];
+```
 ``` csharp
 // Get all messages tagged with tags personal and test
 var query = Query
@@ -3527,7 +3986,7 @@ var query = Query
 var messages = await APObjects.FindAllAsync( "message", query );
 ```
 ``` python
-# fetch all messages tagged with tags personal and test
+// Get all messages tagged with tags personal and test
 tags_to_match = ['personal', 'test']
 tag_query = TagFilter().match_all(tags_to_match)
 
@@ -3630,6 +4089,18 @@ $$$Sample Response
   }
 }
 ```
+``` ios
+NSString *queryString = [APQuery queryWithSearchUsingFreeText:[NSArray arrayWithObjects:@"champs", @"palais", nil]];    
+
+[APObject searchAllObjectsWithTypeName:@"messages" withQueryString:tagQuery
+	successHandler:^(NSArray *objects) {
+	NSLog(@"Messages with 'champ', 'palais' text found:-");
+	for(APObject *message in objects)
+		NSLog(@"%@ \n", [message description]);
+	} failureHandler:^(APError *error) {
+		NSLog(@"Error occurred: %@", [error description]);
+	}];
+```
 ```javascript
 //create the query
 var query = new Appacitvie.Filter.FindAllQuery({
@@ -3704,6 +4175,20 @@ $$$Sample Response
     "additionalmessages": []
   }
 }
+```
+``` ios   
+NSString *pageSizeQuery = [APQuery queryWithPageSize:30 andPageNumber:4];
+NSString *pageNumberQuery = [APQuery queryWithPageSize:30];
+NSString *orderByQuery = [APQuery queryWithOderBy@"__createdby" isAscending:YES];
+NSString *queryString = [NSString stringWithFormat:@"%@&%@&%@",pageSizeQuery, pageNumberQuery, orderByQuery];
+[APObject searchAllObjectsWithTypeName:@"photos" withQueryString:queryString
+	successHandler:^(NSArray *objects) {
+	NSLog(@"Photos ordered by creator in a set of 4 pages of 30 photos each:-");
+	for(APObject *photo in objects)
+		NSLog(@"%@ \n", [photo description]);
+	} failureHandler:^(APError *error) {
+		NSLog(@"Error occurred: %@", [error description]);
+	}];
 ```
 ```javascript
 //create a query
@@ -3787,6 +4272,22 @@ query.filter(
 //fire the query
 query.fetch();
 ```
+``` ios   
+CLLocation *center = [CLLocation alloc] initWithLatitude:36.1749687195 longitude:-115.1372222900
+
+APCompoundQuery *compoundQuery = [APQuery booleanAnd:[NSArray arrayWithObjects:[APQuery booleanOr:[NSArray arrayWithObjects:[[APQuery queryExpressionWithProperty:@"firstName"] startsWith:@"jo"],[[APQuery queryExpressionWithProperty:@"lastname"] isLike:@"*oe*"], nil]], [APQuery queryWithRadialSearchForProperty:@"location" nearLocation:center withinRaduis:10 usingDistanceMetric:kMiles], nil]];
+
+NSString *queryString = [NSString stringWithFormat:@"query=%@"[compoundQuery stringForm]];
+[APObject searchAllObjectsWithTypeName:@"people" withQueryString:queryString
+	successHandler:^(NSArray *objects) {
+	NSLog(@"People whose name and location match the query:-");
+	for(APObject *person in objects)
+		NSLog(@"%@ \n", [person description]);
+	} failureHandler:^(APError *error) {
+		NSLog(@"Error occurred: %@", [error description]);
+	}];
+```
+
 ``` csharp
 //Use of `And` and `Or` operators
 var center = new Geocode(36.1749687195M, -115.1372222900M);
@@ -3805,7 +4306,7 @@ var complexQuery = Query.And(new[]{
           });
 ```
 ``` python
-# use of `And` and `Or` operators
+//Use of `And` and `Or` operators
 centre = '36.1749687195, -115.1372222900'
 
 complex_query = AppacitiveQuery()
@@ -3892,7 +4393,16 @@ $$$Sample Response
 	}
 }
 ```
+``` ios   
+[APGraphNode applyFilterGraphQuery:@"sdktest" usingPlaceHolders:@{@"key1":@"value1", @"key2":@"value2"} successHandler:^(NSArray *objects) {
+		NSLog(@"ObjectIds found:-");
+		for(NSString *objectId in objects)
+			NSLog(@"%@ \n",objectId);
+} failureHandler:^(APError *error) {
+		NSLog(@"Error occurred: %@", [error description]);
+}];
 
+```
 ```csharp
 var filterQueryName = "sample_filter";
 var placeholderFillers = new Dictionary<string, string> { { "key1", "value1" }, { "key2", "value2" } };
@@ -3993,7 +4503,17 @@ $$$Sample Response
 	}
 }
 ```
+``` ios
+APGraphNode *node = [[APGraphNode alloc] init];
 
+[node applyProjectionGraphQuery:@"deals_for_user" usingPlaceHolders:nil 
+forObjectsIds:[NSArray arrayWithObjects:@"43248934317064873", nil] 
+successHandler:^(APGraphNode *node) {
+		NSLog(@"GraphNode:%@ \n",graphNode.description);
+} failureHandler:^(APError *error) {
+		NSLog(@"Error occurred: %@", [error description]);
+}];
+```
 ```csharp
 var projectQueryName = "sample_project";
 var rootIds = new List<string>() { "34912447775245454", "34322447235528474", "34943243891025029" };
@@ -4220,7 +4740,33 @@ newUser.save().then(function(obj) {
     alert('An error occured while saving the user.');
 });
 ```
+``` ios
+$$$METHOD
+//APUser instance method
+saveObjectWithSuccessHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
 
+APUser *user = [[APUser alloc] init];
+
+user.username = @"john.doe";
+user.birthDate = @"1982-11-17";
+user.firstName = @"John";
+user.lastName = @"Doe";
+user.email = @"john.doe@appacitive.com";
+user.password = @"p@ssw0rd";
+user.phone = @"9090909090";
+
+[user addAttributeWithKey:@"isAdminUser" value:@"No"];
+[user setTags:@[@"fakeUser", @"dummyUser"]];
+
+[user saveObjectWithSuccessHandler:^(NSDictionary *result) {
+	NSLog(@"User created!");
+} failureHandler:^(APError *error) {
+		NSLog(@"Error occurred: %@", [error description]);
+}];
+```
 ``` csharp
 //Create a User
 var user = new User
@@ -4233,7 +4779,7 @@ var user = new User
 await user.SaveAsync();
 ```
 ``` python
-# create a User
+//Create a User
 user = AppacitiveUser()
 user.username = 'john.doe'
 user.firstname = 'John'
@@ -4946,7 +5492,7 @@ var userSession = await App.LoginAsync(credentials);
 var user = userSession.LoggedInUser;  //Logged in user
 ```
 ``` python
-# authenticating user by `username` and `password`
+//Authenticating user by `username` and `password`
 user = AppacitiveUser()
 user.username = 'john.doe'
 user.firstname = 'John'
@@ -5011,7 +5557,21 @@ $$$Sample Response
   }
 }
 ```
+``` ios
+$$$METHOD
+//APUser class method
+authenticateUserWithUserName:password:successHandler:failureHandler:
+```
+``` ios
+$$$SAMPLE
+[APUser authenticateUserWithUserName:@"john.doe" password:@"secret"
+	successHandler:^(APUser *user){
+			NSLog(@"Authenticated!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@", [error description]);
+	}];
 
+```
 ```javascript
 $$$Method
 Appacitive.Users.login("{{username}}", "{{password}}");
@@ -5136,6 +5696,23 @@ $$$Sample Response
   }
 }
 ```
+``` ios
+$$$METHOD
+//APUser class method
+authenticateUserWithTwitter:oauthSecret:consumerKey:consumerSecret:successHandler:failureHandler:
+```
+``` ios
+$$$SAMPLE
+[APUser authenticateUserWithTwitter:@"86197729-p6a3vPdCfgkjn461Fn792b8P7vvsCcHbMS2oe"
+	oauthSecret:@"qTIkQt5puknk2j34njknVsXuF8q6VXA3pBfjTWiUUHgI"
+	consumerKey:@"eygsdfsdfexHIJwvhK2w"
+	consumerSecret:@"VYz5yyF9LMbvi2mgf43p85CwsX0QLuEvEJrzvrsMU"
+	successHandler:^(APUser *user){
+			NSLog(@"Authenticated!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@", [error description]);
+	}];
+```
 ``` javascript
 $$$Method
 Appacitive.Users.loginWithFacebook({{accessToken}});
@@ -5223,6 +5800,21 @@ $$$Sample Response
     "additionalmessages": []
   }
 }
+```
+``` ios
+$$$METHOD
+//APUser class method
+authenticateUserWithTwitter:oauthSecret:successHandler:failureHandler:
+```
+``` ios
+$$$SAMPLE
+[APUser authenticateUserWithTwitter:@"86197729-p6a3vPdCfgkjn461Fn792b8P7vvsCcHbMS2oe"
+	oauthSecret:@"qTIkQt5puknk2j34njknVsXuF8q6VXA3pBfjTWiUUHgI"
+	successHandler:^(APUser *user){
+			NSLog(@"Authenticated!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@", [error description]);
+	}];
 ```
 ``` javascript
 $$$Method
@@ -5346,6 +5938,21 @@ $$$Sample Response
   }
 }
 ```
+``` ios
+$$$METHOD
+//APUser instance method
+fetchUserById:successHandler:failureHandler:
+```
+``` ios
+$$$SAMPLE
+APUser *user = [[APUser alloc] init];
+[user fetchUserById:@"john.doe"
+	successHandler:^(){
+			NSLog(@"User Fetched: %@", [user description]);
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@", [error description]);
+	}];
+```
 ``` javascript
 $$$Method
 Appacitive.User::fetch();
@@ -5438,9 +6045,23 @@ $$$Sample Response
 //Get User by `username`
 var user = await Users.GetByUsernameAsync("john.doe");
 ```
-
+``` ios
+$$$METHOD
+//APUser instance method
+fetchUserByUserName:successHandler:failureHandler:
+```
+``` ios
+$$$SAMPLE
+APUser *user = [[APUser alloc] init];
+[user fetchUserByUserName:@"johndoe"
+	successHandler:^(){
+			NSLog(@"User Fetched: %@", [user description]);
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@", [error description]);
+	}];
+```
 ``` python
-# get User by `username`
+//Get User by `username`
 user = AppacitiveUser.get_by_username('john.doe')
 ```
 
@@ -5489,7 +6110,7 @@ The `useridtype` query string parameter is set to `token`.
 var loggedInUser = await Users.GetLoggedInUserAsync();
 ```
 ``` python
-#  fet logged in User
+//  Get logged in User
 user = AppacitiveUser.get_logged_in_user()
 ```
 ``` rest
@@ -5539,6 +6160,21 @@ $$$Sample Response
     "additionalmessages": []
   }
 }
+```
+``` ios
+$$$METHOD
+//APUser instance method
+fetchUserByUserToken:successHandler:failureHandler:
+```
+``` ios
+$$$SAMPLE
+APUser *user = [[APUser alloc] init];
+[APUser fetchUserByUserToken:@"ap1dg3o5ndva84n6bdty2"
+	successHandler:^(){
+			NSLog(@"User Fetched: %@", [user description]);
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@", [error description]);
+	}];
 ```
 ``` javascript
 $$$Method
@@ -5652,7 +6288,22 @@ user.FirstName = "jane";
 user.Set<string>("city", "New York"); 
 await user.SaveAsync();
 ```
-
+``` ios
+$$$METHOD
+//APUser instance method
+updateObjectWithSuccessHandler:failureHandler:
+```
+``` ios
+$$$SAMPLE
+APUser *user = [[APUser alloc] init];
+[user fetchUserById:@"john.doe"];
+user.firstName = @"Johnathan";
+[APUser updateUserWithSuccessHandler:^(){
+			NSLog(@"User Updated: %@", [user description]);
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@", [error description]);
+	}];
+```
 ``` python
 # Get the user which needs to be updated
 user = AppacitiveUser.get_by_id('65464576879867989')
@@ -5662,7 +6313,7 @@ user = AppacitiveUser.get_by_id('65464576879867989')
 user = AppacitiveUser()
 user.firstname = 'Jane'
 user.set_property('city', 'New York')
-# Send changes to appacitive
+
 user.update()
 ```
 ``` javascript
@@ -5708,6 +6359,16 @@ Appacitive.Object.FindAll({
 }, function(status) {
   console.log("Error fetching users");
 });
+```
+``` ios
+$$$SAMPLE
+[APObject searchAllObjectsWithTypeName:@"user" 
+	successHandler:^(NSArray *objects){
+		for(APObject *user in objects)
+			NSLog(@"User Found: %@", [user description]);
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@", [error description]);
+	}];
 ```
 ``` csharp
 //Search user by building `Query`
@@ -5789,6 +6450,21 @@ $$$Sample Response
   }
 }
 ```
+``` ios
+$$$METHOD
+//APUser instance method
+deleteObjectWithSuccessHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+APUser *user = [[APUser alloc] init];
+[user fetchUserById:@"johndoe"];
+[APUser deleteObjectWithSuccessHandler:^(){
+			NSLog(@"User Deleted");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@", [error description]);
+	}];
+```
 ``` javascript
 $$$Method
 Appacitive.Users.deleteUser('{{id}}');
@@ -5850,6 +6526,22 @@ $$$Sample Response
     "additionalmessages": []
   }
 }
+```
+``` ios
+$$$METHOD
+//APUser class method
+deleteObjectWithUserName:successHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+APUser *user = [[APUser alloc] init];
+[user fetchUserById:@"johndoe"];
+[APUser deleteObjectWithUserName:@"john.doe"
+	successHandler:^(){
+			NSLog(@"User Deleted");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@", [error description]);
+	}];
 ```
 ``` javascript
 $$$NOT SUPPORTED
@@ -5915,7 +6607,19 @@ Appacitive.Users.deleteCurrentUser().then(function() {
     // delete failed
 });
 ```
-
+``` ios
+$$$METHOD
+//APUser class method
+deleteCurrentlyLoggedInUserWithSuccessHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+[APUser deleteCurrentlyLoggedInUserWithSuccessHandler:^(){
+			NSLog(@"User Deleted");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@", [error description]);
+	}];
+```
 ``` python
 AppacitiveUser.delete_logged_in_user(delete_connections=False)
 ```
@@ -5952,6 +6656,7 @@ You can store the users last known location in the `geography` property called `
 $$$Method
 POST https://apis.appacitive.com/user/{userid}/checkin?lat={latitude}&long={longitude}
 ```
+
 ``` rest
 $$$Sample Request
 //  Delete user using his session token
@@ -5975,6 +6680,20 @@ $$$Sample Response
     "additionalmessages": []
   }
 }
+```
+``` ios
+$$$METHOD
+//APUser class method
+setUserLocationToLatitude:longitude:forUserWithUserId:successHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+[APUser setUserLocationToLatitude:@"18.57" longitude:@"75.55" forUserWithUserId:@"johndoe"
+	successHandler:^(){
+			NSLog(@"User Checked-in!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@", [error description]);
+	}];
 ```
 ``` javascript
 $$$Method
@@ -6083,6 +6802,22 @@ $$$Sample Response
   }
 }
 ```
+``` ios
+$$$METHOD
+//APUser class method
+validateCurrentUserSessionWithSuccessHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+[APUser validateCurrentUserSessionWithSuccessHandler:^(NSDictionary *result){
+		if([result objectForKey@"result"] == 1)
+			NSLog(@"User session is valid!");
+		else
+			NSLog(@"User session has expired!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@", [error description]);
+	}];
+```
 ``` javascript
 $$$Method
 Appacitive.Users.validateCurrentUser(validateAPI);
@@ -6156,6 +6891,19 @@ $$$Sample Response
     "additionalmessages": []
   }
 }
+```
+``` ios
+$$$METHOD
+//APUser class method
+logoutCurrentlyLoggedInUserWithSuccessHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+[APUser logoutCurrentlyLoggedInUserWithSuccessHandler:^(){
+			NSLog(@"User logged out!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@", [error description]);
+	}];
 ```
 ``` javascript
 $$$Method
@@ -6238,6 +6986,22 @@ $$$Sample Response
   }
 }
 ```
+``` ios
+$$$METHOD
+//APUser instance method
+changePasswordFromOldPassword:toNewPassword:successHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+APUser *user = [[APUser alloc] init];
+[user fetchUserWithId:@"janedoe"];
+[user changePasswordFromOldPassword:@"oldSecret" toNewPassword:"newSecret"
+	successHandler:^(){
+			NSLog(@"Password updated!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@", [error description]);
+	}];
+```
 ``` javascript
 $$$Method
 Appacitive.User::updatePassword('{oldPassword}','{newPassword}');
@@ -6308,7 +7072,22 @@ $$$Sample Response
   }
 }
 ```
-
+``` ios
+$$$METHOD
+//APUser instance method
+sendResetPasswordEmailWithEmailSubject:successHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+APUser *user = [[APUser alloc] init];
+[user fetchUserWithId:@"janedoe"];
+[user sendResetPasswordEmailWithEmailSubject:@"Reset your Appacitive Password"
+	successHandler:^(){
+			NSLog(@"Email sent!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@", [error description]);
+	}];
+```
 ``` javascript
 $$$Method
 Appacitive.Users.sendResetPasswordEmail("{username}", "{subject for the mail}");
@@ -6464,7 +7243,35 @@ $$$Sample Response
 	}
 }
 ```
+``` ios
+$$$METHOD
+//APEmail instance method
+sendEmailWithSuccessHandler:successHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+//Using a preconfigured SMTP setting
+APEmail *email = [[APEmail alloc] initWithRecipients:@[@"xyz@mail.com", @"pqr@mail.com"] 
+subject:@"Hello" body@"Hello from Appacitive"];
 
+[email sendEmailWithSuccessHandler:^(){
+			NSLog(@"Email sent!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@", [error description]);
+	}];
+	
+//Passing the SMTP setting in the call
+APEmail *email = [[APEmail alloc] initWithRecipients:@[@"xyz@mail.com", @"pqr@mail.com"] 
+subject:@"Hello" body@"Hello from Appacitive"];
+
+[email sendEmailUsingSMTPConfig:[APEmail makeSMTPConfigurationDictionaryWithUsername:@"jane.doe@gmail.com" 
+password:@"T0P53CR3T" host:@"smtp.gmail.com" port:@465 enableSSL:YES] 
+	successHandler:^(){
+			NSLog(@"Email sent!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@", [error description]);
+	}];
+```
 ``` javascript
 $$$Method 
 Appacitive.Email.sendRawEmail(email);
@@ -6637,7 +7444,50 @@ $$$Sample Response
 		"additionalmessages": []
 	}
 }
-```          
+```     
+``` ios
+$$$METHOD
+//APEmail instance method
+sendTemplatedEmailUsingTemplate:successHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+//Using a preconfigured SMTP setting
+APEmail *email = [[APEmail alloc] initWithRecipients:@[@"xyz@mail.com", @"pqr@mail.com"] 
+subject:@"Hello" body@"Hello from Appacitive"];
+
+email.templateBody = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+		 @"John Doe", @"userfullname",
+		 @"johndoe", @"username",
+		 @"john.doe", @"accName",
+		 @"DealHunter",@"applicationName", nil];
+
+
+[email sendTemplatedEmailUsingTemplate@"myTemplate" 
+	successHandler:^(){
+			NSLog(@"Email sent!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@", [error description]);
+	}];
+	
+//Passing the SMTP setting in the call
+APEmail *email = [[APEmail alloc] initWithRecipients:@[@"xyz@mail.com", @"pqr@mail.com"] 
+subject:@"Hello" body@"Hello from Appacitive"];
+
+email.templateBody = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+		 @"John Doe", @"userfullname",
+		 @"johndoe", @"username",
+		 @"john.doe", @"accName",
+		 @"DealHunter",@"applicationName", nil];
+
+[email sendTemplatedEmailUsingTemplate:@"myTeplate" usingSMTPConfig:[APEmail makeSMTPConfigurationDictionaryWithUsername:@"jane.doe@gmail.com" 
+password:@"T0P53CR3T" host:@"smtp.gmail.com" port:@465 enableSSL:YES] 
+	successHandler:^(){
+			NSLog(@"Email sent!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@", [error description]);
+	}];
+```     
 ``` csharp
 $$$Sample Request
 
@@ -6837,7 +7687,20 @@ device.save).then(function(obj) {
   alert('error while registering!');
 });
 ```
-
+``` ios
+$$$METHOD
+//APDevice instance method
+registerDeviceWithSuccessHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+APDevice *mydevice = [[APDevice alloc] initWithDeviceToken:@"9999999999" deviceType:@"ios"];
+	[mydevice registerDeviceWithSuccessHandler:^() {
+			NSLog(@"Device registered!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@", [error description]);
+	}];
+```     
 ```csharp
 
 Device device = new Device(DeviceType.iOS)
@@ -6923,6 +7786,21 @@ $$$Sample Response
   }
 }
 ```
+``` ios
+$$$METHOD
+//APDevice instance method
+fetchWithSuccessHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+APDevice *mydevice = [[APDevice alloc] init]; 
+[device ]
+	[mydevice fetchWithSuccessHandler:^() {
+			NSLog(@"Device fetched!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@", [error description]);
+	}];
+```     
 ``` csharp
 
 ```
@@ -7030,7 +7908,22 @@ $$$Sample Response
   }
 }
 ```
-
+``` ios
+$$$METHOD
+//APDevice class method
+fetchObjectsWithObjectId:typeName:successHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+[APDevice fetchObjectsWithObjectId:@[@"12",@"23",@"34",@"45"] typeName:@"device" 
+	successHandler:^(NSArray *objects) {
+	NSLog(@"Devices fetched:%@"]);
+  for(APDevice *device in objects)
+		NSLog(@"%@ ",[device description]);
+} failureHandler:^(APError *error) {
+	NSLog(@"Error occurred: %@",[error description]);
+}];
+```   
 ``` csharp
 $$$Method
 
@@ -7141,7 +8034,25 @@ $$$Sample Request
 $$$Note
 
 ```
-
+``` ios
+$$$METHOD
+//APDevice instance method
+updateObjectWithSuccessHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+APDevice *mydevice = [[APDevice alloc] initWithDeviceToken:@"9999999999" deviceType:@"ios"];
+[mydevice registerDeviceWithSuccessHandler:^() {
+		[mydevice addAttributeWithKey:@"color" value:@"slate block"];
+		[mydevice updateObjectWithSuccessHandler:^(){
+				NSLog(@"Device Updated"]);
+		} failureHandler:^(APError *error) {
+				NSLog(@"Error occurred: %@",[error description]);
+		}];
+} failureHandler:^(APError *error) {
+		NSLog(@"Error occurred: %@",[error description]);
+}];
+``` 
 ``` javascript
 $$$Method
 
@@ -7195,7 +8106,23 @@ $$$Sample Response
   "additionalmessages": []
 }
 ```
-
+``` ios
+$$$METHOD
+//APDevice instance method
+deleteObjectWithSuccessHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+APDevice *mydevice = [[APDevice alloc] initWithDeviceToken:@"9999999999" deviceType:@"ios"];
+		[mydevice deleteObjectWithSuccessHandler:^(){
+				NSLog(@"Device Deleted"]);
+		} failureHandler:^(APError *error) {
+				NSLog(@"Error occurred: %@",[error description]);
+		}];
+} failureHandler:^(APError *error) {
+		NSLog(@"Error occurred: %@",[error description]);
+}];
+``` 
 ``` javascript
 $$$Method
 
@@ -7253,6 +8180,23 @@ $$$Sample Response
   "additionalmessages": []
 }
 ```
+``` ios
+$$$METHOD
+//APDevice instance method
+deleteObjectWithConnectingConnectionsSuccessHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+APDevice *mydevice = [[APDevice alloc] initWithDeviceToken:@"9999999999" deviceType:@"ios"];
+		[mydevice deleteObjectWithConnectingConnectionsSuccessHandler:^(){
+				NSLog(@"Device Deleted with connecting connections!"]);
+		} failureHandler:^(APError *error) {
+				NSLog(@"Error occurred: %@",[error description]);
+		}];
+} failureHandler:^(APError *error) {
+		NSLog(@"Error occurred: %@",[error description]);
+}];
+``` 
 ``` javascript
 $$$Method
 
@@ -7269,6 +8213,23 @@ $$$Sample Request
 
 Device search works exactly the same as any object search. 
 
+``` ios
+$$$METHOD
+//APDevice class method
+searchAllObjectsWithTypeName:withQueryString:successHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+[APDevice searchAllObjectsWithTypeName:@"device" withQueryString:nil
+	successHandler:^(NSArray *objects) {
+	NSLog(@"Devices found:%@"]);
+  for(APDevice *device in objects)
+		NSLog(@"%@ ",[device description]);
+} failureHandler:^(APError *error) {
+	NSLog(@"Error occurred: %@",[error description]);
+}];
+``` 
+
 ```python
 device = AppacitiveDevice()
 device.devicetoken = 'c6ae0529f4752a6a0d127900f9e7c'
@@ -7277,8 +8238,7 @@ device.devicetype = 'ios'
 device.channels = ['channel1', 'channel2']
 
 device.register()
-```
-``` csharp
+
 Device device = new Device(DeviceType.iOS)
             {
                 DeviceToken = "c6ae0529f4752a6a0d127900f9e7c",
@@ -7405,7 +8365,21 @@ $$$Sample Response
   }
 }
 ```
-
+``` ios
+$$$METHOD
+//APPushNotification class method
+sendPushWithSuccessHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+APPushNotification *notification = [[APPushNotification alloc] initWithMessage:@"Bonjour!"];
+	notification.isBroadcast = YES;
+	[notification sendPushWithSuccessHandler:^{
+			NSLog(@"Push Sent!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@",[error description]);
+	}];
+``` 
 ``` javascript
 $$$Method 
 Appacitive.Push.send(options);
@@ -7528,7 +8502,21 @@ $$$Sample Response
   }
 }
 ```
-
+``` ios
+$$$METHOD
+//APPushNotification class method
+sendPushWithSuccessHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+APPushNotification *notification = [[APPushNotification alloc] initWithMessage:@"Bonjour!"];
+	notification.query = [[[APQuery queryExpressionWithProperty:@"devicetype"] isEqualTo:@"ios"] stringForm];
+	[notification sendPushWithSuccessHandler:^{
+			NSLog(@"Push Sent!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@",[error description]);
+	}];
+``` 
 ``` javascript
 $$$Method 
 Appacitive.Push.send(options);
@@ -7724,6 +8712,22 @@ Appacitive.Push.send(options).then(function(notification) {
     alert('Sending Push Notification failed.');
 });
 ```
+``` ios
+$$$METHOD
+//APPushNotification class method
+sendPushWithSuccessHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+APPushNotification *notification = [[APPushNotification alloc] initWithMessage:@"Bonjour!"];
+	notification.channels = @[@"updates", @"upgrades"];
+	[notification sendPushWithSuccessHandler:^{
+			NSLog(@"Push sent on selected channels!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@",[error description]);
+	}];
+``` 
+
 ``` csharp
 $$$Sample Request
 
@@ -7852,6 +8856,22 @@ Appacitive.Push.send(options).then(function(notification) {
     alert('Sending Push Notification failed.');
 });
 ```
+``` ios
+$$$METHOD
+//APPushNotification class method
+sendPushWithSuccessHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+APPushNotification *notification = [[APPushNotification alloc] initWithMessage:@"Bonjour!"];
+	notification.deviceIds = @[@"23423432545", @"4353452352"];
+	[notification sendPushWithSuccessHandler:^{
+			NSLog(@"Push sent to requested devices!"]);
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@",[error description]);
+	}];
+``` 
+
 ``` csharp
 $$$Sample Request
 
@@ -7918,7 +8938,23 @@ var options =
     }
 }
 ```
-
+``` ios
+$$$METHOD
+//APPushNotification class method
+sendPushWithSuccessHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+APPushNotification *notification = [[APPushNotification alloc] initWithMessage:@"Bonjour!"];
+	notification.deviceIds = @[@"23423432545", @"4353452352"];
+	notification.platformOptions = [[APPlatformOptions alloc] init];
+	[notification.platformOptions setIosOptions:[[IOSOptions alloc] initWithSoundFile:@"PushAlert"]];
+	[notification sendPushWithSuccessHandler:^{
+			NSLog(@"Push Sent!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@",[error description]);
+	}];
+``` 
 ```csharp
 await PushNotification
       .ToDeviceIds(....)
@@ -7961,7 +8997,23 @@ var options =
     }
 }
 ```
-
+``` ios
+$$$METHOD
+//APPushNotification class method
+sendPushWithSuccessHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+APPushNotification *notification = [[APPushNotification alloc] initWithMessage:@"Bonjour!"];
+	notification.deviceIds = @[@"4562454234", @"6784645645"];
+	notification.platformOptions = [[APPlatformOptions alloc] init];
+	[notification.platformOptions setAndroidOptions:[[AndroidOptions alloc] initWithTitle:@"Welcome"]];
+	[notification sendPushWithSuccessHandler:^{
+			NSLog(@"Push Sent!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@",[error description]);
+	}];
+``` 
 ```csharp
 await PushNotification
       .ToDeviceIds(....)
@@ -8017,7 +9069,23 @@ var options = {
      }
 }
 ```
-
+``` ios
+$$$METHOD
+//APPushNotification class method
+sendPushWithSuccessHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+APPushNotification *notification = [[APPushNotification alloc] initWithMessage:@"Bonjour!"];
+	notification.deviceIds = @[@"4562454234", @"6784645645"];
+	notification.platformOptions = [[APPlatformOptions alloc] init];
+	[notification.platformOptions setWindowsPhoneOptions:[[WindowsPhoneOptions alloc] initWithToast:[[ToastNotification alloc] initWithText1:@"Text1" text2:@"Text2" path:@"path"]]];
+	[notification sendPushWithSuccessHandler:^{
+			NSLog(@"Push Sent!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@",[error description]);
+	}];
+``` 
 ```csharp
 
 await PushNotification
@@ -8063,7 +9131,23 @@ var options = {
      }
 }
 ```
-
+``` ios
+$$$METHOD
+//APPushNotification class method
+sendPushWithSuccessHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+APPushNotification *notification = [[APPushNotification alloc] initWithMessage:@"Bonjour!"];
+	notification.deviceIds = @[@"4562454234", @"6784645645"];
+	notification.platformOptions = [[APPlatformOptions alloc] init];
+	[notification.platformOptions setWindowsPhoneOptions:[[WindowsPhoneOptions alloc] initWithRaw:[[RawNotification alloc] init]]];
+	[notification sendPushWithSuccessHandler:^{
+			NSLog(@"Push Sent!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@",[error description]);
+	}];
+``` 
 ```csharp
 
 await PushNotification
@@ -8165,7 +9249,43 @@ var options=
      }
 }
 ```
-
+``` ios
+$$$METHOD
+//APPushNotification class method
+sendPushWithSuccessHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+APPushNotification *notification = [[APPushNotification alloc] initWithMessage:@"Bonjour!"];
+	notification.deviceIds = @[@"4562454234", @"6784645645"];
+	notification.platformOptions = [[APPlatformOptions alloc] init];
+	        
+	TileNotification *tileNotification = [[TileNotification alloc] initWithNotificationType:kWPNotificationTypeTile];
+	
+	FlipTile *flipTile = [[FlipTile alloc] init];
+	flipTile.frontTitle = @"Title";
+	flipTile.frontBackgroundImage = @"fBImage";
+	flipTile.frontCount = @"5";
+	flipTile.smallBackgroundImage = @"sBImage";
+	flipTile.wideBackgroundImage = @"wBImage";
+	flipTile.backTitle = @"backTitle";
+	flipTile.backContent = @"backContent";
+	flipTile.backBackgroundImage = @"bBImage";
+	flipTile.wideBackContent = @"wBContent";
+	flipTile.wideBackBackgroundImage = @"wbImage";
+	
+	tileNotification.wp8Tile = flipTile;
+	tileNotification.wp75Tile = flipTile;
+	tileNotification.wp7Tile = flipTile;
+	
+	[notification.platformOptions setWindowsPhoneOptions:[[WindowsPhoneOptions alloc] initWithTileNotification:tileNotification]];
+	
+	[notification sendPushWithSuccessHandler:^{
+			NSLog(@"Push Sent!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@",[error description]);
+	}];
+``` 
 #####Cyclic (only wp8)
 
 The cycle Tile template cycles through between one and nine images.
@@ -8253,6 +9373,46 @@ var options =
 
 }
 ```
+
+``` ios
+$$$METHOD
+//APPushNotification class method
+sendPushWithSuccessHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+APPushNotification *notification = [[APPushNotification alloc] initWithMessage:@"Bonjour!"];
+	notification.deviceIds = @[@"4562454234", @"6784645645"];
+	notification.platformOptions = [[APPlatformOptions alloc] init];
+        
+	TileNotification *tileNotification = [[TileNotification alloc] initWithNotificationType:kWPNotificationTypeTile];
+	
+	CyclicTile *cyclicTile = [[CyclicTile alloc] initWithFrontTitle:@"PushMsg" images:@[@"image1", @"image2", @"image3"]];
+	
+	FlipTile *flipTile = [[FlipTile alloc] init];
+	flipTile.frontTitle = @"Title";
+	flipTile.frontBackgroundImage = @"fBImage";
+	flipTile.frontCount = @"5";
+	flipTile.smallBackgroundImage = @"sBImage";
+	flipTile.wideBackgroundImage = @"wBImage";
+	flipTile.backTitle = @"backTitle";
+	flipTile.backContent = @"backContent";
+	flipTile.backBackgroundImage = @"bBImage";
+	flipTile.wideBackContent = @"wBContent";
+	flipTile.wideBackBackgroundImage = @"wbImage";
+	
+	tileNotification.wp8Tile = cyclicTile;
+	tileNotification.wp75Tile = flipTile;
+	tileNotification.wp7Tile = flipTile;
+	
+	[notification.platformOptions setWindowsPhoneOptions:[[WindowsPhoneOptions alloc] initWithTileNotification:tileNotification]];
+	
+	[notification sendPushWithSuccessHandler:^{
+			NSLog(@"Push Sent!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@",[error description]);
+	}];
+``` 
 
 ```csharp
 await PushNotification
@@ -8362,7 +9522,52 @@ var options=
      }
 }
 ```
-
+``` ios
+$$$METHOD
+//APPushNotification class method
+sendPushWithSuccessHandler:failureHandler
+```
+``` ios
+$$$SAMPLE
+APPushNotification *notification = [[APPushNotification alloc] initWithMessage:@"Bonjour!"];
+	notification.deviceIds = @[@"4562454234", @"6784645645"];
+	notification.platformOptions = [[APPlatformOptions alloc] init];
+        
+	TileNotification *tileNotification = [[TileNotification alloc] initWithNotificationType:kWPNotificationTypeTile];
+	
+	IconicTile *iconicTile = [[IconicTile alloc] init];
+	iconicTile.frontTitle = @"Title";
+	iconicTile.iconImage = @"icon";
+	iconicTile.smallIconImage = @"small-icon";
+	iconicTile.backgroundColor = @"whiteColor";
+	iconicTile.wideContent1 = @"conten1";
+	iconicTile.wideContent2 = @"content2";
+	iconicTile.wideContent3 = @"content3";
+	
+	FlipTile *flipTile = [[FlipTile alloc] init];
+	flipTile.frontTitle = @"Title";
+	flipTile.frontBackgroundImage = @"fBImage";
+	flipTile.frontCount = @"5";
+	flipTile.smallBackgroundImage = @"sBImage";
+	flipTile.wideBackgroundImage = @"wBImage";
+	flipTile.backTitle = @"backTitle";
+	flipTile.backContent = @"backContent";
+	flipTile.backBackgroundImage = @"bBImage";
+	flipTile.wideBackContent = @"wBContent";
+	flipTile.wideBackBackgroundImage = @"wbImage";
+	
+	tileNotification.wp8Tile = iconicTile;
+	tileNotification.wp75Tile = flipTile;
+	tileNotification.wp7Tile = flipTile;
+	
+	[notification.platformOptions setWindowsPhoneOptions:[[WindowsPhoneOptions alloc] initWithTileNotification:tileNotification]];
+	
+	[notification sendPushWithSuccessHandler:^{
+			NSLog(@"Push Sent!");
+	} failureHandler:^(APError *error) {
+			NSLog(@"Error occurred: %@",[error description]);
+	}];
+``` 
 ```csharp
 await PushNotification
         .Broadcast("message")
@@ -8476,6 +9681,25 @@ $$$Sample Response
   }
 }
 ```
+
+``` ios
+NSBundle *myBundle = [NSBundle bundleForClass:[self class]];
+NSString *uploadPath = [myBundle pathForResource:@"test_image" ofType:@"png"];
+NSData *myData = [NSData dataWithContentsOfFile:uploadPath];
+APFile *apFile = [[APFile alloc] init];
+[apFile uploadFileWithName:@"Image2"
+				data:myData
+				validUrlForTime:@10
+				contentType:@"image/png"
+				successHandler:^(NSDictionary *dictionary){
+						NSLog(@"%@", dictionary.description);
+						isUploadSuccessful = YES;
+				} failureHandler:^(APError *error){
+						isUploadSuccessful = NO;
+}];
+
+```
+
 ``` javascript
 $$$Method
 Appacitive.File::save();
