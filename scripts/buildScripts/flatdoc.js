@@ -144,6 +144,7 @@ var path = require('path');
                             hLang = "javascript"; break;
                         case "nolang": return code + " "; break; //Inline html handling
                         case "nolang-rest": hLang = "javascript"; break;
+                        case "python": hLang = "python"; break;
                     }
                     return prepend + hljs.highlight(hLang, code).value;
                 }

@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+
+    <title>Appacitive - Documentation</title>
+    <link rel="shortcut icon" href="favicon.ico?v=__RevisionNoGoesHere__" />
+
+    <!-- Flatdoc theme -->
+    <!--<link href="../style/style.css" rel="stylesheet" />
+    <link href="../style/custom.css" rel="stylesheet" />-->
+
+    <link href="../style/bundle.min.css?v=__RevisionNoGoesHere__" rel="stylesheet" />
+
+    <link href="../style/theme/white/theme.min.css?v=__RevisionNoGoesHere__" rel="stylesheet" title="white"/>
+    <link href="../style/theme/black/theme.min.css?v=__RevisionNoGoesHere__" rel="stylesheet" title="black"/>
+
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+</head>
+<body role='flatdoc'>
+    <div class='header'>
+        <div class='left'>
+            <a href="http://www.appacitive.com" class="logo"></a>
+        </div>
+        <div class='right'>
+            <ul>
+                <li><a href='http://appacitive.com'>Home</a></li>
+                <li><a href='http://appacitive.com/features/'>Features</a></li>
+                <li><a href='http://appacitive.com/pricing/'>Pricing</a></li>
+                <li><a href='http://blogs.appacitive.com'>Blogs</a></li>
+                <li><a href='http://support.appacitive.com'>Feedback & Support</a></li>
+                <li style="display: none;"><a id="aLogin" href='https://portal.appacitive.com/login.html?rel=docs'>Login</a></li>
+            </ul>
+        </div>
+        <div class="ex-right">
+            <ul class="top_links_user" style="display: none;">
+                <li><a href="javascript:void(0)" id="lnkUserMenu">
+                    <img id="imgUserPhoto" alt="photo" />
+                    <span class="top_nav_user_name_first">{{firstName}}</span> <span class="top_nav_user_name_last">{{lastName}} </span></a>
+                    <div class="top_user_drop_menu">
+                        <ul id="lstUserMenu" class="nav-list">
+                            <li><a href="javascript:void(0)" id="lnkMyAccount">My Account</a></li>
+                            <li><a href="javascript:void(0)" id="lnkLogout">Logout</a></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class='content-root'>
+        <div class='menubar'>
+            <div class='menu section' role='flatdoc-menu'></div>
+        </div>
+        <div class="language">
+            <div class="toolbar">
+                <ul class="nav nav-pills">
+                    <li><a data-lang="rest">Curl</a></li>
+                    <li><a data-lang="javascript">javascript</a></li>
+                    <li><a data-lang="csharp">.Net</a></li>
+                    <li><a data-lang="python">python</a></li>
+                    <li><a data-lang="ios"> iOS</a></li>
+                    <!--<li><a data-lang="android">Android</a></li>-->
+                </ul>
+                <div class="theme-switch">
+                    <a class="theme theme-white" data-theme="white" title="Switch to White theme"></a>
+                    <a class="theme theme-black" data-theme="black" title="Switch to Black theme"></a>
+                </div>
+            </div>
+        </div>
+        <div role='flatdoc-content' class='content'></div>
+    </div>
+
+    <div class="footer">
+        <div class="copyright">
+            &#169 2013 Appacitive Software Pvt Ltd
+        </div>
+    </div>
+    
+    <!-- Flatdoc -->
+<!--<script src="../scripts/infra/jquery1.9.1.js"></script>
+    <script src="../scripts/infra/legacy.js"></script>
+    <script src="../scripts/infra/highlight.js"></script>
+    <script src="../scripts/infra/flatdoc.js"></script>
+    <script src="../scripts/infra/md5.js"></script>
+    <script src="../scripts/code/script.js"></script>-->
+
+    <script src="../scripts/bundle.min.js?v=__RevisionNoGoesHere__" type="text/javascript"></script>
+
+    <!-- Meta -->
+    <meta content="Appacitive - Documentation" property="og:title">
+    <meta content="Appacitive - Documentation." name="description">
+
+    <!-- Initializer -->
+    <script id = "scriptFlatdocReady">
+        Flatdoc.run({
+            fetcher: Flatdoc.file('index.md')
+        });
+    </script>
+
+</body>
+</html>

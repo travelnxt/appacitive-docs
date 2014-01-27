@@ -829,6 +829,8 @@
                         token = this.token.text;
                         var lang = this.token.lang;
 
+                        lang = lang.replace('!','');
+                        
                         lang = $.trim(lang);
                         token = marked(token);
                         token = $(token).html();
@@ -844,6 +846,7 @@
                               + '>'
                               + token
                               + '</div>\n';
+                            block = '<div class="content-wrapper" style="padding-bottom:0px !important;">';
                         } else token = '<p>' + token + '</p>';
                     }
                     block += token;

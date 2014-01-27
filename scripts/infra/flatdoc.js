@@ -49,9 +49,35 @@ Also includes:
 
     Flatdoc.file = function (url) {
         return function (callback) {
-            $.get(url)
-              .fail(function (e) { callback(e, null); })
-              .done(function (data) { callback(null, data); });
+            if (typeof url == 'object') {
+                var data = [];
+                var len = url.length;
+                var cb = function (d, index) {
+                    data[index] = d;
+                    len--;
+                    if (len == 0) {
+                        var markdown = '';
+                        for (var i = 0 ; i < data.length; i = i + 1) {
+                            markdown += data[i];
+                        }
+                        callback(null, markdown);
+                    }
+                }
+
+                var getFile = function (url, index) {
+                    $.get(url)
+                      .fail(function (e) { })
+                      .done(function (data) { cb(data, index); });
+                };
+
+                for (var i = 0; i < url.length; i = i + 1) {
+                    getFile(url[i], i);
+                }
+            } else {
+                $.get(url)
+                  .fail(function (e) { callback(e, null); })
+                  .done(function (data) { callback(null, data); });
+            }
         };
     };
 
@@ -140,6 +166,7 @@ Also includes:
                             hLang = "javascript"; break;
                         case "nolang": return code + " "; break; //Inline html handling
                         case "nolang-rest": hLang = "javascript"; break;
+                        case "python": hLang = "python"; break;
                     }
                     return prepend + hljs.highlight(hLang, code).value;
                 }
@@ -1244,6 +1271,8 @@ Also includes:
                         token = this.token.text;
                         var lang = this.token.lang;
 
+                        lang = lang.replace('!','');
+
                         lang = $.trim(lang);
                         token = marked(token);
                         token = $(token).html();
@@ -1259,6 +1288,7 @@ Also includes:
                               + '>'
                               + token
                               + '</div>\n';
+                            block = '<div class="content-wrapper" style="padding-bottom:0px !important;">'
                         } else token = '<p>' + token + '</p>';
                     }
 
