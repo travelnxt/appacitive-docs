@@ -370,19 +370,26 @@ APObject *post = [[APObject alloc] initWithTypeName:@"post"];
 
 
 ``` python
+# create a new object for type 'post'
 post = AppacitiveObject('post')
+
+# set two of its properties 'title' & 'text'
 post.set_property('title', 'Python Programming Language')
 post.set_property('text', 'Python is a programming language that lets you work more quickly and integrate your systems more effectively.')
 
+# add an key-value pair attribute to the object
 post.set_attribute('is_verified', 'false')
 
+# add a few tags to the object
 post.add_tag('intro')
 post.add_tags(['python', 'technology'])
 
+# create the object on appacitive
 post.create()
 
-# response object contains the status of the create call
-# if successful, populates the post object with system-defined properties like __id, __createdBy etc.
+# response json contains the status of the create call
+# if the call fails for any reason, this method raises an AppacitiveError exception with the exception details
+# if successful, populates the 'post' object with system-defined properties like __id, __createdBy etc., user defined properties, attributes and tags.
 ```
 ``` rest
 $$$Sample Response
@@ -541,6 +548,7 @@ APObject *post = [[APObject alloc] initWithTypeName:@"post"];
 
 ``` python
 $$$Sample Request
+# fetch an object of type 'post' and id 33017891581461312 from appacitive
 post = AppacitiveObject.get('post', '33017891581461312')
 print 'Fetched post with title %s and text %s' % (post.get_property('title'), post.get_property('text'))
 ```
@@ -709,6 +717,7 @@ def multi_get(cls, object_type, object_ids, fields=None):
 ```
 ``` python
 $$$Sample Request
+# fetch two objects of type 'post' with ids 33017891581461312 and 33017891581461313 from appacitive in a single call.
 object_ids = ['33017891581461312', '33017891581461313']
 posts = AppacitiveObject.multi_get('post', object_ids)
 
@@ -816,6 +825,8 @@ def get(cls, object_type, object_id, fields=None):
 ```
 ``` python
 $$$Sample Request
+# fetch only a few fields of an object of type 'post' from appacitive by its id
+# this method helps to reduce the payload of the response from the server
 fields_to_fetch = ['text', 'title']
 post = AppacitiveObject.get('post', '33017891581461312', fields_to_fetch)
 print 'Fetched post with title %s and text %s' % (post.get_property('title'), post.get_property('text'))
@@ -996,26 +1007,27 @@ def update(self, with_revision=False):
 ```
 ``` python
 $$$Sample Request
-
+# fetch an object of type 'post' with id 33017891581461312 from appacitive
 post = AppacitiveObject.get('post', '33017891581461312')
 
+# modify two its properties 'title' and 'text'
 post.set_property('title', 'updated title')
 post.set_property('text', 'This is updated text for the post.')
 
+# add or update an attribute on that object
 post.set_attribute('topic', 'programming')
+# remove an existing attribute from the object
 post.remove_attribute('technology')
 
+# add a couple of tags to the object
 post.add_tags(['tagA', 'tagB'])
+# remove a tag from the object
 post.remove_tag('tagC')
-
+# send your changes to appacitive
 post.update()
+# object of type 'post' has now been successfully updated on appacitive
 ```
-``` python
-$$$Note
-After the save, the existing post object would be updated with the latest values
-of all the fields.
 
-```
 ``` javascript
 $$$Method
 Appacitive.Object::save();
@@ -1125,8 +1137,10 @@ await APObjects.DeleteAsync("player", "123456678809");
 ```
 
 ``` python
-/* Delete a single object */
+# Delete a single object 
+# the variable post holds an object of type 'post' which is already present on appacitive
 post.delete()
+
 ```
 
 #### Delete multiple objects
@@ -1212,7 +1226,8 @@ var ids = new [] { "14696753262625025", "14696753262625026" };
 await APObjects.MultiDeleteAsync("player", ids);
 ```
 ``` python
-/*  Delete multiple objects. */
+#  Delete multiple objects. 
+# delete multiple objects of type 'post' in a single call
 object_ids = ['14696753262625025', '14696753262625026']
 AppacitiveObject.multi_delete('player', object_ids)
 ```
@@ -1293,8 +1308,10 @@ var deleteConnection = true;
 await APObjects.DeleteAsync("friend", "123456678809", deleteConnection);
 ```
 ``` python
-/* Single Delete with connected objects */
+# Single Delete with connected objects 
+# fetch an object of type 'post' from appacitive with id 9312344456678809
 post = AppacitiveObject.get('post', '9312344456678809')
+# delete the object along with all connections from this object or to this object
 post.delete_with_connections()
 ```
 
@@ -1395,7 +1412,9 @@ $$$sample object
     conn.Set<DateTime>("joining_date", new DateTime(2012,1,1));
 ```
 ``` python
-conn = AppacitiveConnection('employment').from_created_object_id('employee', 8768521317231283123).to_created_object_id('employer', 2543637146238712836)
+# assemble a connection of relation type 'employment' from an existing object of type 'employee' and id 8768521317231283123 to another existing object of type 'employer' with id 2543637146238712836
+conn = AppacitiveConnection('employment').from_existing_object_id('employee', 8768521317231283123).to_existing_object_id('employer', 2543637146238712836)
+# set a property called 'joining_date' for that connection
 conn.set_property('joining_date', datetime.datetime.today())
 ```
 ### Create a new connection
@@ -1707,19 +1726,18 @@ await connection.SaveAsync();
 var scoreId = score.Id;
 ```
 ``` python
-/* Will create a new my_score connection between 
-    - existing player object with id 12344567823432 and 
-    - new score object which will also be created when the connection is created.
-*/ The my_score relation defines two endpoints "player" and "score" for this information.
+# Will create a new 'my_score' connection between 
+#    an existing 'player' object with id 12344567823432 and 
+#    a new 'score' object which will also be created when the connection is created.
+# The 'my_score' relation has two endpoints 'player' and 'score'
 
-//Create an instance of object of type score
 score = AppacitiveObject('score')
 score.set_property('points', 150)
 
 conn = AppacitiveConnection('my_scores').from_existing_object_id('player', 12344567823432).to_new_object('score', score)
 conn.create()
 
-// The id of the score object should now be set since it has also been created on the server.
+# The id of the score object will now be set since it has also been created on appacitive.
 
 score_id = score.id
 ```
@@ -1897,11 +1915,11 @@ var scoreId = score.Id;
 var playerId = player.Id;
 ```
 ``` python
-/* Will create a new my_score connection between 
-    - existing player object with id 123445678 and 
-    - new score object, which will also be created when the connection is created.
-  The my_score relation defines two endpoints "player" and "score" for this information.
-*/ 
+# Will create a new 'my_score' connection between 
+#    an existing 'player' object with id 123445678 and 
+#    a new 'score' object, which will also be created when the connection is created.
+#  The 'my_score' relation has two endpoints 'player' and 'score'.
+
 
 score = AppacitiveObject('score')
 score.set_property('points', 150)
@@ -2328,7 +2346,7 @@ var connection2 = await APConnections.GetAsync("reivew",
                                        "22322", "33422");
 ```
 ``` python
-//Single connection by endpoint object ids
+# Single connection by endpoint object ids
 conn = AppacitiveConnection.find_by_objects('22322', '33422', relation='review')
 ```
 
@@ -2563,7 +2581,7 @@ $$$Sample Request
 await APConnections.DeleteAsync("review", "123345");
 ```
 ``` python
-/* delete review connection with id 123123 */
+# delete review connection with id 123123 
 connection = AppacitiveConnection.get('review', '123345')
 connection.delete()
 ```
@@ -2656,7 +2674,7 @@ var ids = new [] {"40438996554377032", "40440007982449139", "40440007982449139"}
 await APConnections.MultiDeleteAsync("review", ids);
 ```
 ``` python
-/* delete review connections with ids 40438996554377032, 40440007982449139 & 40440007982449139 */
+# delete review connections with ids 40438996554377032, 40440007982449139 & 40440007982449139 
 
 connection_ids = ['40438996554377032', '40440007982449139', '40440007982449139']
 AppacitiveConnection.multi_delete('review', connection_ids)
@@ -3304,10 +3322,10 @@ while (true)
 }
 ```
 ``` python
-//Build the query
+# build the query
 query = AppacitiveQuery()
 query.filter = PropertyFilter('firstname').is_equal_to('John')
-
+# fire the query
 players = AppacitiveObject.find('player', query)
 ```
 ### Conventions for REST api
@@ -3527,18 +3545,18 @@ APQuery *greaterThanQuery = [[APQuery queryExpressionWithProperty@"birthdate"] i
 
 
 ``` python
-///Samples
+# Samples
 
-//First name like "oh"
+# First name like "oh"
 like_filter = PropertyFilter('firstname').like('*oh*')
 
-//First name starts with "jo"
+# First name starts with "jo"
 starts_with_filter = PropertyFilter(''firstname').starts_with('Jo')
 
-//Between two dates
+# Between two dates
 between_dates_filter = PropertyFilter('birthdate').between(datetime.date(1980, 1, 1), datetime.date.today())
 
-//Greater than a date
+# Greater than a date
 greater_than_filter = PropertyFilter('birthdate').is_greater_than(datetime.date(1970, 1, 1))
 ```
 ### Geo queries
@@ -3650,7 +3668,7 @@ NSString *radialQuery = [APQuery queryWithRadialSearchForProperty:@"location" ne
 	}];
 ```
 ``` python
-//Search for hotels near Las Vegas in a radius of 10 miles
+# search for hotels near Las Vegas in a radius of 10 miles
 centre = '361749687195, -115.1372222900'
 radial_query = PropertyFilter('location').within_circle(centre, '10 mi')
 
@@ -3775,7 +3793,7 @@ NSString *polygonSearch = [APQuery queryWithPolygonSearchForProperty:@"location"
 	}];
 ```
 ``` python
-//Search for hotel which is between 4 co-ordinates
+# search for hotel which is between 4 co-ordinates
 pt1 = '36.1749687195, -115.1372222900'
 pt2 = '34.1749687195, -116.1372222900'
 pt3 = '35.1749687195, -114.1372222900'
@@ -3880,7 +3898,7 @@ var query = Query
 var messages = await APObjects.FindAllAsync( "message", query );
 ```
 ``` python
-// Get all messages tagged with tags personal or private.
+# fetch all messages tagged with tags personal or private.
 tags_to_match = ['personal', 'private']
 tag_query = TagFilter().match_one_or_more(tags_to_match)
 
@@ -3986,7 +4004,7 @@ var query = Query
 var messages = await APObjects.FindAllAsync( "message", query );
 ```
 ``` python
-// Get all messages tagged with tags personal and test
+# fetch all messages tagged with tags personal and test
 tags_to_match = ['personal', 'test']
 tag_query = TagFilter().match_all(tags_to_match)
 
@@ -4306,7 +4324,7 @@ var complexQuery = Query.And(new[]{
           });
 ```
 ``` python
-//Use of `And` and `Or` operators
+# use of `And` and `Or` operators
 centre = '36.1749687195, -115.1372222900'
 
 complex_query = AppacitiveQuery()
@@ -4779,7 +4797,7 @@ var user = new User
 await user.SaveAsync();
 ```
 ``` python
-//Create a User
+# create a User
 user = AppacitiveUser()
 user.username = 'john.doe'
 user.firstname = 'John'
@@ -5492,7 +5510,7 @@ var userSession = await App.LoginAsync(credentials);
 var user = userSession.LoggedInUser;  //Logged in user
 ```
 ``` python
-//Authenticating user by `username` and `password`
+# authenticating user by `username` and `password`
 user = AppacitiveUser()
 user.username = 'john.doe'
 user.firstname = 'John'
@@ -6061,7 +6079,7 @@ APUser *user = [[APUser alloc] init];
 	}];
 ```
 ``` python
-//Get User by `username`
+# Get User by `username`
 user = AppacitiveUser.get_by_username('john.doe')
 ```
 
@@ -6110,7 +6128,7 @@ The `useridtype` query string parameter is set to `token`.
 var loggedInUser = await Users.GetLoggedInUserAsync();
 ```
 ``` python
-//  Get logged in User
+#  Get logged in User
 user = AppacitiveUser.get_logged_in_user()
 ```
 ``` rest
@@ -6314,6 +6332,7 @@ user = AppacitiveUser()
 user.firstname = 'Jane'
 user.set_property('city', 'New York')
 
+# Send changes to appacitive
 user.update()
 ```
 ``` javascript
@@ -8238,7 +8257,8 @@ device.devicetype = 'ios'
 device.channels = ['channel1', 'channel2']
 
 device.register()
-
+```
+``` csharp
 Device device = new Device(DeviceType.iOS)
             {
                 DeviceToken = "c6ae0529f4752a6a0d127900f9e7c",
