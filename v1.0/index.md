@@ -3657,7 +3657,7 @@ var hotels = await APObjects.FindAllAsync( "hotel", radialQuery);
 ```
 ``` ios
 CLLocation *lasVegas = [[CLLocation alloc] initWithLatitude:361749687195 longitude:-115.1372222900];
-NSString *radialQuery = [APQuery queryWithRadialSearchForProperty:@"location" nearLocation:lasVegas withinRaduis:[NSNumber numberWithInt:10] usingDistanceMetric:kMiles];
+NSString *radialQuery = [APQuery queryWithRadialSearchForProperty:@"location" nearLocation:lasVegas withinRadius:[NSNumber numberWithInt:10] usingDistanceMetric:kMiles];
 [APObject searchAllObjectsWithTypeName:@"hotel" withQueryString:radialQuery 
 	successHandler:^(NSArray *objects) {
 		NSLog(@"Hotels found:-");
@@ -4293,7 +4293,7 @@ query.fetch();
 ``` ios   
 CLLocation *center = [CLLocation alloc] initWithLatitude:36.1749687195 longitude:-115.1372222900
 
-APCompoundQuery *compoundQuery = [APQuery booleanAnd:[NSArray arrayWithObjects:[APQuery booleanOr:[NSArray arrayWithObjects:[[APQuery queryExpressionWithProperty:@"firstName"] startsWith:@"jo"],[[APQuery queryExpressionWithProperty:@"lastname"] isLike:@"*oe*"], nil]], [APQuery queryWithRadialSearchForProperty:@"location" nearLocation:center withinRaduis:10 usingDistanceMetric:kMiles], nil]];
+APCompoundQuery *compoundQuery = [APQuery booleanAnd:[NSArray arrayWithObjects:[APQuery booleanOr:[NSArray arrayWithObjects:[[APQuery queryExpressionWithProperty:@"firstName"] startsWith:@"jo"],[[APQuery queryExpressionWithProperty:@"lastname"] isLike:@"*oe*"], nil]], [APQuery queryWithRadialSearchForProperty:@"location" nearLocation:center withinRadius:10 usingDistanceMetric:kMiles], nil]];
 
 NSString *queryString = [NSString stringWithFormat:@"query=%@"[compoundQuery stringForm]];
 [APObject searchAllObjectsWithTypeName:@"people" withQueryString:queryString
