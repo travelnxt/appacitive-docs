@@ -5116,7 +5116,7 @@ $$$Sample Response
 ```
 ``` javascript
 $$$Method
-Appacitive.Users.signupWithFacebook();
+Appacitive.Users.loginWithFacebook();
 ```
 ``` javascript
 $$$Sample Request
@@ -5137,11 +5137,10 @@ window.fbAsyncInit = function() {
 Appacitive.Facebook.requestLogin().then(function(fbResponse) {
   var token = Appacitive.Facebook.accessToken();
 
-  console.log('Facebook login successfull with access token: '
-     + token);
+  console.log('Facebook login successfull with access token: ' + token);
 
   // signup with Appacitive
-  return Appacitive.Users.signupWithFacebook(token);
+  return Appacitive.Users.loginWithFacebook(token);
 
 }).then(function (authResult) {
   // user has been successfully signed up and set as current user
