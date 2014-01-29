@@ -4550,13 +4550,14 @@ nodes = AppacitiveGraphSearch.project(projection_query_name, root_ids, place_hol
 ```
 ```javascript
 $$$Method
-Appacitive.Queries.GraphProjectQuery({projectQueryName}, {placeholderFillers}).fetch();
+Appacitive.Queries.GraphProjectQuery({projectQueryName}, [{rootIds}], {placeholderFillers}).fetch();
 ```
 ```javascript
 $$$Sample Request
 var projectQueryName = "sample_filter";
 var placeholderFillers = { key1: "value1", key2: "value2" };
-var query = new Appacitive.Queries.GraphProjectQuery(projectQueryName, placeholderFillers);
+var rootIds = ["34912447775245454", "34322447235528474", "34943243891025029"];
+var query = new Appacitive.Queries.GraphProjectQuery(projectQueryName, rootIds, placeholderFillers);
 
 query.fetch().then(function(results) {
   /* results object contains list of objects for provided ids
