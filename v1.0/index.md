@@ -149,7 +149,7 @@ App.Initialize(Net45.WindowsHost.Instance,
 curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
-https://apis.appacitive.com/object/device/find/all
+https://apis.appacitive.com/v1.0/object/device/find/all
 ```
 
 
@@ -296,7 +296,7 @@ In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
-PUT https://apis.appacitive.com/object/{type}
+PUT https://apis.appacitive.com/v1.0/object/{type}
 ```
 ``` csharp
 $$$Method
@@ -326,7 +326,7 @@ curl -X PUT \
 -H "Appacitive-Environment: {environment (sandbox or live)}" \
 -H "Content-Type: application/json" \
 -d '{ "title" : "test", "text" : "This is a test post.", "__attributes" : { "has_verified" : "false" }}' \
-https://apis.appacitive.com/object/post
+https://apis.appacitive.com/v1.0/object/post
 ```
 ``` csharp
 $$$Sample Request
@@ -464,7 +464,7 @@ In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/object/{type}/{id}?fields={comma separated list of fields}
+GET https://apis.appacitive.com/v1.0/object/{type}/{id}?fields={comma separated list of fields}
 ```
 ``` rest
 $$$Sample Request
@@ -472,7 +472,7 @@ $$$Sample Request
 curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
-https://apis.appacitive.com/object/post/33017891581461312
+https://apis.appacitive.com/v1.0/object/post/33017891581461312
 ```
 ``` rest
 $$$Sample Response
@@ -613,7 +613,7 @@ In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/object/{type}/multiget/{comma separated ids}?fields={comma separated list of fields}
+GET https://apis.appacitive.com/v1.0/object/{type}/multiget/{comma separated ids}?fields={comma separated list of fields}
 ```
 ``` rest
 $$$Sample Request
@@ -621,7 +621,7 @@ $$$Sample Request
 curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
-https://apis.appacitive.com/object/post/multiget/33017891581461312,33017891581461313
+https://apis.appacitive.com/v1.0/object/post/multiget/33017891581461312,33017891581461313
 ```
 ``` rest
 $$$Sample Response
@@ -755,7 +755,7 @@ out using this and will always be returned. To select specific fields you need t
 ``` rest
 $$$Method
 // The fields parameter can be applied to any objects or connections api call.
-GET https://apis.appacitive.com/object/{type}/{id}?fields={comma separated list of fields}
+GET https://apis.appacitive.com/v1.0/object/{type}/{id}?fields={comma separated list of fields}
 ```
 ``` rest
 $$$Sample Request
@@ -763,7 +763,7 @@ $$$Sample Request
 curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
-https://apis.appacitive.com/object/post/33017891581461312?fields=text,title
+https://apis.appacitive.com/v1.0/object/post/33017891581461312?fields=text,title
 ```
 ``` rest
 $$$Sample Response
@@ -881,7 +881,7 @@ In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/object/{type}/{id}?revision={current revision}
+POST https://apis.appacitive.com/v1.0/object/{type}/{id}?revision={current revision}
 ```
 ``` rest
 $$$Sample Request
@@ -896,7 +896,7 @@ curl -X POST \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "title" : "updated title", "text" : "This is updated text for the post.", "__attributes" : { "topic" : "testing" }, "__addtags" : ["tagA", "tagB"], "__removetags" : ["tagC"]}' \
-https://apis.appacitive.com/object/post/33017891581461312
+https://apis.appacitive.com/v1.0/object/post/33017891581461312
 ```
 ``` rest
 $$$Sample Response
@@ -1077,7 +1077,7 @@ In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
-DELETE https://apis.appacitive.com/object/{type}/{id}
+DELETE https://apis.appacitive.com/v1.0/object/{type}/{id}
 ```
 ``` rest
 $$$Sample Request
@@ -1086,7 +1086,7 @@ $$$Sample Request
 curl -X DELETE \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-Apikey: {Your api key}" \
-https://apis.appacitive.com/object/player/123456678809
+https://apis.appacitive.com/v1.0/object/player/123456678809
 
 ```
 ``` rest
@@ -1164,7 +1164,7 @@ In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/object/{type}/bulkdelete
+POST https://apis.appacitive.com/v1.0/object/{type}/bulkdelete
 ```
 ``` rest
 $$$Sample Request
@@ -1174,7 +1174,7 @@ curl -X POST \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-Apikey: {Your api key}" \
 -d '{"idlist":["14696753262625025","14696753262625026"]}' \
-https://apis.appacitive.com/object/player/bulkdelete
+https://apis.appacitive.com/v1.0/object/player/bulkdelete
 
 ```
 ``` rest
@@ -1254,7 +1254,7 @@ In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
-DELETE https://apis.appacitive.com/object/{type}/{id}?deleteconnections=true
+DELETE https://apis.appacitive.com/v1.0/object/{type}/{id}?deleteconnections=true
 ```
 ``` rest
 $$$Sample Request
@@ -1262,7 +1262,7 @@ $$$Sample Request
 curl -X DELETE \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-Apikey: {Your api key}" \
-https://apis.appacitive.com/object/player/123456678809?deleteconnections=true
+https://apis.appacitive.com/v1.0/object/player/123456678809?deleteconnections=true
 
 ```
 ``` rest
@@ -1442,7 +1442,7 @@ In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
-PUT https://apis.appacitive.com/connection/{relation type}
+PUT https://apis.appacitive.com/v1.0/connection/{relation type}
 ```
 ``` rest
 $$$Sample Request
@@ -1454,7 +1454,7 @@ curl -X PUT \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-Apikey: {Your api key}" \
 -d '{"__endpointa":{"label":"reviewer","objectid":"123445678"},"__endpointb":{"label":"hotel","objectid":"987654321"}}' \
-https://apis.appacitive.com/connection/reviewed
+https://apis.appacitive.com/v1.0/connection/reviewed
 ```
 ``` rest
 $$$Sample Response
@@ -1586,7 +1586,7 @@ as part of a single transaction.
 
 ``` rest
 $$$Method
-PUT https://apis.appacitive.com/connection/{relation type}
+PUT https://apis.appacitive.com/v1.0/connection/{relation type}
 ```
 ``` rest
 $$$Sample Request
@@ -1598,7 +1598,7 @@ curl -X PUT \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-Apikey: {Your api key}" \
 -d '{"__endpointa":{"label":"score","object":{"__type":"score","points":"150"}},"__endpointb":{"label":"player","objectid":"123445678"}}' \
-https://apis.appacitive.com/connection/my_score
+https://apis.appacitive.com/v1.0/connection/my_score
 
 ```
 ``` rest
@@ -1750,7 +1750,7 @@ both the endpoints as well as the connection between the two in a single operati
 
 ``` rest
 $$$Method
-PUT https://apis.appacitive.com/connection/{relation type}
+PUT https://apis.appacitive.com/v1.0/connection/{relation type}
 ```
 ``` rest
 $$$Sample Request
@@ -1762,7 +1762,7 @@ curl -X PUT \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-Apikey: {Your api key}" \
 -d '{"__endpointa":{"label":"score","object":{"__type":"score","points":"150"}},"__endpointb":{"label":"player", "object":{"__type":"player","name":"sirius"}}}' \
-https://apis.appacitive.com/connection/my_score
+https://apis.appacitive.com/v1.0/connection/my_score
 
 ```
 ``` rest
@@ -1960,14 +1960,14 @@ In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/connection/{type}/{id}?fields={(optional) comma separated list of fields}
+GET https://apis.appacitive.com/v1.0/connection/{type}/{id}?fields={(optional) comma separated list of fields}
 ```
 ``` rest
 $$$Sample Request
 curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
-https://apis.appacitive.com/connection/reviewed/33017891581461312
+https://apis.appacitive.com/v1.0/connection/reviewed/33017891581461312
 ```
 ``` rest
 $$$Sample Response
@@ -2074,7 +2074,7 @@ In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/connection/{type}/multiget/{comma separated ids}?fields={comma separated list of fields}
+GET https://apis.appacitive.com/v1.0/connection/{type}/multiget/{comma separated ids}?fields={comma separated list of fields}
 ```
 ``` rest
 $$$Sample Request
@@ -2082,7 +2082,7 @@ $$$Sample Request
 curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
-https://apis.appacitive.com/connection/reviewed/multiget/33017891581461312,33017891581461313
+https://apis.appacitive.com/v1.0/connection/reviewed/multiget/33017891581461312,33017891581461313
 ```
 ``` rest
 $$$Sample Response
@@ -2235,7 +2235,7 @@ Returns a connection of the specified type if one exists between objectAid and o
 
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/connection/{type}/find/{objectAid}/{objectBid}?label={label}
+GET https://apis.appacitive.com/v1.0/connection/{type}/find/{objectAid}/{objectBid}?label={label}
 ```
 ``` rest
 $$$Sample Request
@@ -2244,7 +2244,7 @@ $$$Sample Request
 curl -X GET \
 -H "Appacitive-Environment: sandbox" \
 -H "Appacitive-Session: P7IM2L8/EIC6kpzkC3wzQYFoDtIZZXhpUDZ2wf13FWfVki7flNEepVks8SlnLtgUyyjaZGTUVInQqvHJ8kwnNnHEdsZAGDU9+XNV107ZC/PkFEAs1RIpN43J69vPNvsN80shAG7eM+9YbheFH5eWHw==" \
-https://apis.appacitive.com/connection/friend/find/22322/33422?label=freind
+https://apis.appacitive.com/v1.0/connection/friend/find/22322/33422?label=freind
 
 ```
 ``` rest
@@ -2381,7 +2381,7 @@ In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/connection/{type}/{id}?revision={current revision}
+POST https://apis.appacitive.com/v1.0/connection/{type}/{id}?revision={current revision}
 ```
 ``` rest
 $$$Sample Request
@@ -2394,7 +2394,7 @@ curl -X POST \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "joining_date" : "2012-09-16", "__attributes" : { "topic" : "testing" }, "__addtags" : ["tagA", "tagB"], "__removetags" : ["tagC"]}' \
-https://apis.appacitive.com/connection/employment/33017891581461312
+https://apis.appacitive.com/v1.0/connection/employment/33017891581461312
 ```
 ``` rest
 $$$Sample Response
@@ -2518,7 +2518,7 @@ details of the failure.
 
 ``` rest
 $$$Method
-DELETE https://apis.appacitive.com/connection/{type}/{id}
+DELETE https://apis.appacitive.com/v1.0/connection/{type}/{id}
 ```
 ``` rest
 $$$Sample Request
@@ -2528,7 +2528,7 @@ curl -X DELETE \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/connection/review/123123
+https://apis.appacitive.com/v1.0/connection/review/123123
 ```
 ``` rest
 $$$Sample Response
@@ -2607,7 +2607,7 @@ details of the failure.
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/connection/{type}/bulkdelete
+POST https://apis.appacitive.com/v1.0/connection/{type}/bulkdelete
 ```
 ``` rest
 $$$Sample Request
@@ -2618,7 +2618,7 @@ curl -X DELETE \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "idlist": [ "40438996554377032", "40440007982449139", "40440007982449139"] }' \
-https://apis.appacitive.com/connection/review/bulkdelete
+https://apis.appacitive.com/v1.0/connection/review/bulkdelete
 ```
 ``` rest
 $$$Sample Response
@@ -2717,7 +2717,7 @@ Returns the list of objects (along with connection information) connected to the
 
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/connection/{connection_type}/{object_type}/{object_id}/find?returnedge={true/false}
+GET https://apis.appacitive.com/v1.0/connection/{connection_type}/{object_type}/{object_id}/find?returnedge={true/false}
 ```
 ``` rest
 $$$Sample Request
@@ -2727,7 +2727,7 @@ curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
-GET https://apis.appacitive.com/connection/visitor/city/636523636/find?returnedge=true
+GET https://apis.appacitive.com/v1.0/connection/visitor/city/636523636/find?returnedge=true
 ```
 ``` rest
 $$$Sample Response
@@ -2869,7 +2869,7 @@ Returns a list of all connections that exists between objectAId and objectBId of
 
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/connection/find/{objectAId}/{objectBId}
+GET https://apis.appacitive.com/v1.0/connection/find/{objectAId}/{objectBId}
 ```
 ``` rest
 $$$Sample Request
@@ -2879,7 +2879,7 @@ curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/connection/find/22322/33422
+https://apis.appacitive.com/v1.0/connection/find/22322/33422
 
 ```
 ``` rest
@@ -3030,7 +3030,7 @@ Returns a list of all connections that exist between objectAid and objectBids of
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/connection/interconnects
+POST https://apis.appacitive.com/v1.0/connection/interconnects
 ```
 ``` rest
 $$$Sample Request
@@ -3041,7 +3041,7 @@ curl -X POST \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{"object1id":"33422","object2ids":["22322","44522","55622","665722"]}' \
-https://apis.appacitive.com/connection/interconnects
+https://apis.appacitive.com/v1.0/connection/interconnects
 ```
 ``` rest
 $$$Sample Response
@@ -3203,7 +3203,7 @@ record of the search results. The platform specific examples will indicate how t
 
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/object/{type}/find/all?query={query expression}
+GET https://apis.appacitive.com/v1.0/object/{type}/find/all?query={query expression}
 ```
 ``` rest
 $$$Sample Request
@@ -3213,7 +3213,7 @@ curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/object/player/find/all?query=*firstname == 'john'
+https://apis.appacitive.com/v1.0/object/player/find/all?query=*firstname == 'john'
 ```
 ``` rest
 $$$Sample Response
@@ -3349,14 +3349,14 @@ curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {sandbox or live}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/user/find/all?query=*age > 25
+https://apis.appacitive.com/v1.0/user/find/all?query=*age > 25
 
 // Find all users with attribute group_name equal to developers.
 curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {sandbox or live}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/user/find/all?query=@group_name=='developers'
+https://apis.appacitive.com/v1.0/user/find/all?query=@group_name=='developers'
 
 
 ```
@@ -3585,7 +3585,7 @@ A radial search requires the following parameters.
 
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/object/{type}/find/all?query=*{property_name} within_circle {latitude},{longitude},{radius} {km or mi}
+GET https://apis.appacitive.com/v1.0/object/{type}/find/all?query=*{property_name} within_circle {latitude},{longitude},{radius} {km or mi}
 ```
 ``` rest
 $$$Sample Request
@@ -3595,7 +3595,7 @@ curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/object/hotel/find/all?query=*geocode within_circle 36.1749687195,-115.1372222900,10 mi
+https://apis.appacitive.com/v1.0/object/hotel/find/all?query=*geocode within_circle 36.1749687195,-115.1372222900,10 mi
 ```
 ``` rest
 $$$Sample Response
@@ -3693,7 +3693,7 @@ This is typically useful when you want a finer grained control on the shape of t
  
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/object/{type}/find/all?query=*{property_name} within_polygon {lat1,long1} | {lat2,long2} | {lat3,long3} | ..
+GET https://apis.appacitive.com/v1.0/object/{type}/find/all?query=*{property_name} within_polygon {lat1,long1} | {lat2,long2} | {lat3,long3} | ..
 ```
 ``` rest
 $$$Sample Request
@@ -3707,7 +3707,7 @@ curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/object/hotel/find/all?query=*geocode within_polygon 36.1749687195,-115.1372222900 | 38.1123237195,-115.1372222900 | 38.1123237195,-113.871283723 | 36.1749687195,-113.871283723
+https://apis.appacitive.com/v1.0/object/hotel/find/all?query=*geocode within_polygon 36.1749687195,-115.1372222900 | 38.1123237195,-115.1372222900 | 38.1123237195,-113.871283723 | 36.1749687195,-113.871283723
 ```
 ``` rest
 $$$Sample Response
@@ -3827,7 +3827,7 @@ Returns a list of all records of the given type that are tagged with atleast one
 
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/object/{type}/find/all?query=tagged_with_one_or_more('{comma separated list of tags}')
+GET https://apis.appacitive.com/v1.0/object/{type}/find/all?query=tagged_with_one_or_more('{comma separated list of tags}')
 ```
 ``` rest
 $$$Sample Request
@@ -3837,7 +3837,7 @@ curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/object/message/find/all?query=tagged_with_one_or_more('personal,private')
+https://apis.appacitive.com/v1.0/object/message/find/all?query=tagged_with_one_or_more('personal,private')
 ```
 ``` rest
 $$$Sample Response
@@ -3941,7 +3941,7 @@ Returns a list of all records of the given type that are tagged with all of the 
 
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/object/{type}/find/all?query=tagged_with_all('{comma separated list of tags}')
+GET https://apis.appacitive.com/v1.0/object/{type}/find/all?query=tagged_with_all('{comma separated list of tags}')
 ```
 ``` rest
 $$$Sample Request
@@ -3951,7 +3951,7 @@ curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/object/message/find/all?query=tagged_with_all('personal,test')
+https://apis.appacitive.com/v1.0/object/message/find/all?query=tagged_with_all('personal,test')
 ```
 ``` rest
 $$$Sample Response
@@ -4061,7 +4061,7 @@ Returns a list of all records of the given type that match the given free text e
 
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/object/{type}/find/all?freetext={free text expression}
+GET https://apis.appacitive.com/v1.0/object/{type}/find/all?freetext={free text expression}
 ```
 ``` rest
 $$$Sample Request
@@ -4071,7 +4071,7 @@ curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/object/photo/find/all?freetext=champs Palais
+https://apis.appacitive.com/v1.0/object/photo/find/all?freetext=champs Palais
 ```
 ``` rest
 $$$Sample Response
@@ -4149,7 +4149,7 @@ You can also specify the property name based on which you would like the result 
 
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/object/{type}/find/all?psize={page size}&pnum={page number}&orderBy={order by property name}&isAsc={true or false}
+GET https://apis.appacitive.com/v1.0/object/{type}/find/all?psize={page size}&pnum={page number}&orderBy={order by property name}&isAsc={true or false}
 ```
 ``` rest
 $$$Sample Request
@@ -4159,7 +4159,7 @@ curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
-GET https://apis.appacitive.com/object/photo/find/all?psize=1&pnum=2&orderBy=__id&isAsc=false
+GET https://apis.appacitive.com/v1.0/object/photo/find/all?psize=1&pnum=2&orderBy=__id&isAsc=false
 
 ```
 ``` rest
@@ -4374,7 +4374,7 @@ Note that graph queries are HTTP POST calls.
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/search/{filter query name}/filter
+POST https://apis.appacitive.com/v1.0/search/{filter query name}/filter
 ```
 ``` rest
 $$$Sample Request
@@ -4390,7 +4390,7 @@ curl -X POST \
 		"key2": "value2"
 	}
 }
-https://apis.appacitive.com/search/sample_filter/filter
+https://apis.appacitive.com/v1.0/search/sample_filter/filter
 ```
 
 ``` rest
@@ -4481,7 +4481,7 @@ The response to a projection query will depend on how you design your projection
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/search/{projection query name}/project
+POST https://apis.appacitive.com/v1.0/search/{projection query name}/project
 ```
 ``` rest
 $$$Sample Request
@@ -4502,7 +4502,7 @@ curl -X POST \
 		"key2": "value2"
 	}
 }
-https://apis.appacitive.com/search/sample_projection/project
+https://apis.appacitive.com/v1.0/search/sample_projection/project
 ```
 
 ``` rest
@@ -4690,7 +4690,7 @@ In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
-PUT https://apis.appacitive.com/user
+PUT https://apis.appacitive.com/v1.0/user
 ```
 ``` rest
 $$$Sample Request
@@ -4699,7 +4699,7 @@ curl -X PUT \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "__tags": ["male"], "username": "john.doe", "firstname": "John", "email": "john.doe@appacitive.com", "password": "p@ssw0rd" }' \
-https://apis.appacitive.com/user
+https://apis.appacitive.com/v1.0/user
 ```
 ``` rest
 $$$Sample Response
@@ -4840,7 +4840,7 @@ Here onwards, the linked identity can be accessed using the `name` of the identi
 
 ``` rest
 $$$Method
-PUT https://apis.appacitive.com/user/
+PUT https://apis.appacitive.com/v1.0/user/
 ```
 ``` rest
 $$$Sample Request
@@ -4850,7 +4850,7 @@ curl -X PUT \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "username": "john.doe", "firstname": "John", "email": "john.doe@appacitive.com", "password": "p@ssw0rd", "__link": { "authtype": "facebook", "accesstoken": "{facebook access token}" }}' \
-https://apis.appacitive.com/user
+https://apis.appacitive.com/v1.0/user
 ```
 ``` javascript
 $$$Method
@@ -4960,7 +4960,7 @@ If you have already specified the `consumerkey` and `consumersecret` in the mana
 
 ``` rest
 $$$Method
-PUT https://apis.appacitive.com/user/
+PUT https://apis.appacitive.com/v1.0/user/
 ```
 ``` rest
 $$$Sample Request
@@ -4970,7 +4970,7 @@ curl -X PUT \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "username": "john.doe", "firstname": "John", "email": "john.doe@appacitive.com", "password": "p@ssw0rd", "__link": { "authtype": "twitter", "oauthtoken": "{twitter oauth token}", "oauthtokensecret": "{twitter oauth token secret}", "consumerkey": "{twitter consumer key}", "consumersecret": "{twitter consumer secret}"}}' \
-https://apis.appacitive.com/user
+https://apis.appacitive.com/v1.0/user
 ```
 ``` rest
 $$$Sample Response
@@ -5071,7 +5071,7 @@ In this example, we will use a facebook access token.
 
 ``` rest
 $$$Method
-PUT https://apis.appacitive.com/user/authenticate
+PUT https://apis.appacitive.com/v1.0/user/authenticate
 ```
 ``` rest
 $$$Sample Request
@@ -5081,7 +5081,7 @@ curl -X POST \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "type": "facebook", "accesstoken": "{facebook access token}", "createnew": true }' \
-https://apis.appacitive.com/user/authenticate
+https://apis.appacitive.com/v1.0/user/authenticate
 ```
 ``` rest
 $$$Sample Response
@@ -5216,7 +5216,7 @@ The response contains a `status` object which describes the status of the reques
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/user/{userId}/link
+POST https://apis.appacitive.com/v1.0/user/{userId}/link
 ```
 ``` rest
 $$$Sample Request
@@ -5226,7 +5226,7 @@ curl -X PUT \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "type": "facebook", "accesstoken": "{facebook access token}" }' \
-https://apis.appacitive.com/user/john.doe/link?useridtype=username
+https://apis.appacitive.com/v1.0/user/john.doe/link?useridtype=username
 ```
 ``` rest
 $$$Sample Response
@@ -5288,7 +5288,7 @@ The response contains a `status` object which describes the status of the reques
 
 ``` rest
 $$$Method
-PUT https://apis.appacitive.com/user/{userId}/link
+PUT https://apis.appacitive.com/v1.0/user/{userId}/link
 ```
 ``` rest
 $$$Sample Request
@@ -5298,7 +5298,7 @@ curl -X PUT \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "authtype": "twitter", "oauthtoken": "{twitter oauth token}", "oauthtokensecret": "{twitter oauth token secret}", "consumerkey": "{twitter consumer key}", "consumersecret": "{twitter consumer secret}" }' \
-https://apis.appacitive.com/user/john.doe/link?useridtype=username
+https://apis.appacitive.com/v1.0/user/john.doe/link?useridtype=username
 ```
 ``` rest
 $$$Sample Response
@@ -5361,7 +5361,7 @@ If you no longer want to associate an Appacitive user to an OAuth provider, you 
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/user/{userId}/{name}/delink
+POST https://apis.appacitive.com/v1.0/user/{userId}/{name}/delink
 ```
 ``` rest
 $$$Sample Request
@@ -5370,7 +5370,7 @@ curl -X POST \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/user/john.doe/facebook/delink?useridtype=username
+https://apis.appacitive.com/v1.0/user/john.doe/facebook/delink?useridtype=username
 ```
 ``` rest
 $$$Sample Response
@@ -5529,7 +5529,7 @@ response = user.authenticate('p@ssw0rd')
 ```
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/user/authenticate
+POST https://apis.appacitive.com/v1.0/user/authenticate
 ```
 ``` rest
 $$$Sample Request
@@ -5539,7 +5539,7 @@ curl -X POST \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "username": "john.doe", "password": "p@ssw0rd" }' \
-https://apis.appacitive.com/user/authenticate
+https://apis.appacitive.com/v1.0/user/authenticate
 ```
 ``` rest
 $$$Sample Response
@@ -5668,7 +5668,7 @@ You can authenticate a user and generate a session token using a access token us
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/user/authenticate
+POST https://apis.appacitive.com/v1.0/user/authenticate
 ```
 ``` rest
 $$$Sample Request
@@ -5678,7 +5678,7 @@ curl -X POST \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "type": "facebook", "accesstoken": "{facebook access token}" }' \
-https://apis.appacitive.com/user/authenticate
+https://apis.appacitive.com/v1.0/user/authenticate
 ```
 ``` rest
 $$$Sample Response
@@ -5773,7 +5773,7 @@ You can set them up once in the management portal in the social network settings
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/user/authenticate
+POST https://apis.appacitive.com/v1.0/user/authenticate
 ```
 ``` rest
 $$$Sample Request
@@ -5783,7 +5783,7 @@ curl -X POST \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "type": "twitter", "oauthtoken": "{oAuth token}", "oauthtokensecret": "{oAuth token secret}", "consumerKey": "{consumer key}", "consumerSecret": "{consumer secret}" }' \
-https://apis.appacitive.com/user/authenticate
+https://apis.appacitive.com/v1.0/user/authenticate
 ```
 ``` rest
 $$$Sample Response
@@ -5911,7 +5911,7 @@ var user = await Users.GetByIdAsync("1234525435344346",
 ```
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/user/{user Id}
+GET https://apis.appacitive.com/v1.0/user/{user Id}
 ```
 ``` rest
 $$$Sample Request
@@ -5921,7 +5921,7 @@ curl -X POST \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/user/34912447775245454
+https://apis.appacitive.com/v1.0/user/34912447775245454
 ```
 ``` rest
 $$$Sample Response
@@ -6014,7 +6014,7 @@ The value of `useridtype` is set to `username`.
 
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/user/{username}?useridtype=username
+GET https://apis.appacitive.com/v1.0/user/{username}?useridtype=username
 ```
 ``` rest
 $$$Sample Request
@@ -6024,7 +6024,7 @@ curl -X POST \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/user/john.doe?useridtype=username
+https://apis.appacitive.com/v1.0/user/john.doe?useridtype=username
 ```
 ``` rest
 $$$Sample Response
@@ -6134,7 +6134,7 @@ user = AppacitiveUser.get_logged_in_user()
 ```
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/user/me
+GET https://apis.appacitive.com/v1.0/user/me
 ```
 ``` rest
 $$$Sample Request
@@ -6144,7 +6144,7 @@ curl -X POST \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/user/me
+https://apis.appacitive.com/v1.0/user/me
 ```
 ``` rest
 $$$Sample Response
@@ -6250,7 +6250,7 @@ In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/user/
+POST https://apis.appacitive.com/v1.0/user/
 ```
 ``` rest
 $$$Sample Request
@@ -6260,7 +6260,7 @@ curl -X POST \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "email":"johnny@appacitive.com", "username":"johnny", "phone": null, "lastname":null, "__addtags":[ "coffee.lover", "foodie" ], "__removetags":[ "newuser" ] }' \
-https://apis.appacitive.com/user
+https://apis.appacitive.com/v1.0/user
 ```
 ``` rest
 $$$Sample Response
@@ -6445,7 +6445,7 @@ A status object describing the status of the delete user call.
 
 ``` rest
 $$$Method
-DELETE https://apis.appacitive.com/user/{userId}
+DELETE https://apis.appacitive.com/v1.0/user/{userId}
 ```
 ``` rest
 $$$Sample Request
@@ -6455,7 +6455,7 @@ curl -X DELETE \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/user/34912447775245454
+https://apis.appacitive.com/v1.0/user/34912447775245454
 ```
 ``` rest
 $$$Sample Response
@@ -6522,7 +6522,7 @@ An additional query string parameter called `useridtype` is sent to specify the 
 
 ``` rest
 $$$Method
-DELETE https://apis.appacitive.com/user/{username}?useridtype=username
+DELETE https://apis.appacitive.com/v1.0/user/{username}?useridtype=username
 ```
 ``` rest
 $$$Sample Request
@@ -6532,7 +6532,7 @@ curl -X DELETE \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/user/john.doe?useridtype=username
+https://apis.appacitive.com/v1.0/user/john.doe?useridtype=username
 ```
 ``` rest
 $$$Sample Response
@@ -6589,7 +6589,7 @@ A valid session token still needs to be passed in the `Appacitive-User-Auth` hea
 
 ``` rest
 $$$Method
-DELETE https://apis.appacitive.com/user/me?useridtype=token&token={user token}
+DELETE https://apis.appacitive.com/v1.0/user/me?useridtype=token&token={user token}
 ```
 ``` rest
 $$$Sample Request
@@ -6599,7 +6599,7 @@ curl -X DELETE \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/user/me?useridtype=token&token=K2liWXVlSHZ0elNESUloTFlLRE5EQ2lzWXZtM0FFL0JxYW01WTBtVFlmTHZ6aHFMaWtEKzRUdlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa2kvekJpTUZGYyt2ZEFTVi9mbGdNN2xRaEZuWUJidVByR3lFMkZlTzNrRHV3cldVUFRNbFA5M3B6NFN5Rkd3K1dNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==
+https://apis.appacitive.com/v1.0/user/me?useridtype=token&token=K2liWXVlSHZ0elNESUloTFlLRE5EQ2lzWXZtM0FFL0JxYW01WTBtVFlmTHZ6aHFMaWtEKzRUdlRRUkVHNndHSnZUbU42bUR0OUVWdTB3V3NBOFNVa2kvekJpTUZGYyt2ZEFTVi9mbGdNN2xRaEZuWUJidVByR3lFMkZlTzNrRHV3cldVUFRNbFA5M3B6NFN5Rkd3K1dNTWc1ZlBPclErOXBKN05NZWlXL2JNPQ==
 ```
 ``` rest
 $$$Sample Response
@@ -6674,7 +6674,7 @@ You can store the users last known location in the `geography` property called `
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/user/{userid}/checkin?lat={latitude}&long={longitude}
+POST https://apis.appacitive.com/v1.0/user/{userid}/checkin?lat={latitude}&long={longitude}
 ```
 
 ``` rest
@@ -6685,7 +6685,7 @@ curl -X POST \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/user/john.doe/checkin?useridtype=username&lat=10.10&long=20.20
+https://apis.appacitive.com/v1.0/user/john.doe/checkin?useridtype=username&lat=10.10&long=20.20
 ```
 
 ``` rest
@@ -6796,7 +6796,7 @@ Once you create a session `token` for a user using one of the aunthenticating me
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/user/validate
+POST https://apis.appacitive.com/v1.0/user/validate
 ```
 ``` rest
 $$$Sample Request
@@ -6806,7 +6806,7 @@ curl -X POST \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/user/validate```
+https://apis.appacitive.com/v1.0/user/validate```
 
 ``` rest
 $$$Sample Response
@@ -6886,7 +6886,7 @@ You may want to invalidate a previously generated session token for a user at so
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/user/invalidate
+POST https://apis.appacitive.com/v1.0/user/invalidate
 ```
 ``` rest
 $$$Sample Request
@@ -6896,7 +6896,7 @@ curl -X POST \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/user/invalidate
+https://apis.appacitive.com/v1.0/user/invalidate
 ```
 
 ``` rest
@@ -6978,7 +6978,7 @@ If a user of your app simply wants to change his/her password, it requires a sim
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/user/{userId}/changepassword?useridtype={id/username/token}
+POST https://apis.appacitive.com/v1.0/user/{userId}/changepassword?useridtype={id/username/token}
 ```
 
 ``` rest
@@ -6990,7 +6990,7 @@ curl -X POST \
 -H "Appacitive-User-Auth: {User token}" \
 -H "Content-Type: application/json" \
 -d '{ "oldpassword": "{old password}", "newpassword": "{new password}" }' \
-https://apis.appacitive.com/user/45178614534861534/changepassword?useridtype=id
+https://apis.appacitive.com/v1.0/user/45178614534861534/changepassword?useridtype=id
 ```
 
 ``` rest
@@ -7066,7 +7066,7 @@ read the blog post <a href="http://blogs.appacitive.com/2013/10/password-managem
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/user/sendresetpasswordemail
+POST https://apis.appacitive.com/v1.0/user/sendresetpasswordemail
 ```
 
 ``` rest
@@ -7077,7 +7077,7 @@ curl -X POST \
 -H "Appacitive-Environment: {sandbox or live}" \
 -H "Content-Type: application/json" \
 -d '{ "username": "{username of the user}", "subject": "{subject of the email}" }' \
-https://apis.appacitive.com/user/sendresetpasswordemail
+https://apis.appacitive.com/v1.0/user/sendresetpasswordemail
 ```
 ``` rest
 $$$Sample Response
@@ -7208,7 +7208,7 @@ You can use this API to send simple (non templated) emails.
  
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/email/send
+POST https://apis.appacitive.com/v1.0/email/send
 ```
 ``` rest
 $$$Sample Request
@@ -7402,7 +7402,7 @@ To know about creating email templates, read the blog post <a href="http://blogs
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/email/send
+POST https://apis.appacitive.com/v1.0/email/send
 ```
 ``` rest
 $$$Sample Request
@@ -7635,7 +7635,7 @@ More pre-defined properties are available in the device type for your benefit. Y
 
 ``` rest
 $$$Method
-PUT https://apis.appacitive.com/device/register
+PUT https://apis.appacitive.com/v1.0/device/register
 ```
 ``` rest
 $$$Sample Request
@@ -7761,7 +7761,7 @@ In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/object/device/{id}?fields={comma separated list of fields}
+GET https://apis.appacitive.com/v1.0/object/device/{id}?fields={comma separated list of fields}
 ```
 ``` rest
 $$$Sample Request
@@ -7769,7 +7769,7 @@ $$$Sample Request
 curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
-https://apis.appacitive.com/object/device/33017891581461312
+https://apis.appacitive.com/v1.0/object/device/33017891581461312
 ```
 ``` rest
 $$$Sample Response
@@ -7861,7 +7861,7 @@ In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/object/device/multiget/{comma separated ids}?fields={comma separated list of fields}
+GET https://apis.appacitive.com/v1.0/object/device/multiget/{comma separated ids}?fields={comma separated list of fields}
 ```
 ``` rest
 $$$Sample Request
@@ -7869,7 +7869,7 @@ $$$Sample Request
 curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
-https://apis.appacitive.com/object/device/multiget/33017891581461312,33017891581461313
+https://apis.appacitive.com/v1.0/object/device/multiget/33017891581461312,33017891581461313
 ```
 ``` rest
 $$$Sample Response
@@ -7986,7 +7986,7 @@ In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/device/{id}?revision={current revision}
+POST https://apis.appacitive.com/v1.0/device/{id}?revision={current revision}
 ```
 ``` rest
 $$$Sample Request
@@ -8001,7 +8001,7 @@ curl -X POST \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
 -d '{ "devicetype": "wp8", "devicetoken": "987654", "__attributes" : { "topic" : "testing" }, "__addtags" : ["tagA", "tagB"], "__removetags" : ["tagC"]}' \
-https://apis.appacitive.com/object/post/33017891581461312
+https://apis.appacitive.com/v1.0/object/post/33017891581461312
 ```
 ``` rest
 $$$Sample Response
@@ -8103,7 +8103,7 @@ In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
-DELETE https://apis.appacitive.com/device/{id}
+DELETE https://apis.appacitive.com/v1.0/device/{id}
 ```
 ``` rest
 $$$Sample Request
@@ -8112,7 +8112,7 @@ $$$Sample Request
 curl -X DELETE \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-Apikey: {Your api key}" \
-https://apis.appacitive.com/device/123456678809
+https://apis.appacitive.com/v1.0/device/123456678809
 
 ```
 ``` rest
@@ -8178,7 +8178,7 @@ In case of an error, the `status` object contains details of the failure.
 
 ``` rest
 $$$Method
-DELETE https://apis.appacitive.com/device/{id}?deleteconnections=true
+DELETE https://apis.appacitive.com/v1.0/device/{id}?deleteconnections=true
 ```
 ``` rest
 $$$Sample Request
@@ -8186,7 +8186,7 @@ $$$Sample Request
 curl -X DELETE \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Appacitive-Apikey: {Your api key}" \
-https://apis.appacitive.com/device/123456678809?deleteconnections=true
+https://apis.appacitive.com/v1.0/device/123456678809?deleteconnections=true
 
 ```
 ``` rest
@@ -8341,7 +8341,7 @@ This is for sending a push to all the devices that are registered for a push.
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/push/
+POST https://apis.appacitive.com/v1.0/push/
 ```
 ``` rest
 $$$Sample Request
@@ -8478,7 +8478,7 @@ Like say you want to send a Push to just the iOS devices. You can specifiy that 
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/push/
+POST https://apis.appacitive.com/v1.0/push/
 ```
 ``` rest
 $$$Sample Request
@@ -8643,7 +8643,7 @@ You can send a Push to channels (groups).
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/push/
+POST https://apis.appacitive.com/v1.0/push/
 ```
 ``` rest
 $$$Sample Request
@@ -8786,7 +8786,7 @@ You can send a Push to just a specific set of device ids as well.
 
 ``` rest
 $$$Method
-POST https://apis.appacitive.com/push/
+POST https://apis.appacitive.com/v1.0/push/
 ```
 ``` rest
 $$$Sample Request
@@ -9676,7 +9676,7 @@ In the request, the optional query string paramertes you can provide are.
 
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/file/uploadurl?contenttype={content-type}
+GET https://apis.appacitive.com/v1.0/file/uploadurl?contenttype={content-type}
 ```
 ``` rest
 $$$Sample Request
@@ -9685,7 +9685,7 @@ curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/file/uploadurl?filename=mypicture&contenttype=image/jpeg&expires=10
+https://apis.appacitive.com/v1.0/file/uploadurl?filename=mypicture&contenttype=image/jpeg&expires=10
 ```
 ``` rest
 $$$Sample Response
@@ -9826,7 +9826,7 @@ To download a file from Appacitive for your app, you need to get a `pre-signed` 
  
 ``` rest
 $$$Method
-GET https://apis.appacitive.com/file/download/{file id}
+GET https://apis.appacitive.com/v1.0/file/download/{file id}
 ```
 ``` rest
 $$$Sample Request
@@ -9835,7 +9835,7 @@ curl -X GET \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/file/download/mypicture
+https://apis.appacitive.com/v1.0/file/download/mypicture
 ```
 ``` rest
 $$$Sample Response
@@ -9907,7 +9907,7 @@ This deletes a previously uploaded file from appacitive.
  
 ``` rest
 $$$Method
-DELETE https://apis.appacitive.com/file/delete/{file id}
+DELETE https://apis.appacitive.com/v1.0/file/delete/{file id}
 ```
 ``` rest
 $$$Sample Request
@@ -9916,7 +9916,7 @@ curl -X DELETE \
 -H "Appacitive-Apikey: {Your api key}" \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
 -H "Content-Type: application/json" \
-https://apis.appacitive.com/file/delete/mypicture
+https://apis.appacitive.com/v1.0/file/delete/mypicture
 ```
 ``` rest
 $$$Sample Response
