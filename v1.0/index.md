@@ -3885,7 +3885,21 @@ The table below shows a list of supported logical operators corresponding to the
 
 `NOTE`: The `between` operator is inclusive at both ends.
 
+``` android
+        //  Samples
 
+        //  firstname like 'oh'
+        new PropertyFilter("firstname").like("oh");
+
+        //  firstname starts with 'Jo'
+        new PropertyFilter("firstname").startsWith("Jo");
+
+        //  Between two dates
+        new PropertyFilter("birthdate").between(new Date(1980, 1, 1), new Date());
+
+        //  Greater than an integer
+        new PropertyFilter("score").isGreaterThanEqualTo(1000);
+```
 ``` rest
 $$$ Query Samples
 
@@ -4042,6 +4056,23 @@ A radial search requires the following parameters.
   <dd>required<br/><span>The unit of distance (mi \ km).
 </dl>
 
+``` android
+        // Search for hotels near Las Vegas in a radius of 10 miles
+        double[] centre = new double[]{36.0800, 115.1522};
+        AppacitiveQuery query = new AppacitiveQuery();
+        query.filter = new GeoFilter("location")
+                .withinCircle(centre, 10, DistanceMetric.mi);
+        List<String> fields = null;
+        AppacitiveObject.findInBackground("hotel", query, fields, new Callback<PagedList<AppacitiveObject>>() {
+            @Override
+            public void success(PagedList<AppacitiveObject> result) {
+            }
+
+            @Override
+            public void failure(PagedList<AppacitiveObject> result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 GET https://apis.appacitive.com/v1.0/object/{type}/find/all?query=*{property_name} within_circle {latitude},{longitude},{radius} {km or mi}
@@ -4128,7 +4159,7 @@ NSString *radialQuery = [APQuery queryWithRadialSearchForProperty:@"location" ne
 ```
 ``` python
 # search for hotels near Las Vegas in a radius of 10 miles
-centre = '361749687195, -115.1372222900'
+centre = '36.1749687195, -115.1372222900'
 radial_query = PropertyFilter('location').within_circle(centre, '10 mi')
 
 response = AppacitiveObject.find('hotel', radial_query)
@@ -4149,7 +4180,35 @@ This is typically useful when you want a finer grained control on the shape of t
   <dt>geocodes</dt>
   <dd>required<br/><span>List of geocodes indicating the vertices of the polygonal region.
 </dl>
- 
+
+``` android
+        // Search for hotels which fall inside the following polygon
+        final double[] point1 = new double[]{36.1749687195, -115.1372222900};
+        final double[] point2 = new double[]{34.1749687195, -116.1372222900};
+        final double[] point3 = new double[]{35.1749687195, -114.1372222900};
+        final double[] point4 = new double[]{36.1749687195, -114.1372222900};
+
+        List<double[]> polygon = new ArrayList<double[]>(){{
+            add(point1);
+            add(point2);
+            add(point3);
+            add(point4);
+        }};
+
+        AppacitiveQuery query = new AppacitiveQuery();
+        query.filter = new GeoFilter("location")
+                .withinPolygon(polygon);
+        List<String> fields = null;
+        AppacitiveObject.findInBackground("hotel", query, fields, new Callback<PagedList<AppacitiveObject>>() {
+            @Override
+            public void success(PagedList<AppacitiveObject> result) {
+            }
+
+            @Override
+            public void failure(PagedList<AppacitiveObject> result, Exception e) {
+            }
+        });
+``` 
 ``` rest
 $$$Method
 GET https://apis.appacitive.com/v1.0/object/{type}/find/all?query=*{property_name} within_polygon {lat1,long1} | {lat2,long2} | {lat3,long3} | ..
@@ -4284,6 +4343,25 @@ For data of a given type, you can query for all records that are tagged with one
 ** Response ** 
 Returns a list of all records of the given type that are tagged with atleast one of the given tag values.
 
+``` android
+        //  Fetch all messages tagged with tags 'personal' OR 'private' OR both.
+        List<String> tagsToMatch = new ArrayList<String>() {{
+            add("personal");
+            add("private");
+        }};
+        AppacitiveQuery query = new AppacitiveQuery();
+        query.filter = new TagFilter().matchOneOrMore(tagsToMatch);
+        List<String> fields = null;
+        AppacitiveObject.findInBackground("message", query, fields, new Callback<PagedList<AppacitiveObject>>() {
+            @Override
+            public void success(PagedList<AppacitiveObject> result) {
+            }
+
+            @Override
+            public void failure(PagedList<AppacitiveObject> result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 GET https://apis.appacitive.com/v1.0/object/{type}/find/all?query=tagged_with_one_or_more('{comma separated list of tags}')
@@ -4398,6 +4476,25 @@ An alternative variation of the above tag based search allows you to query for a
 ** Response ** 
 Returns a list of all records of the given type that are tagged with all of the given tag values.
 
+``` android
+        //  Fetch all messages tagged with tags 'personal' AND 'private'.
+        List<String> tagsToMatch = new ArrayList<String>() {{
+            add("personal");
+            add("private");
+        }};
+        AppacitiveQuery query = new AppacitiveQuery();
+        query.filter = new TagFilter().matchAll(tagsToMatch);
+        List<String> fields = null;
+        AppacitiveObject.findInBackground("message", query, fields, new Callback<PagedList<AppacitiveObject>>() {
+            @Override
+            public void success(PagedList<AppacitiveObject> result) {
+            }
+
+            @Override
+            public void failure(PagedList<AppacitiveObject> result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 GET https://apis.appacitive.com/v1.0/object/{type}/find/all?query=tagged_with_all('{comma separated list of tags}')
@@ -4517,7 +4614,24 @@ Returns a list of all records of the given type that match the given free text e
 | Must contain     | +{term}        | `+hello world` will search for all text that contains the term `hello` and may contain the term `world`.
 | Must not contain     | -{term}       | `hello -world` will search for all text may contain the term hello but does not contain the term `world`.
 
+``` android
+        List<String> tokens = new ArrayList<String>() {{
+            add("french");
+            add("Palais");
+        }};
+        AppacitiveQuery query = new AppacitiveQuery();
+        query.freeTextTokens = tokens;
+        List<String> fields = null;
+        AppacitiveObject.findInBackground("photo", query, fields, new Callback<PagedList<AppacitiveObject>>() {
+            @Override
+            public void success(PagedList<AppacitiveObject> result) {
+            }
 
+            @Override
+            public void failure(PagedList<AppacitiveObject> result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 GET https://apis.appacitive.com/v1.0/object/{type}/find/all?freetext={free text expression}
@@ -4606,6 +4720,27 @@ All search queries on the platform return a paginated response. You can specify 
 
 You can also specify the property name based on which you would like the result set to be sorted, along with the direction (ascending or descending). Take a look at the platform specific samples to see how this information is passed from the client.
 
+``` android
+        AppacitiveQuery query = new AppacitiveQuery();
+        
+		//	Paging info
+		query.pageNumber = 2;
+        query.pageSize = 25;
+		
+		//	Sorting info
+        query.orderBy = "photo_title";
+        query.isAscending = true;
+        List<String> fields = null;
+        AppacitiveObject.findInBackground("photo", query, fields, new Callback<PagedList<AppacitiveObject>>() {
+            @Override
+            public void success(PagedList<AppacitiveObject> result) {
+            }
+
+            @Override
+            public void failure(PagedList<AppacitiveObject> result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 GET https://apis.appacitive.com/v1.0/object/{type}/find/all?psize={page size}&pnum={page number}&orderBy={order by property name}&isAsc={true or false}
@@ -4713,6 +4848,16 @@ Individual SDKs provide helper methods to help assist in building compound queri
 
 `NOTE`: All types of queries with the exception of free text queries can be combined into a compound query.
 
+``` android
+        double[] centre = new double[]{36.1749687195, -115.1372222900};
+
+        AppacitiveQuery complexQuery = new AppacitiveQuery();
+        Filter firstnameFilter = new PropertyFilter("firstname").startsWith("Jo");
+        Filter lastnameFilter = new PropertyFilter("lastname").like("oe");
+
+        Filter geoFilter = new GeoFilter("location").withinCircle(centre, 10, DistanceMetric.mi);
+        complexQuery.filter = BooleanOperator.and(new Query[]{geoFilter, BooleanOperator.or(new Query[]{firstnameFilter, lastnameFilter})});
+```
 ``` javascript
 //Use of `And` and `Or` operators
 var center = new Appacitive.GeoCoord(36.1749687195, -115.1372222900);
@@ -4831,6 +4976,23 @@ Note that graph queries are HTTP POST calls.
 	<dd>required<br/><span>This should be set to `application/json`.
 </dl>
 
+``` android
+        String filterQueryName = "sample_filter";
+        Map<String, String> placeHolderFillers = new HashMap<String, String>() {{
+            put("key1", "value1");
+            put("key2", "value2");
+        }};
+
+        AppacitiveGraphSearch.filterQueryInBackground(filterQueryName, placeHolderFillers,  new Callback<List<Long>>() {
+            @Override
+            public void success(List<Long> ids) {
+            }
+
+            @Override
+            public void failure(List<Long> result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 POST https://apis.appacitive.com/v1.0/search/{filter query name}/filter
@@ -4938,6 +5100,28 @@ The response to a projection query will depend on how you design your projection
 	<dd>required<br/><span>This should be set to `application/json`.
 </dl>
 
+``` android
+        String projectQueryName = "sample_project";
+        List<Long> rootIds = new ArrayList<Long>() {{
+            add(34912447775245454L);
+            add(34322447235528474L);
+            add(34943243891025029L);
+        }};
+        Map<String, String> placeHolderFillers = new HashMap<String, String>() {{
+            put("key1", "value1");
+            put("key2", "value2");
+        }};
+
+        AppacitiveGraphSearch.projectQueryInBackground(projectQueryName, rootIds, placeHolderFillers, new Callback<List<AppacitiveGraphNode>>() {
+            @Override
+            public void success(List<AppacitiveGraphNode> nodes) {
+            }
+
+            @Override
+            public void failure(List<AppacitiveGraphNode> result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 POST https://apis.appacitive.com/v1.0/search/{projection query name}/project
