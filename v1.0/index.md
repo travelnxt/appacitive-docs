@@ -7849,6 +7849,28 @@ You can use this API to send simple (non templated) emails.
 	<dd>required<br/><span>This should be set to `application/json`.
 </dl>
  
+``` android
+        AppacitiveEmail emailWithRawBody = new AppacitiveEmail("Subject goes here.")
+                .withBody(new RawEmailBody("Body goes here", false))
+                .withSmtp(new SmtpSettings("sathley@appacitive.com", "********", "smtp.gmail.com", 465, true));
+        emailWithRawBody.to = new ArrayList<String>() {{
+            add("sathley@appacitive.com");
+        }};
+        emailWithRawBody.cc = new ArrayList<String>() {{
+            add("support@appacitive.com");
+        }};
+
+        emailWithRawBody.fromAddress = "connect@appacitive.com";
+        emailWithRawBody.sendInBackground(new Callback<AppacitiveEmail>() {
+            @Override
+            public void success(AppacitiveEmail email) {
+            }
+
+            @Override
+            public void failure(AppacitiveEmail email, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 POST https://apis.appacitive.com/v1.0/email/send
@@ -8043,6 +8065,28 @@ To know about creating email templates, read the blog post <a href="http://blogs
 	<dd>required<br/><span>This should be set to `application/json`.
 </dl>
 
+``` android
+        Map<String, String> templateFillers = new HashMap<String, String>() {{
+            put("username", "john");
+            put("date", new Date().toString());
+        }};
+        AppacitiveEmail emailWithTemplatedBody = new AppacitiveEmail("Subject goes here.")
+                .withBody(new TemplatedEmailBody("sample_template", templateFillers, true));
+        emailWithTemplatedBody.to = new ArrayList<String>() {{
+            add("sathley@appacitive.com");
+        }};
+
+        emailWithTemplatedBody.fromAddress = "connect@appacitive.com";
+        emailWithTemplatedBody.sendInBackground(new Callback<AppacitiveEmail>() {
+            @Override
+            public void success(AppacitiveEmail email) {
+            }
+
+            @Override
+            public void failure(AppacitiveEmail email, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 POST https://apis.appacitive.com/v1.0/email/send
@@ -10317,6 +10361,19 @@ In the request, the optional query string paramertes you can provide are.
   <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`. 
 </dl>
 
+``` android
+        AppacitiveFile.getUploadUrlInBackground("image/png", "my_selfie.png", 60, new Callback<FileUploadUrlResponse>() {
+            @Override
+            public void success(FileUploadUrlResponse result) {
+                String url = result.url;
+                String fileId = result.fileId;
+            }
+
+            @Override
+            public void failure(FileUploadUrlResponse result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 GET https://apis.appacitive.com/v1.0/file/uploadurl?contenttype={content-type}
@@ -10467,6 +10524,17 @@ To download a file from Appacitive for your app, you need to get a `pre-signed` 
   <dd>optional<br/><span>Time in minutes for which the url will be valid, default value 5 mins. 
 </dl>
  
+``` android
+        AppacitiveFile.getDownloadUrlInBackground("my_selfie.png", 60, new Callback<String>() {
+            @Override
+            public void success(String downloadUrl) {
+            }
+
+            @Override
+            public void failure(String result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 GET https://apis.appacitive.com/v1.0/file/download/{file id}
