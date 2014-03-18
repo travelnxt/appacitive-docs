@@ -124,7 +124,13 @@ In order to pass the api key and environment information for the application use
   <dd><span>Environment to target. Valid values are ``live`` and ``sandbox``</span></dd>
 </dl>
 
+``` android
+//	For android 
+AppacitiveContext.initialize("{Your api key}", Environment.live, this.getApplicationContext());
 
+// For java
+AppacitiveContext.initialize("{Your api key}", Environment.live);
+```
 ``` javascript
 Appacitive.initialize({ 
     apikey: '{Your api key}' /* required */, 
@@ -140,7 +146,7 @@ App.Initialize(WindowsPhone7.WP7.Instance,
 
 //For Windows app
 App.Initialize(Net45.WindowsHost.Instance, 
-                   "{Your api key}", 
+                   "S{Your api key}", 
                     Environment.Live);
 ```
 
@@ -202,6 +208,21 @@ System generated properties are fields used for housekeeping and storing meta-in
 
 User defined properties are fields defined by you via the type designer. These are exposed as fields directly on the object.
 
+``` android
+		AppacitiveObject score = new AppacitiveObject("score");
+        score.setStringProperty("difficulty", "normal");
+        score.setIntProperty("level", 10);
+        score.setDoubleProperty("score", 1400.50);
+
+        score.setAttribute("is_first_time_user", "true");
+        score.setAttribute("team_color", "blue");
+
+        score.addTag("amateur");
+        score.addTags(new ArrayList<String>() {{
+            add("unverified");
+            add("right_handed");
+        }});
+```
 ``` rest
 $$$sample object 
 {
@@ -294,6 +315,39 @@ Creates a new object of a specific type.
 Returns the newly created object with all the system defined properties (e.g., ``__id``) set.
 In case of an error, the `status` object contains details of the failure.
 
+
+``` android
+        //  Create a new AppacitiveObject to store a post.
+        AppacitiveObject post = new AppacitiveObject("post");
+
+        // Set two string/text properties, 'title' & ''text.
+        post.setStringProperty("title", "Android Operating System");
+        post.setStringProperty("text", "Android is an operating system based on the Linux kernel,[12] and designed primarily for touchscreen mobile devices such as smartphones and tablet computers");
+
+        //  Add some arbitrary key-value pairs as attributes to the object.
+        post.setAttribute("proof_read", "true");
+        post.setAttribute("num_pages", "25");
+
+        // Add a few tags to the object.
+        post.addTag("intro");
+        post.addTags(new ArrayList<String>() {{
+            add("android");
+            add("technology");
+        }});
+
+        // Create the object on Appacitive.
+        post.createInBackground(new Callback<AppacitiveObject>() {
+            @Override
+            public void success(AppacitiveObject result) {
+                //  'result' holds the newly created 'post' object.
+            }
+
+            @Override
+            public void failure(AppacitiveObject result, Exception e) {
+                //  in case of error, e holds the error details.
+            }
+        });
+```
 ``` rest
 $$$Method
 PUT https://apis.appacitive.com/v1.0/object/{type}
@@ -462,6 +516,24 @@ type and its system defined id.
 Returns the existing object matching the given id.
 In case of an error, the `status` object contains details of the failure.
 
+
+``` android
+		List<String> fieldsToFetch = new ArrayList<String>();   
+        //  Empty or null fieldsToFetch list indicated fetch all fields.
+        AppacitiveObject.getInBackground("post", 33017891581461312L, fieldsToFetch, new Callback<AppacitiveObject>() {
+            @Override
+            public void success(AppacitiveObject result) {
+                //  'result' holds the 'post' object you requested.
+                Log.v("TAG", result.getPropertyAsString("title"));
+                Log.v("TAG", result.getPropertyAsString("text"));
+            }
+
+            @Override
+            public void failure(AppacitiveObject result, Exception e) {
+                Log.e("TAG", e.getMessage());
+            }
+        });
+```
 ``` rest
 $$$Method
 GET https://apis.appacitive.com/v1.0/object/{type}/{id}?fields={comma separated list of fields}
@@ -611,6 +683,29 @@ In case of an error, the `status` object contains details of the failure.
 
 `NOTE` : Please note that providing the same id multiple times will not return duplicates.
 
+``` android
+        //   Fetch two objects of type 'post' with ids 33017891581461312 and 33017891581461313 from appacitive in a single call.
+        List<Long> posts = new ArrayList<Long>() {{
+            add(33017891581461312L);
+            add(33017891581461313L);
+        }};
+
+        List<String> fields = null;
+
+        AppacitiveObject.multiGetInBackground("post", posts, fields, new Callback<List<AppacitiveObject>>() {
+            @Override
+            public void success(List<AppacitiveObject> result) {
+                for (AppacitiveObject post : result)
+                    Log.v("TAG", String.format("Fetched post with title %s and text %s.", post.getPropertyAsString("title"), post.getPropertyAsString("title")));
+            }
+
+            @Override
+            public void failure(List<AppacitiveObject> result, Exception e) {
+                Log.e("TAG", e.getMessage());
+            }
+        });
+```
+
 ``` rest
 $$$Method
 GET https://apis.appacitive.com/v1.0/object/{type}/multiget/{comma separated ids}?fields={comma separated list of fields}
@@ -752,6 +847,36 @@ The fields parameter allows you to pick and choose the exact properties that you
 This applies to both user and system defined properties. The ``__id``,``__type`` or ``__relationtype`` fields cannot be filtered 
 out using this and will always be returned. To select specific fields you need to pass a list of the fields that you want the system to return.
 
+
+``` android 
+        //   Fetch only the properties 'title' and 'text' for the following two posts..
+        List<Long> posts = new ArrayList<Long>() {{
+            add(33017891581461312L);
+            add(33017891581461313L);
+        }};
+
+        List<String> fields = new ArrayList<String>() {{
+            add("title");
+            add("text");
+        }};
+
+        AppacitiveObject.multiGetInBackground("post", posts, fields, new Callback<List<AppacitiveObject>>() {
+            @Override
+            public void success(List<AppacitiveObject> result) {
+                //  the post objects in result contain only the requested fields.
+                for (AppacitiveObject post : result) {
+                    String title = post.getPropertyAsString("title");
+                    String text = post.getPropertyAsString("text");
+                    Log.v("TAG", String.format("Fetched post with title %s and text %s.", title, text));
+                }
+            }
+
+            @Override
+            public void failure(List<AppacitiveObject> result, Exception e) {
+                Log.e("TAG", e.getMessage());
+            }
+        });
+```
 ``` rest
 $$$Method
 // The fields parameter can be applied to any objects or connections api call.
@@ -878,7 +1003,41 @@ and update only needs the information that has actually changed.
 Returns the updated object.
 In case of an error, the `status` object contains details of the failure.
 
+``` android
+        // In case the object is not already retrieved from the system,
+        // simply create a new instance of an object with the id.
+        // This creates a "handle" to the object on the client
+        // without actually retrieving the data from the server.
+        // Simply update the fields that you want to update and invoke updateInBackground().
+        
+        // This will simply create a handle or reference to the existing object.
 
+        AppacitiveObject post = new AppacitiveObject("post", 33017891581461312L);
+
+        //  Update the user defined properties 'title' & 'text' for this post.
+        post.setStringProperty("title", "updated title");
+        post.setStringProperty("text", "This is updated text for the post.");
+
+        //  Add a new key-value attribute
+        post.setAttribute("topic", "testing");
+
+        //  Add/remove tags
+        post.addTag("tagA");
+        post.addTag("tagB");
+
+        post.removeTag("tagC");
+
+        boolean updateWithRevision = false;
+        post.updateInBackground(updateWithRevision, new Callback<AppacitiveObject>() {
+            @Override
+            public void success(AppacitiveObject result) {
+            }
+
+            @Override
+            public void failure(AppacitiveObject result, Exception e) {
+            }
+        });
+```		
 ``` rest
 $$$Method
 POST https://apis.appacitive.com/v1.0/object/{type}/{id}?revision={current revision}
@@ -1074,7 +1233,23 @@ This operation will fail if the object has existing connections with other objec
 Returns successful `status` object.
 In case of an error, the `status` object contains details of the failure.
 
+``` android 
+        AppacitiveObject post = new AppacitiveObject("post", 33017891581461312L);
 
+        //  Delete the post object with id 33017891581461312 from appacitive
+
+        boolean deleteWithConnections = false;
+        post.deleteInBackground(deleteWithConnections, new Callback<Void>() {
+            @Override
+            public void success(Void result) {
+
+            }
+
+            @Override
+            public void failure(Void result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 DELETE https://apis.appacitive.com/v1.0/object/{type}/{id}
@@ -1161,6 +1336,23 @@ Do note that all the objects should be of the same type and must not be connecte
 Returns successful `status` object.
 In case of an error, the `status` object contains details of the failure.
 
+``` android
+        //  Delete the following players from appacitive in a single call.
+        List<Long> playerIds = new ArrayList<Long>() {{
+            add(14696753262625025L);
+            add(14696753262625026L);
+        }};
+
+        AppacitiveObject.bulkDeleteInBackground("player", playerIds, new Callback<Void>() {
+            @Override
+            public void success(Void result) {
+            }
+
+            @Override
+            public void failure(Void result, Exception e) {
+            }
+        });
+```
 
 ``` rest
 $$$Method
@@ -1251,7 +1443,19 @@ There are scenarios where you might want to delete an object irrespective of exi
 Returns successful `status` object.
 In case of an error, the `status` object contains details of the failure.
 
+``` android
+        //  Delete the friend object with id 752624436678809 and also delete all connections with this object. ina single call
+        boolean deleteWithConnections = true;
+        AppacitiveObject.deleteInBackground("friend", 752624436678809L, deleteWithConnections, new Callback<Void>() {
+            @Override
+            public void success(Void result) {
+            }
 
+            @Override
+            public void failure(Void result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 DELETE https://apis.appacitive.com/v1.0/object/{type}/{id}?deleteconnections=true
@@ -1368,6 +1572,14 @@ Do use the label of the endpoint to identify the correct endpoint.
 
 User defined properties are fields defined by you via the model designer. These are exposed as fields directly on the connection object.
 
+``` android
+        //  Assemble a connection of relation type 'employment' from an existing object of type 'employee' and id 8768521317231283123 to another existing object of type 'employer' with id 2543637146238712836
+        AppacitiveConnection employment = new AppacitiveConnection("emplpyment")
+                .fromExistingObject("employee", 21317231283123L)
+                .toExistingObject("employer", 716238712836L);
+        //  Set a property called 'joining_date' for that connection
+        employment.setDateProperty("joining_date", new Date(2014, 05, 20));
+```
 ``` rest
 $$$sample object 
 {
@@ -1439,7 +1651,22 @@ To create a connection between two existing objects, you need to pass the connec
 Returns the newly created connection object with all the system defined properties (e.g., ``__id``) set.
 In case of an error, the `status` object contains details of the failure.
 
+``` android
+        AppacitiveConnection review = new AppacitiveConnection("reviewed")
+                .fromExistingObject("reviewer", 8768521317231283123L)
+                .toExistingObject("hotel", 4543637146238712836L);
 
+        review.setDateProperty("review_date", new Date());
+        review.createInBackground(new Callback<AppacitiveConnection>() {
+            @Override
+            public void success(AppacitiveConnection result) {
+            }
+
+            @Override
+            public void failure(AppacitiveConnection result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 PUT https://apis.appacitive.com/v1.0/connection/{relation type}
@@ -1568,10 +1795,10 @@ var connection = APConnection
 await connection .SaveAsync();
 ```
 ``` python
-//`review` is relation name, 
-//`reviewer` and `hotel` are the endpoint labels
+#	`review` is the relation name, 
+#	`reviewer` and `hotel` are the endpoint labels
 connection = AppacitiveConnection('reviewed').from_existing_object_id('reviewer', 8768521317231283123).to_existing_object_id('hotel', 4543637146238712836)
-connection.set_property('joining_date', datetime.datetime.today())
+connection.set_property('review_date', datetime.datetime.today())
 connection.create()
 ```
 
@@ -1584,6 +1811,32 @@ either an existing object reference or a completely new object inside the endpoi
 If a new object is provided in the request, then the operation will create both the object and the connection 
 as part of a single transaction.
 
+``` android
+        //  Will create a new my_score connection between
+        //    - existing 'player' object with id 123445678 and
+        //    - new 'score' object which will also be created when the connection is created.
+
+        //  The my_score relation defines two endpoints "player" and "score" for this information.
+
+        //  Create an instance of object of type 'score'
+        final AppacitiveObject score = new AppacitiveObject("score");
+        score.setIntProperty("score", 150);
+        
+        //  Create a connection between existing 'player' object and new 'score' object.
+        new AppacitiveConnection("my_scores").fromExistingObject("player", 123445678L)
+                .toNewObject("score", score)
+                .createInBackground(new Callback<AppacitiveConnection>() {
+                    @Override
+                    public void success(AppacitiveConnection result) {
+                        // The id of the 'score' object should now be set since it has also been created on the server.
+                        long scoreId = score.getId();
+                    }
+
+                    @Override
+                    public void failure(AppacitiveConnection result, Exception e) {
+                    }
+                });
+```
 ``` rest
 $$$Method
 PUT https://apis.appacitive.com/v1.0/connection/{relation type}
@@ -1748,6 +2001,36 @@ As indicated in the earlier example, the create connection operation allows you 
 or a new object in its two endpoints. Passing a new object in each of the endpoints will allow you to create 
 both the endpoints as well as the connection between the two in a single operation.
 
+``` android
+        //  Will create a new my_score connection between
+        //    - new player object and
+        //    - new score object, both of which will also be created when the connection is created.
+        //  The my_score relation defines two endpoints "player" and "score" for this information.
+
+        //  Create an instance of object of type score
+        final AppacitiveObject score = new AppacitiveObject("score");
+        score.setIntProperty("points", 150);
+
+        //  Create an instance of object of type player
+        final AppacitiveObject player = new AppacitiveObject("player");
+        player.setStringProperty("name", "sirius");
+
+        //  Create these two objects on the server and also a connection between them of relation type 'my_scores'
+        new AppacitiveConnection("my_scores")
+                .fromNewObject("player", player)
+                .toNewObject("score", score)
+                .createInBackground(new Callback<AppacitiveConnection>() {
+                    @Override
+                    public void success(AppacitiveConnection result) {
+                        long scoreId = score.getId();
+                        long playerId = player.getId();
+                    }
+
+                    @Override
+                    public void failure(AppacitiveConnection result, Exception e) {
+                    }
+                });
+```
 ``` rest
 $$$Method
 PUT https://apis.appacitive.com/v1.0/connection/{relation type}
@@ -1891,8 +2174,8 @@ APConnection *connection = [[APConnection alloc] initWithRelationtType:@"myScore
 
 ``` csharp
 /* Will create a new my_score connection between 
-    - existing player object with id 123445678 and 
-    - new score object, which will also be created when the connection is created.
+    - new player object and 
+    - new score object, both of which will also be created when the connection is created.
   The my_score relation defines two endpoints "player" and "score" for this information.
 */ 
 
@@ -1916,8 +2199,8 @@ var playerId = player.Id;
 ```
 ``` python
 # Will create a new 'my_score' connection between 
-#    an existing 'player' object with id 123445678 and 
-#    a new 'score' object, which will also be created when the connection is created.
+#    a new 'player' object and 
+#    a new 'score' object, both of which will also be created when the connection is created.
 #  The 'my_score' relation has two endpoints 'player' and 'score'.
 
 
@@ -1958,6 +2241,20 @@ Returns a single connection specified by id. To get a single connection you need
 Returns the existing connection object matching the given id.
 In case of an error, the `status` object contains details of the failure.
 
+``` android
+		//  Retrieve a connection by its id
+        List<String> fieldsToRetrieve = null;
+        AppacitiveConnection.getInBackground("review", 33017891581461312L, fieldsToRetrieve, new Callback<AppacitiveConnection>() {
+            @Override
+            public void success(AppacitiveConnection result) {
+                
+            }
+
+            @Override
+            public void failure(AppacitiveConnection result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 GET https://apis.appacitive.com/v1.0/connection/{type}/{id}?fields={(optional) comma separated list of fields}
@@ -2045,10 +2342,10 @@ $$$Sample Request
 var conn = await APConnections.GetAsync("review", "33017891581461312");
 ```
 ``` python
-//Single connection by connection id
+#	retrieve a connection by its connection id
 conn = AppacitiveConnection.get('review', 33017891581461312)
 ```
-#### Retrieve multiple connections by id
+#### Retrieve multiple connections by their ids
 
 Returns a list of multiple existing connections from the system. To get a list of connections you 
 must provide the type of the relation and a list of ids to retrieve. Given that only one type is allowed,
@@ -2072,6 +2369,24 @@ In case of an error, the `status` object contains details of the failure.
 
 `NOTE` : Please note that providing the same id multiple times will not return duplicates.
 
+``` android
+        List<Long> connectionIds = new ArrayList<Long>() {{
+            add(33017891581461312L);
+            add(33017891581461313L);
+        }};
+        List<String> fieldsToFetch = null;
+        AppacitiveConnection.multiGetInBackground("reviewed", connectionIds, fieldsToFetch, new Callback<List<AppacitiveConnection>>() {
+            @Override
+            public void success(List<AppacitiveConnection> result) {
+                for (AppacitiveConnection review : result)
+                    Log.v("TAG", String.format("Fetched review with id %s.", review.getId()));
+            }
+
+            @Override
+            public void failure(List<AppacitiveConnection> result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 GET https://apis.appacitive.com/v1.0/connection/{type}/multiget/{comma separated ids}?fields={comma separated list of fields}
@@ -2233,6 +2548,22 @@ then you can simply try and retrieve that connection by specifying the type as "
 
 Returns a connection of the specified type if one exists between objectAid and objectBid
 
+
+``` android
+        List<String> fields = null;
+        AppacitiveConnection.findByObjectsAndRelationInBackground("friend", 22322L, 33422L, fields, new Callback<AppacitiveConnection>() {
+            @Override
+            public void success(AppacitiveConnection result) {
+                if (result != null) {
+                } else {                    
+                }
+            }
+
+            @Override
+            public void failure(AppacitiveConnection result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 GET https://apis.appacitive.com/v1.0/connection/{type}/find/{objectAid}/{objectBid}?label={label}
@@ -2341,12 +2672,12 @@ $$$Sample Request
 ```
 
 ``` csharp
-//Single connection by endpoint object ids
+//Single connection by endpoint object ids and relation
 var connection2 = await APConnections.GetAsync("reivew", 
                                        "22322", "33422");
 ```
 ``` python
-# Single connection by endpoint object ids
+# retrieve single connection by endpoint object ids and relation
 conn = AppacitiveConnection.find_by_objects('22322', '33422', relation='review')
 ```
 
@@ -2378,7 +2709,32 @@ The Appacitive platform supports partial updates on connections. As a result, in
 Returns the updated connection object.
 In case of an error, the `status` object contains details of the failure.
 
+``` android
+        //  Get the connection object and update the description
+        AppacitiveConnection.getInBackground("review", 1234345, null, new Callback<AppacitiveConnection>() {
+            @Override
+            public void success(AppacitiveConnection connection) {
+                
+                //  Update the description of the 'review'
+                connection.setStringProperty("description", "best ribs in town. :)");
+                boolean updateWithRevision = false;
+                connection.updateInBackground(updateWithRevision, new Callback<AppacitiveConnection>() {
+                    @Override
+                    public void success(AppacitiveConnection updatedObject) {
+                    }
 
+                    @Override
+                    public void failure(AppacitiveConnection result, Exception e) {
+                    }
+                });
+            }
+
+            @Override
+            public void failure(AppacitiveConnection result, Exception e) {
+                super.failure(result, e);
+            }
+        });
+```
 ``` rest
 $$$Method
 POST https://apis.appacitive.com/v1.0/connection/{type}/{id}?revision={current revision}
@@ -2492,7 +2848,7 @@ connection.Set<string>("description", "good hotel");
 await connection.SaveAsync();
 ```
 ``` python
-//Get the connection object and update the description
+#	get the connection object and update its description property
 connection = AppacitiveConnection.get('review', '1234345')
 connection.set_property('description', 'Good Hotel.')
 connection.update(with_revision=False)
@@ -2516,6 +2872,18 @@ If the delete is successful, the response will contain a successful `status` obj
 Incase the given id does not exist or in the event of a failure, the response will contain a `status` object with 
 details of the failure.
 
+``` android
+        //  Delete a 'review' connection with id 123345.
+        AppacitiveConnection.deleteInBackground("review", 123345L, new Callback<Void>() {
+            @Override
+            public void success(Void result) {
+            }
+
+            @Override
+            public void failure(Void result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 DELETE https://apis.appacitive.com/v1.0/connection/{type}/{id}
@@ -2604,6 +2972,24 @@ One caveat here is that, all the connections should be of the same type.
 If the delete is successful, the response will contain a successful `status` object.
 Incase any of the given id do not exist or in the event of a failure, the response will contain a `status` object with 
 details of the failure.
+
+``` android
+        //  Delete review connections with ids 40438996554377032, 40440007982449139 & 40440007982449139.
+        List<Long> connectionIds = new ArrayList<Long>() {{
+            add(40438996554377032L);
+            add(40440007982449139L);
+            add(40440007982449139L);
+        }};
+        AppacitiveConnection.bulkDeleteInBackground("review", connectionIds, new Callback<Void>() {
+            @Override
+            public void success(Void result) {
+            }
+
+            @Override
+            public void failure(Void result, Exception e) {
+            }
+        });
+```
 
 ``` rest
 $$$Method
@@ -2714,7 +3100,23 @@ In the query for connected data, you need to specify the type of the connection 
 
 Returns the list of objects (along with connection information) connected to the given object via the given connection type.
 
+``` android
+        //  Get all users who have visited San Francisco (city object with id 636523636)
+        AppacitiveQuery query = null;
+        List<String> fields = null;
+        AppacitiveObject.getConnectedObjectsInBackground("visitor", "city", 636523636L, query, fields, new Callback<ConnectedObjectsResponse>() {
+            @Override
+            public void success(ConnectedObjectsResponse result) {
+                for (ConnectedObject connectedObject : result.results) {
 
+                }
+            }
+
+            @Override
+            public void failure(ConnectedObjectsResponse result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 GET https://apis.appacitive.com/v1.0/connection/{connection_type}/{object_type}/{object_id}/find?returnedge={true/false}
@@ -2867,6 +3269,18 @@ Say you have two users and you want to see if they are friends (by virtue of a "
 
 Returns a list of all connections that exists between objectAId and objectBId of any relation type
 
+``` android
+        List<String> fields = null;
+        AppacitiveConnection.findByObjectsInBackground(22322L, 33422L, fields, new Callback<PagedList<AppacitiveConnection>>() {
+            @Override
+            public void success(PagedList<AppacitiveConnection> result) {
+            }
+
+            @Override
+            public void failure(PagedList<AppacitiveConnection> result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 GET https://apis.appacitive.com/v1.0/connection/find/{objectAId}/{objectBId}
@@ -3027,6 +3441,32 @@ Say you have many `users` and `houses`( objects of type house) and you want to d
 Returns a list of all connections that exist between objectAid and objectBids of any relation type
 
 **Note** that this is a `POST` HTTP call.
+
+``` android
+        final long johnId = 22322;
+        final long janeId = 33422;
+        final long tarzanId = 44522;
+        final long house1Id = 55622;
+        final long house2Id = 66722;
+
+        long objectAId = johnId;
+        List<Long> objectBIds = new ArrayList<Long>() {{
+            add(janeId);
+            add(tarzanId);
+            add(house1Id);
+            add(house2Id);
+        }};
+        List<String> fields = null;
+        AppacitiveConnection.findInterconnectsInBackground(objectAId, objectBIds, fields, new Callback<PagedList<AppacitiveConnection>>() {
+            @Override
+            public void success(PagedList<AppacitiveConnection> result) {
+            }
+
+            @Override
+            public void failure(PagedList<AppacitiveConnection> result, Exception e) {
+            }
+        });
+```
 
 ``` rest
 $$$Method
@@ -3201,6 +3641,25 @@ All search results are paged with a page size of `20` by default. You can change
 Passing any value higher than this will limit the results to `200`. The platform also supports providing modifiers to fine tune the exact set of fields to return for each 
 record of the search results. The platform specific examples will indicate how this can be done.
 
+``` android
+        //  Build the query
+        AppacitiveQuery appacitiveQuery = new AppacitiveQuery();
+        appacitiveQuery.query = new PropertyFilter("firstname").isEqualTo("John");
+
+        //  Fire the query
+        List<String> fields = null;
+        AppacitiveObject.findInBackground("player", appacitiveQuery, fields, new Callback<PagedList<AppacitiveObject>>() {
+            @Override
+            public void success(PagedList<AppacitiveObject> result) {
+                Log.v("TAG", String.format("%s Johns found.", result.pagingInfo.totalRecords));
+            }
+
+            @Override
+            public void failure(PagedList<AppacitiveObject> result, Exception e) {
+            }
+        });
+
+```
 ``` rest
 $$$Method
 GET https://apis.appacitive.com/v1.0/object/{type}/find/all?query={query expression}
