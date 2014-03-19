@@ -5331,6 +5331,23 @@ All other pre-defined properties are optional and you may wish to use them or ad
 Returns the newly created user object with all the system defined properties set like `__id`, `__utcdatecreated`, `__createdby` etc.
 In case of an error, the `status` object contains details of the failure.
 
+``` android
+        AppacitiveUser user = new AppacitiveUser();
+        user.setFirstName("John");
+        user.setUsername("john.doe");
+        user.setPassword("p@ssw0rd");
+        user.setEmail("john.doe@appacitive.com");
+
+        user.signupInBackground(new Callback<AppacitiveUser>() {
+            @Override
+            public void success(AppacitiveUser user) {
+            }
+
+            @Override
+            public void failure(AppacitiveUser user, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 PUT https://apis.appacitive.com/v1.0/user
@@ -6130,6 +6147,21 @@ console.log(Appacitive.Users.current().get('__id'));
 
 A newly generated string session `token`, the `user` object itself and a `status` object are returned.
 
+``` android
+        long expiry = 15 * 60;
+        int maxAttempts = Integer.MAX_VALUE;
+        AppacitiveUser.loginInBackground("username", "password", expiry, maxAttempts, new Callback<AppacitiveUser>() {
+            @Override
+            public void success(AppacitiveUser user) {
+                AppacitiveUser loggedInUser = AppacitiveContext.getLoggedInUser();
+                String userToken = AppacitiveContext.getLoggedInUserToken();
+            }
+
+            @Override
+            public void failure(AppacitiveUser result, Exception e) {
+            }
+        });
+```
 ``` csharp
 //Authenticating user by `username` and `password`
 var creds = new UsernamePasswordCredentials("username", "password")
@@ -6543,7 +6575,18 @@ The same pattern applies for other calls like deleting the user or updating the 
 
 The user object is returned if a user exists in the system for your app with the id you supplied.
 
+``` android
+        List<String> fields = null;
+        AppacitiveUser.getByIdInBackground(1234525435344346L, fields, new Callback<AppacitiveUser>() {
+            @Override
+            public void success(AppacitiveUser user) {
+            }
 
+            @Override
+            public void failure(AppacitiveUser user, Exception e) {
+            }
+        });
+```
 ``` csharp
 //Get User by `id`
 var user = await Users.GetByIdAsync("1234525435344346");
@@ -6654,7 +6697,18 @@ The value of `useridtype` is set to `username`.
   <dd>required<br/><span>This should be set to `application/json`.
 </dl>
 
+``` android
+        List<String> fields = null;
+        AppacitiveUser.getByUsernameInBackground("john.doe", fields, new Callback<AppacitiveUser>() {
+            @Override
+            public void success(AppacitiveUser user) {
+            }
 
+            @Override
+            public void failure(AppacitiveUser user, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 GET https://apis.appacitive.com/v1.0/user/{username}?useridtype=username
@@ -6767,6 +6821,18 @@ The `useridtype` query string parameter is set to `token`.
   <dd>required<br/><span>This should be set to `application/json`.
 </dl>
 
+``` android
+        List<String> fields = null;
+        AppacitiveUser.getLoggedInUserInBackground(fields, new Callback<AppacitiveUser>() {
+            @Override
+            public void success(AppacitiveUser user) {
+            }
+
+            @Override
+            public void failure(AppacitiveUser user, Exception e) {
+            }
+        });
+```
 ``` csharp
 //  Get logged in User
 var loggedInUser = await Users.GetLoggedInUserAsync();
@@ -6891,6 +6957,26 @@ You can specify which user you want to update by using either his `id`, `usernam
 Returns the updated user object with the `__revision` number incremented.
 In case of an error, the `status` object contains details of the failure.
 
+``` android
+        AppacitiveUser.getByIdInBackground(65464576879867989L, null, new Callback<AppacitiveUser>() {
+            @Override
+            public void success(AppacitiveUser user) {
+                user.setEmail("mary.jane2@appacitive.com");
+                user.setLastName("Jane");
+                user.setStringProperty("city", "New York");
+                
+                user.updateInBackground(false, new Callback<AppacitiveUser>() {
+                    @Override
+                    public void success(AppacitiveUser updatedUser) {
+                        
+                    }
+
+                    @Override
+                    public void failure(AppacitiveUser updatedUser, Exception e) {
+                        
+                    }
+                });
+```
 ``` rest
 $$$Method
 POST https://apis.appacitive.com/v1.0/user/
@@ -7085,7 +7171,18 @@ A status object describing the status of the delete user call.
   <dd>required<br/><span>This should be set to `application/json`.
 </dl>
 
+``` android
+        boolean deleteConnections = false;
+        AppacitiveUser.deleteInBackground(42952490524897L, deleteConnections, new Callback<Void>() {
+            @Override
+            public void success(Void result) {
+            }
 
+            @Override
+            public void failure(Void result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 DELETE https://apis.appacitive.com/v1.0/user/{userId}
@@ -7162,7 +7259,18 @@ An additional query string parameter called `useridtype` is sent to specify the 
   <dd>required<br/><span>This should be set to `application/json`.
 </dl>
 
+``` android
+        boolean deleteConnections = false;
+        AppacitiveUser.deleteInBackground("john.doe", deleteConnections, new Callback<Void>() {
+            @Override
+            public void success(Void result) {
+            }
 
+            @Override
+            public void failure(Void result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 DELETE https://apis.appacitive.com/v1.0/user/{username}?useridtype=username
@@ -7230,6 +7338,18 @@ A valid session token still needs to be passed in the `Appacitive-User-Auth` hea
   <dd>required<br/><span>This should be set to `application/json`.
 </dl>
 
+``` android
+        boolean deleteConnections = false;
+        AppacitiveUser.deleteLoggedInUserInBackground(deleteConnections, new Callback<Void>() {
+            @Override
+            public void success(Void result) {
+            }
+
+            @Override
+            public void failure(Void result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 DELETE https://apis.appacitive.com/v1.0/user/me?useridtype=token&token={user token}
@@ -7315,6 +7435,20 @@ You can store the users last known location in the `geography` property called `
   <dd>required<br/><span>This should be set to `application/json`.
 </dl>
 
+``` android
+        double[] checkinCoordinates = new double[]{36.0800, 115.1522};
+        AppacitiveUser user = new AppacitiveUser(2456785426874425L);
+        user.checkinInBackground(checkinCoordinates, new Callback<Void>() {
+            @Override
+            public void success(Void result) {
+                double[] currentLocation = AppacitiveContext.getCurrentLocation();
+            }
+
+            @Override
+            public void failure(Void result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 POST https://apis.appacitive.com/v1.0/user/{userid}/checkin?lat={latitude}&long={longitude}
@@ -7437,6 +7571,26 @@ Once you create a session `token` for a user using one of the aunthenticating me
   <dd>required<br/><span>This should be set to `application/json`.
 </dl>
 
+``` android
+        AppacitiveUser.loginInBackground("username", "password", -1, -1, new Callback<AppacitiveUser>() {
+            @Override
+            public void success(AppacitiveUser user) {
+                AppacitiveUser.validateCurrentlyLoggedInUserSessionInBackground(new Callback<Void>() {
+                    @Override
+                    public void success(Void result) {
+                    }
+
+                    @Override
+                    public void failure(Void result, Exception e) {
+                    }
+                });
+            }
+
+            @Override
+            public void failure(AppacitiveUser user, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 POST https://apis.appacitive.com/v1.0/user/validate
@@ -7527,6 +7681,26 @@ You may want to invalidate a previously generated session token for a user at so
   <dd>required<br/><span>This should be set to `application/json`.
 </dl>
 
+``` android
+        AppacitiveUser.loginInBackground("username", "password", -1, -1, new Callback<AppacitiveUser>() {
+            @Override
+            public void success(AppacitiveUser user) {
+                AppacitiveUser.invalidateCurrentlyLoggedInUserSessionInBackground(new Callback<Void>() {
+                    @Override
+                    public void success(Void result) {
+                    }
+
+                    @Override
+                    public void failure(Void result, Exception e) {
+                    }
+                });
+            }
+
+            @Override
+            public void failure(AppacitiveUser user, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 POST https://apis.appacitive.com/v1.0/user/invalidate
@@ -7619,6 +7793,26 @@ If a user of your app simply wants to change his/her password, it requires a sim
   <dd>required<br/><span>This should be set to `application/json`.
 </dl>
 
+``` android
+        AppacitiveUser.getByUsernameInBackground("john.doe", null, new Callback<AppacitiveUser>() {
+            @Override
+            public void success(AppacitiveUser user) {
+                user.updatePasswordInBackground("oldPassword", "newPassword", new Callback<Void>() {
+                    @Override
+                    public void success(Void result) {
+                    }
+
+                    @Override
+                    public void failure(Void result, Exception e) {
+                    }
+                });
+            }
+
+            @Override
+            public void failure(AppacitiveUser user, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 POST https://apis.appacitive.com/v1.0/user/{userId}/changepassword?useridtype={id/username/token}
@@ -7707,6 +7901,17 @@ read the blog post <a href="http://blogs.appacitive.com/2013/10/password-managem
   <dd>required<br/><span>This should be set to `application/json`.
 </dl>
 
+``` android
+        AppacitiveUser.sendResetPasswordEmailInBackground("john.doe", "Email Subject", new Callback<Void>() {
+            @Override
+            public void success(Void result) {
+            }
+
+            @Override
+            public void failure(Void result, Exception e) {
+            }
+        });
+```
 ``` rest
 $$$Method
 POST https://apis.appacitive.com/v1.0/user/sendresetpasswordemail
