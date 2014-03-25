@@ -10781,6 +10781,12 @@ $$$Sample Response
   }
 }
 ```
+``` ios
+APFile *fileObj = [[APFile alloc] init];
+[fileObj downloadFileWithName:@"BannerImage" validUrlForTime:@10 successHandler:^(NSData *data) {
+    UIImage *bannerImage = [UIImage imageWithData:data];
+    }];
+```
 ``` csharp
 //Three ways to download file
 var download = new FileDownload(fileName);
@@ -10860,6 +10866,9 @@ $$$Sample Response
     "additionalmessages": []
   }
 }
+```
+``` ios
+[APFile deleteFileWithName:@"bannerImage"];
 ```
 ``` python
 AppacitiveFile.delete_file('my_selfie')
