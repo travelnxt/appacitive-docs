@@ -367,7 +367,6 @@ $$$Method
 saveObjectWithSuccessHandler:failureHandler
 ```
 
-
 ``` python
 score.create()
 ```
@@ -912,17 +911,15 @@ $$$Sample Response
 ``` ios
 $$$Method
 //APObject instance method
-fetchWithQueryString:successHandler:failureHandler:
+fetchWithPropertiesToFetch:successHandler:failureHandler:
 ```
 ``` ios
 $$$Sample Request
-NSString *fields = [APQuery queryWithFields:[NSArray arrayWithObjects:@"text",@"title",nil]];
-
 APObject *post = [[APObject alloc]initWithTypeName:@"post"];
- [post fetchWithQueryString:queryString successHandler:^(){
-      NSLog(@"post title:%@, post text:%@",[object getTitle],[object getText]);
+    [post fetchWithPropertiesToFetch:@[@"text",@"title"]  successHandler:^(){
+        NSLog(@"post title:%@, post text:%@",[post getPropertyWithKey:@"text"],[post getPropertyWithKey:@"title"]);
     }failureHandler:^(APError *error){
-      NSLog(@"Error occurred: %@",[error description]);
+        NSLog(@"Error occurred: %@",[error description]);
     }];
 ```
 ``` csharp
@@ -1762,7 +1759,7 @@ connection.save().then(function (obj) {
 ```
 ``` ios
 $$$Method
-//APConncetion instance method
+//APConnection instance method
 createConnectionWithObjectA:objectB:successHandler:failureHandler:
 ```
 ``` ios
@@ -1938,7 +1935,7 @@ connection.save().then(function (obj) {
 ```
 ``` ios
 $$$Method
-//APConncetion instance method
+//APConnection instance method
 createConnectionWithObjectAId:objectB:labelA:labelB:successHandler:failureHandler:
 ```
 ``` ios
@@ -2146,7 +2143,7 @@ connection.save().then(function (obj) {
 
 ``` ios
 $$$Method
-//APConncetion instance method
+//APConnection instance method
 createConnectionWithObjectA:objectB:labelA:labelB:successHandler:failureHandler:
 ```
 ``` ios
@@ -2325,7 +2322,7 @@ Appacitive.Connection.get({
 
 ``` ios
 $$$Method
-//APConncetions class method
+//APConnections class method
 fetchConnectionWithRelationType:objectId:successHandler:failureHandler:
 ```
 ``` ios
@@ -2459,7 +2456,7 @@ $$$Sample Response
 
 ``` ios
 $$$Method
-//APConncetions class method
+//APConnections class method
 fetchConnectionsWithRelationType:objectIds:successHandler:failureHandler:
 ```
 ``` ios
@@ -2658,7 +2655,7 @@ Appacitive.Connection.getBetweenObjectsForRelation({
 
 ``` ios
 $$$Method
-//APConncetions class method
+//APConnections class method
 searchAllConnectionsWithRelationType:fromObjectId:toObjectId:successHandler:failureHandler:
 ```
 ``` ios
@@ -3400,7 +3397,7 @@ Appacitive.Connection.getBetweenObjects({
 ``` ios
 $$$Method
 //APConnections class method
-searchAllConnectionsFromObjectId:toObjectId: successHandler:failureHandler:
+searchAllConnectionsFromObjectId:toObjectId:successHandler:failureHandler:
 ```
 ``` ios
 $$$Sample Request
@@ -3603,7 +3600,7 @@ Appacitive.Connection.getInterconnects({
 ``` ios
 $$$Method
 //APConnections class method
-searchAllConnectionsFromObjectId:toObjectIds: successHandler:failureHandler:
+searchAllConnectionsFromObjectId:toObjectIds:successHandler:failureHandler:
 ```
 ``` ios
 $$$Sample Request
@@ -3751,18 +3748,20 @@ query.fetch().then(succcessHandler);
 ```
 ``` ios
 //Build the query
-APQuery *query = [[APQuery queryExpressionWithProperty:@"firstName"] isEqualTo:@"John"]
+APQuery *query = [[APQuery alloc] init];
+query.filterQuery = [[APQuery queryExpressionWithProperty:@"firstName"] isEqualTo:@"John"];
 
 //`objects` is `PagedList` of `APObject`
-[APObject searchAllObjectsWithTypeName:@"player" withQueryString:[query stringForm] 
-	successHandler:^(NSArray *objects) {
-	NSLog(@"Objects fetched:%@"]);
-  for(APConnection *obj in objects)
-		NSLog(@"%@ ",[obj description]);
-} failureHandler:^(APError *error) {
-	NSLog(@"Error occurred: %@",[error description]);
-}];
+[APObject searchAllObjectsWithTypeName:@"player" withQuery:[query stringValue]
+                        successHandler:^(NSArray *objects) {
+                            NSLog(@"Objects fetched:");
+                            for(APConnection *obj in objects)
+                                NSLog(@"%@ ",[obj description]);
+                        } failureHandler:^(APError *error) {
+                            NSLog(@"Error occurred: %@",[error description]);
+                        }];
 ```
+
 ``` csharp
 //Build the query
 var query = Query.Property("firstname").Equals("John");
@@ -3999,21 +3998,25 @@ var greaterThanQuery = Query.Property("birthdate").IsGreaterThan(date);
 
 ``` ios
 ///Samples
-
+    
 //First name like "oh"
-APQuery *likeQuery = [[APQuery queryExpressionWithProperty:@"firstname"] isLike@"oh"];
+APQuery *likeQuery = [[APQuery alloc] init];
+likeQuery.filterQuery = [[APQuery queryExpressionWithProperty:@"firstname"] isLike:@"oh"];
 
 //First name starts with "jo"
-APQuery *startWithQuery = [[APQuery queryExpressionWithProperty:@"firstname"] startsWith@"jo"];
+APQuery *startWithQuery = [[APQuery alloc] init];
+startWithQuery.filterQuery = [[APQuery queryExpressionWithProperty:@"firstname"] startsWith:@"jo"];
 
 //Between two dates
-NSDate *startDate = [NSDate dateByAddingTimeInterval:NSTimeIntervalSince1970-30];
-NSDate *endDate = [NSDate dateByAddingTimeInterval:NSTimeIntervalSince1970-20];
-APQuery *betweenDatesQuery = [[APQuery queryExpressionWithProperty@"birthdate"] isBetweenDates:startDate and:endDate];
+NSDate *startDate = [[NSDate date] dateByAddingTimeInterval:NSTimeIntervalSince1970-30];
+NSDate *endDate = [[NSDate date] dateByAddingTimeInterval:NSTimeIntervalSince1970-20];
+APQuery *betweenDatesQuery = [[APQuery alloc] init];
+betweenDatesQuery.filterQuery = [[APQuery queryExpressionWithProperty:@"birthdate"] isBetweenDates:startDate and:endDate];
 
 //Greater than a date
-NSDate *date = [NSDate dateByAddingTimeInterval:NSTimeIntervalSince1970-30];
-APQuery *greaterThanQuery = [[APQuery queryExpressionWithProperty@"birthdate"] isGreaterThanDate:date];
+NSDate *date = [[NSDate date] dateByAddingTimeInterval:NSTimeIntervalSince1970-30];
+APQuery *greaterThanQuery = [[APQuery alloc] init];
+greaterThanQuery.filterQuery = [[APQuery queryExpressionWithProperty:@"birthdate"] isGreaterThanDate:date];
 ```
 
 
@@ -4147,15 +4150,16 @@ var hotels = await APObjects.FindAllAsync( "hotel", radialQuery);
 ```
 ``` ios
 CLLocation *lasVegas = [[CLLocation alloc] initWithLatitude:361749687195 longitude:-115.1372222900];
-NSString *radialQuery = [APQuery queryWithRadialSearchForProperty:@"location" nearLocation:lasVegas withinRadius:[NSNumber numberWithInt:10] usingDistanceMetric:kMiles];
-[APObject searchAllObjectsWithTypeName:@"hotel" withQueryString:radialQuery 
-	successHandler:^(NSArray *objects) {
-		NSLog(@"Hotels found:-");
-		for(APObject *hotel in objects)
-			NSLog(@"%d \n", [hotel description]);
-	}failureHandler:^(APError *error) {
-		NSLog(@"Error occurred:", [error description]);
-	}];
+APQuery *radialQuery = [[APQuery alloc] init];
+radialQuery.filterQuery = [APQuery queryWithRadialSearchForProperty:@"location" nearLocation:lasVegas withinRadius:[NSNumber numberWithInt:10] usingDistanceMetric:kMiles];
+[APObject searchAllObjectsWithTypeName:@"hotel" withQuery:[radialQuery stringValue]
+                        successHandler:^(NSArray *objects) {
+                            NSLog(@"Hotels found:-");
+                            for(APObject *hotel in objects)
+                                NSLog(@"%@ \n", [hotel description]);
+                        }failureHandler:^(APError *error) {
+                            NSLog(@"Error occurred:%@", [error description]);
+                        }];
 ```
 ``` python
 # search for hotels near Las Vegas in a radius of 10 miles
@@ -4299,16 +4303,17 @@ CLLocation *vertex3 = [[CLLocation alloc] initWithLatitude:35.1749687195 longitu
 CLLocation *vertex4 = [[CLLocation alloc] initWithLatitude:36.1749687195 longitude:-114.1372222900];
 NSArray *polyCoords = [NSArray arrayWithObjects:vertex1, vertex2, vertex3, vertex4, nil];
 
-NSString *polygonSearch = [APQuery queryWithPolygonSearchForProperty:@"location" withPolygonCoordinates:polyCoords];
+APQuery *polygonSearch = [[APQuery alloc] init];
+polygonSearch.filterQuery = [APQuery queryWithPolygonSearchForProperty:@"location" withPolygonCoordinates:polyCoords];
 
-[APObject searchAllObjectsWithTypeName:@"hotel" withQueryString:polygonSearch
-	successHandler:^(NSArray *objects) {
-	NSLog(@"Hotels Found:-");
-	for(APObject *hotel in objects)
-		NSLog(@"%@ \n", [hotel description]);
-	} failureHandler:^(APError *error) {
-		NSLog(@"Error occurred: %@", [error description]);
-	}];
+[APObject searchAllObjectsWithTypeName:@"hotel" withQuery:[polygonSearch stringValue]
+                        successHandler:^(NSArray *objects) {
+                            NSLog(@"Hotels Found:-");
+                            for(APObject *hotel in objects)
+                                NSLog(@"%@ \n", [hotel description]);
+                        } failureHandler:^(APError *error) {
+                            NSLog(@"Error occurred: %@", [error description]);
+                        }];
 ```
 ``` python
 # search for hotel which is between 4 co-ordinates
@@ -4415,17 +4420,18 @@ $$$Sample Response
 ``` ios
 // Get all messages tagged with tags personal or private.
 NSArray *tags = [NSArray arrayWithObjects:@"personal", @"private", nil];
-    
-NSString *tagQuery = [APQuery queryWithSearchUsingOneOrMoreTags:tags];
 
-[APObject searchAllObjectsWithTypeName:@"messages" withQueryString:tagQuery
-	successHandler:^(NSArray *objects) {
-	NSLog(@"Messages with 'personal', 'private' tags found:-");
-	for(APObject *message in objects)
-		NSLog(@"%@ \n", [message description]);
-	} failureHandler:^(APError *error) {
-		NSLog(@"Error occurred: %@", [error description]);
-	}];
+APQuery *tagQuery = [[APQuery alloc] init];
+tagQuery.filterQuery = [APQuery queryWithSearchUsingOneOrMoreTags:tags];
+
+[APObject searchAllObjectsWithTypeName:@"messages" withQuery:[tagQuery stringValue]
+                        successHandler:^(NSArray *objects) {
+                            NSLog(@"Messages with 'personal', 'private' tags found:-");
+                            for(APObject *message in objects)
+                                NSLog(@"%@ \n", [message description]);
+                        } failureHandler:^(APError *error) {
+                            NSLog(@"Error occurred: %@", [error description]);
+                        }];
 ```
 ``` csharp
 // Get all messages tagged with tags personal or private.
@@ -4540,17 +4546,18 @@ $$$Sample Response
 ``` ios
 // Get all messages tagged with tags personal and test
 NSArray *tags = [NSArray arrayWithObjects:@"personal", @"test", nil];
-    
-NSString *tagQuery = [APQuery queryWithSearchUsingAllTags:tags];
 
-[APObject searchAllObjectsWithTypeName:@"messages" withQueryString:tagQuery
-	successHandler:^(NSArray *objects) {
-	NSLog(@"Messages with 'personal' and 'test' tags found:-");
-	for(APObject *message in objects)
-		NSLog(@"%@ \n", [message description]);
-	} failureHandler:^(APError *error) {
-		NSLog(@"Error occurred: %@", [error description]);
-	}];
+APQuery *tagQuery = [[APQuery alloc] init];
+tagQuery.filterQuery = [APQuery queryWithSearchUsingAllTags:tags];
+
+[APObject searchAllObjectsWithTypeName:@"messages" withQuery:[tagQuery stringValue]
+                        successHandler:^(NSArray *objects) {
+                            NSLog(@"Messages with 'personal' and 'test' tags found:-");
+                            for(APObject *message in objects)
+                                NSLog(@"%@ \n", [message description]);
+                        } failureHandler:^(APError *error) {
+                            NSLog(@"Error occurred: %@", [error description]);
+                        }];
 ```
 ``` csharp
 // Get all messages tagged with tags personal and test
@@ -4681,16 +4688,17 @@ $$$Sample Response
 }
 ```
 ``` ios
-NSString *queryString = [APQuery queryWithSearchUsingFreeText:[NSArray arrayWithObjects:@"champs", @"palais", nil]];    
+APQuery *query = [[APQuery alloc] init];
+query.freeText = @"champs palais";
 
-[APObject searchAllObjectsWithTypeName:@"messages" withQueryString:tagQuery
-	successHandler:^(NSArray *objects) {
-	NSLog(@"Messages with 'champ', 'palais' text found:-");
-	for(APObject *message in objects)
-		NSLog(@"%@ \n", [message description]);
-	} failureHandler:^(APError *error) {
-		NSLog(@"Error occurred: %@", [error description]);
-	}];
+[APObject searchAllObjectsWithTypeName:@"messages" withQuery:[query stringValue]
+                        successHandler:^(NSArray *objects) {
+                            NSLog(@"Messages with 'champ', 'palais' text found:-");
+                            for(APObject *message in objects)
+                                NSLog(@"%@ \n", [message description]);
+                        } failureHandler:^(APError *error) {
+                            NSLog(@"Error occurred: %@", [error description]);
+                        }];
 ```
 ```javascript
 //create the query
@@ -4789,18 +4797,20 @@ $$$Sample Response
 }
 ```
 ``` ios   
-NSString *pageSizeQuery = [APQuery queryWithPageSize:30 andPageNumber:4];
-NSString *pageNumberQuery = [APQuery queryWithPageSize:30];
-NSString *orderByQuery = [APQuery queryWithOderBy@"__createdby" isAscending:YES];
-NSString *queryString = [NSString stringWithFormat:@"%@&%@&%@",pageSizeQuery, pageNumberQuery, orderByQuery];
-[APObject searchAllObjectsWithTypeName:@"photos" withQueryString:queryString
-	successHandler:^(NSArray *objects) {
-	NSLog(@"Photos ordered by creator in a set of 4 pages of 30 photos each:-");
-	for(APObject *photo in objects)
-		NSLog(@"%@ \n", [photo description]);
-	} failureHandler:^(APError *error) {
-		NSLog(@"Error occurred: %@", [error description]);
-	}];
+APQuery *query = [[APQuery alloc] init];
+query.pageNumber = 4;
+query.pageSize = 30;
+query.orderBy = @"__createdby";
+query.isAsc = YES;
+
+[APObject searchAllObjectsWithTypeName:@"photos" withQuery:[query stringValue]
+                        successHandler:^(NSArray *objects) {
+                            NSLog(@"Photos ordered by creator in a set of 4 pages of 30 photos each:-");
+                            for(APObject *photo in objects)
+                                NSLog(@"%@ \n", [photo description]);
+                        } failureHandler:^(APError *error) {
+                            NSLog(@"Error occurred: %@", [error description]);
+                        }];
 ```
 ```javascript
 //create a query
@@ -4895,19 +4905,23 @@ query.filter(
 query.fetch();
 ```
 ``` ios   
-CLLocation *center = [CLLocation alloc] initWithLatitude:36.1749687195 longitude:-115.1372222900
+CLLocation *center = [[CLLocation alloc] initWithLatitude:36.1749687195 longitude:-115.1372222900];
+APQuery *query = [[APQuery alloc] init];
+query.filterQuery = [APQuery booleanAnd:@[
+   [APQuery booleanOr:@[[[APQuery queryExpressionWithProperty:@"firstname"] startsWith:@"jo"],
+                        [[APQuery queryExpressionWithProperty:@"lastname"] isLike:@"*oe*"]]
+    ],
+   [APQuery queryWithRadialSearchForProperty:@"location" nearLocation:center withinRadius:@10 usingDistanceMetric:kMiles]] ];
 
-APCompoundQuery *compoundQuery = [APQuery booleanAnd:[NSArray arrayWithObjects:[APQuery booleanOr:[NSArray arrayWithObjects:[[APQuery queryExpressionWithProperty:@"firstName"] startsWith:@"jo"],[[APQuery queryExpressionWithProperty:@"lastname"] isLike:@"*oe*"], nil]], [APQuery queryWithRadialSearchForProperty:@"location" nearLocation:center withinRadius:10 usingDistanceMetric:kMiles], nil]];
 
-NSString *queryString = [NSString stringWithFormat:@"query=%@"[compoundQuery stringForm]];
-[APObject searchAllObjectsWithTypeName:@"people" withQueryString:queryString
-	successHandler:^(NSArray *objects) {
-	NSLog(@"People whose name and location match the query:-");
-	for(APObject *person in objects)
-		NSLog(@"%@ \n", [person description]);
-	} failureHandler:^(APError *error) {
-		NSLog(@"Error occurred: %@", [error description]);
-	}];
+[APObject searchAllObjectsWithTypeName:@"people" withQuery:[query stringValue]
+                        successHandler:^(NSArray *objects) {
+                            NSLog(@"People whose name and location match the query:-");
+                            for(APObject *person in objects)
+                                NSLog(@"%@ \n", [person description]);
+                        } failureHandler:^(APError *error) {
+                            NSLog(@"Error occurred: %@", [error description]);
+                        }];
 ```
 
 ``` csharp
@@ -9128,11 +9142,11 @@ Device search works exactly the same as any object search.
 ``` ios
 $$$METHOD
 //APDevice class method
-searchAllObjectsWithTypeName:withQueryString:successHandler:failureHandler
+searchAllObjectsWithTypeName:withQuery:successHandler:failureHandler
 ```
 ``` ios
 $$$SAMPLE
-[APDevice searchAllObjectsWithTypeName:@"device" withQueryString:nil
+[APDevice searchAllObjectsWithTypeName:@"device" withQuery:nil
 	successHandler:^(NSArray *objects) {
 	NSLog(@"Devices found:%@"]);
   for(APDevice *device in objects)
