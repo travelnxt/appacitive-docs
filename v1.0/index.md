@@ -10626,8 +10626,7 @@ $$$Sample Response
 NSBundle *myBundle = [NSBundle bundleForClass:[self class]];
 NSString *uploadPath = [myBundle pathForResource:@"test_image" ofType:@"png"];
 NSData *myData = [NSData dataWithContentsOfFile:uploadPath];
-APFile *apFile = [[APFile alloc] init];
-[apFile uploadFileWithName:@"Image2"
+[APFile uploadFileWithName:@"Image2"
 				data:myData
 				validUrlForTime:@10
 				contentType:@"image/png"
@@ -10782,8 +10781,7 @@ $$$Sample Response
 }
 ```
 ``` ios
-APFile *fileObj = [[APFile alloc] init];
-[fileObj downloadFileWithName:@"BannerImage" validUrlForTime:@10 successHandler:^(NSData *data) {
+[APFile downloadFileWithName:@"BannerImage" validUrlForTime:@10 successHandler:^(NSData *data) {
     UIImage *bannerImage = [UIImage imageWithData:data];
     }];
 ```
