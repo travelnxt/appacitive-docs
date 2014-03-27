@@ -87,7 +87,7 @@ var path = require('path');
               });
         };
     };
-
+w
     /**
      * Parser module.
      * Parses a given Markdown document and returns a JSON object with data
@@ -226,7 +226,7 @@ var path = require('path');
             $el.attr('id', id);
         });
 
-        if (window && window.docType == 'SDK') {
+        if (typeof window != 'undefined' && window.docType == 'SDK') {
             var h5 = $content.find("h5:contains('Table of Contents')");
             h5.next().remove();
             h5.remove();
