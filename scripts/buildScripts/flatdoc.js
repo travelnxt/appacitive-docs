@@ -87,7 +87,7 @@ var path = require('path');
               });
         };
     };
-w
+
     /**
      * Parser module.
      * Parses a given Markdown document and returns a JSON object with data
