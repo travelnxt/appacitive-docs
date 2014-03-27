@@ -2660,7 +2660,7 @@ searchAllConnectionsWithRelationType:fromObjectId:toObjectId:successHandler:fail
 ```
 ``` ios
 $$$Sample Request
-[APConnections searchAllConnectionsWithRelationType:@"review" fromObjectId:@"33017891581461312" toObjectId:@"33017891581461313" successHandler^(NSArray objects) {
+[APConnections searchAllConnectionsWithRelationType:@"review" fromObjectId:@"33017891581461312" toObjectId:@"33017891581461313" successHandler^(NSArray objects, NSInteger pageNumber, NSInteger pageSize, NSInteger totalRecords) {
   for(APConnection *connection in objects)
   	NSLog(@"Connection fetched:%@",[connection description]);
 }failureHandler:^(APError *error){
@@ -3402,7 +3402,7 @@ searchAllConnectionsFromObjectId:toObjectId:successHandler:failureHandler:
 ``` ios
 $$$Sample Request
 [APConnections searchAllConnectionsFromObjectId:@"22322" toObjectId:@"33422" 
-successHandler:^(NSArray *objects) {
+successHandler:^(NSArray *objects, NSInteger pageNumber, NSInteger pageSize, NSInteger totalRecords) {
 	NSLog(@"Connections fetched:%@"]);
   for(APConnection *conn in objects)
 		NSLog(@"%@ ",[conn description])
@@ -3605,7 +3605,7 @@ searchAllConnectionsFromObjectId:toObjectIds:successHandler:failureHandler:
 ``` ios
 $$$Sample Request
 [APConnections searchAllConnectionsFromObjectId:@"22322" toObjectIds:@[@"33422", @"44522", @"55622", @"66722"] 
-successHandler:^(NSArray *objects) {
+successHandler:^(NSArray *objects, NSInteger pageNumber, NSInteger pageSize, NSInteger totalRecords) {
 	NSLog(@"Connections fetched:%@"]);
   for(APConnection *conn in objects)
 		NSLog(@"%@ ",[conn description]);
@@ -3753,7 +3753,7 @@ query.filterQuery = [[APQuery queryExpressionWithProperty:@"firstName"] isEqualT
 
 //`objects` is `PagedList` of `APObject`
 [APObject searchAllObjectsWithTypeName:@"player" withQuery:[query stringValue]
-                        successHandler:^(NSArray *objects) {
+                        successHandler:^(NSArray *objects, NSInteger pageNumber, NSInteger pageSize, NSInteger totalRecords) {
                             NSLog(@"Objects fetched:");
                             for(APConnection *obj in objects)
                                 NSLog(@"%@ ",[obj description]);
@@ -4153,7 +4153,7 @@ CLLocation *lasVegas = [[CLLocation alloc] initWithLatitude:361749687195 longitu
 APQuery *radialQuery = [[APQuery alloc] init];
 radialQuery.filterQuery = [APQuery queryWithRadialSearchForProperty:@"location" nearLocation:lasVegas withinRadius:[NSNumber numberWithInt:10] usingDistanceMetric:kMiles];
 [APObject searchAllObjectsWithTypeName:@"hotel" withQuery:[radialQuery stringValue]
-                        successHandler:^(NSArray *objects) {
+                        successHandler:^(NSArray *objects, NSInteger pageNumber, NSInteger pageSize, NSInteger totalRecords) {
                             NSLog(@"Hotels found:-");
                             for(APObject *hotel in objects)
                                 NSLog(@"%@ \n", [hotel description]);
@@ -4307,7 +4307,7 @@ APQuery *polygonSearch = [[APQuery alloc] init];
 polygonSearch.filterQuery = [APQuery queryWithPolygonSearchForProperty:@"location" withPolygonCoordinates:polyCoords];
 
 [APObject searchAllObjectsWithTypeName:@"hotel" withQuery:[polygonSearch stringValue]
-                        successHandler:^(NSArray *objects) {
+                        successHandler:^(NSArray *objects, NSInteger pageNumber, NSInteger pageSize, NSInteger totalRecords) {
                             NSLog(@"Hotels Found:-");
                             for(APObject *hotel in objects)
                                 NSLog(@"%@ \n", [hotel description]);
@@ -4425,7 +4425,7 @@ APQuery *tagQuery = [[APQuery alloc] init];
 tagQuery.filterQuery = [APQuery queryWithSearchUsingOneOrMoreTags:tags];
 
 [APObject searchAllObjectsWithTypeName:@"messages" withQuery:[tagQuery stringValue]
-                        successHandler:^(NSArray *objects) {
+                        successHandler:^(NSArray *objects, NSInteger pageNumber, NSInteger pageSize, NSInteger totalRecords) {
                             NSLog(@"Messages with 'personal', 'private' tags found:-");
                             for(APObject *message in objects)
                                 NSLog(@"%@ \n", [message description]);
@@ -4551,7 +4551,7 @@ APQuery *tagQuery = [[APQuery alloc] init];
 tagQuery.filterQuery = [APQuery queryWithSearchUsingAllTags:tags];
 
 [APObject searchAllObjectsWithTypeName:@"messages" withQuery:[tagQuery stringValue]
-                        successHandler:^(NSArray *objects) {
+                        successHandler:^(NSArray *objects, NSInteger pageNumber, NSInteger pageSize, NSInteger totalRecords) {
                             NSLog(@"Messages with 'personal' and 'test' tags found:-");
                             for(APObject *message in objects)
                                 NSLog(@"%@ \n", [message description]);
@@ -4692,7 +4692,7 @@ APQuery *query = [[APQuery alloc] init];
 query.freeText = @"champs palais";
 
 [APObject searchAllObjectsWithTypeName:@"messages" withQuery:[query stringValue]
-                        successHandler:^(NSArray *objects) {
+                        successHandler:^(NSArray *objects, NSInteger pageNumber, NSInteger pageSize, NSInteger totalRecords) {
                             NSLog(@"Messages with 'champ', 'palais' text found:-");
                             for(APObject *message in objects)
                                 NSLog(@"%@ \n", [message description]);
@@ -4804,7 +4804,7 @@ query.orderBy = @"__createdby";
 query.isAsc = YES;
 
 [APObject searchAllObjectsWithTypeName:@"photos" withQuery:[query stringValue]
-                        successHandler:^(NSArray *objects) {
+                        successHandler:^(NSArray *objects, NSInteger pageNumber, NSInteger pageSize, NSInteger totalRecords) {
                             NSLog(@"Photos ordered by creator in a set of 4 pages of 30 photos each:-");
                             for(APObject *photo in objects)
                                 NSLog(@"%@ \n", [photo description]);
@@ -4915,7 +4915,7 @@ query.filterQuery = [APQuery booleanAnd:@[
 
 
 [APObject searchAllObjectsWithTypeName:@"people" withQuery:[query stringValue]
-                        successHandler:^(NSArray *objects) {
+                        successHandler:^(NSArray *objects, NSInteger pageNumber, NSInteger pageSize, NSInteger totalRecords) {
                             NSLog(@"People whose name and location match the query:-");
                             for(APObject *person in objects)
                                 NSLog(@"%@ \n", [person description]);
@@ -7126,7 +7126,7 @@ Appacitive.Object.FindAll({
 ``` ios
 $$$SAMPLE
 [APObject searchAllObjectsWithTypeName:@"user" 
-	successHandler:^(NSArray *objects){
+	successHandler:^(NSArray *objects, NSInteger pageNumber, NSInteger pageSize, NSInteger totalRecords){
 		for(APObject *user in objects)
 			NSLog(@"User Found: %@", [user description]);
 	} failureHandler:^(APError *error) {
@@ -9147,7 +9147,7 @@ searchAllObjectsWithTypeName:withQuery:successHandler:failureHandler
 ``` ios
 $$$SAMPLE
 [APDevice searchAllObjectsWithTypeName:@"device" withQuery:nil
-	successHandler:^(NSArray *objects) {
+	successHandler:^(NSArray *objects, NSInteger pageNumber, NSInteger pageSize, NSInteger totalRecords) {
 	NSLog(@"Devices found:%@"]);
   for(APDevice *device in objects)
 		NSLog(@"%@ ",[device description]);
