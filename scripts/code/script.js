@@ -26,11 +26,13 @@ isDev = false;
                 currentId = cid;
 
                 if (reCal == false && window.history.replaceState) {
-                    var href = window.location.href.replace(window.location.hash, "") + "#" + window.lang + "/" + cid;
+                    var href = window.location.href.replace(window.location.hash, "") + "#" + window.urlLang + cid;
                     window.history.replaceState({ href: href }, "", href);
                 }
 
-                cid = $($("[href='#" + cid + "']")[0]).parents('li.level-3').children('a').attr('href').replace("#", "");
+                try {
+                    cid = $($("[href='#" + cid + "']")[0]).parents('li.level-3').children('a').attr('href').replace("#", "");
+                } catch (e) { }
             }
 
             var isLevel5 = false;
@@ -41,11 +43,14 @@ isDev = false;
                 currentId = cid;
 
                 if (reCal == false && window.history.replaceState) {
-                    var href = window.location.href.replace(window.location.hash, "") + "#" + window.lang + "/" + cid;
+                    var href = window.location.href.replace(window.location.hash, "") + "#" + window.urlLang + cid;
                     window.history.replaceState({ href: href }, "", href);
                 }
 
-                cid = $($("[href='#" + cid + "']")[0]).parents('li.level-3').children('a').attr('href').replace("#", "");
+                try {
+                    cid = $($("[href='#" + cid + "']")[0]).parents('li.level-3').children('a').attr('href').replace("#", "");
+                }
+                catch (e) { }
             }
 
             if ($("[href='#" + pid + "']").hasClass("level-4") || $("[href='#" + pid + "']").hasClass("level-5")) {
@@ -92,7 +97,7 @@ isDev = false;
             currentId = cid;
             // Add the location hash via replaceState.
             if (reCal == false && window.history.replaceState) {
-                var href = window.location.href.replace(window.location.hash, "") + "#" + window.lang + "/" + cid;
+                var href = window.location.href.replace(window.location.hash, "") + "#" + window.urlLang + cid;
                 window.history.replaceState({ href: href }, "", href);
             }
         });
@@ -153,11 +158,22 @@ isDev = false;
                 var selected = $that.data("lang").toLowerCase();
                 $(".lang-" + selected).show();
                 switch (selected) {
-                    case "rest": window.lang = "curl"; break;
-                    case "csharp": window.lang = "dotnet"; break;
-                    default: window.lang = selected; break;
+                    case "rest": window.lang = "curl";
+                        window.urlLang = "curl/"; break;
+                    case "csharp": window.lang = "dotnet";
+                        window.urlLang = "dotnet/"; break;
+                    case "javascript": window.lang = "javascript";
+                        window.urlLang = "javascript/"; break;
+                    case "ios": window.lang = "ios";
+                        window.urlLang = "ios/"; break;
+                    case "python": window.lang = "python";
+                        window.urlLang = "python/"; break;
+                    default: window.lang = selected;
+                        window.urlLang = selected + "/"; break;
                 }
 
+            } else {
+                window.urlLang = '';
             }
 
 
@@ -507,7 +523,7 @@ isDev = false;
         }
         $('html, body').scrollTop(top);
 
-        href = "#" + window.lang + "/" + href.replace("#", "");
+        href = "#" + window.urlLang + href.replace("#", "");
 
         $('body').trigger('anchor', href);
 

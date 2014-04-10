@@ -137,7 +137,8 @@ var path = require('path');
                 if (lang) {
                     switch (lang.toLowerCase()) {
                         case "csharp": hLang = "cs"; break;
-                        case "ios": hLang = "objectivec"; break;
+                        case "ios":
+                        case "objectivec": hLang = "objectivec"; break;
                         case "android": hLang = "java"; break;
                         case "rest":
                         case "javascript":
@@ -188,22 +189,48 @@ var path = require('path');
             var $el = $(this);
             var text = $el.text();
 
-            if ($el.is('h2'))
-                text = $el.prevAll("h1:first").html() + "_" + text;
+            if ($el.is('h2')) {
+                var h1 = $el.prevAll("h1:first");
+                var title = h1.length > 0 ? h1.html() : '';
+                text = title + '_' + text;
+            }
+            if ($el.is('h3')) {
+                var h1 = $el.prevAll("h1:first");
+                var h2 = $el.prevAll("h2:first");
+                var title = h1.length > 0 ? h1.html() : '';
+                title += h2.length > 0 ? ('_' + h2.html()) : '';
+                text = title + '_' + text;
+            }
+            if ($el.is('h4')) {
+                var h1 = $el.prevAll("h1:first");
+                var h2 = $el.prevAll("h2:first");
+                var h3 = $el.prevAll("h3:first");
+                var title = h1.length > 0 ? h1.html() : '';
+                title += h2.length > 0 ? ('_' + h2.html()) : '';
+                title += h3.length > 0 ? ('_' + h3.html()) : '';
+                text = title + '_' + text;
+            }
 
-            if ($el.is('h3'))
-                text = $el.prevAll("h1:first").html() + "_" + $el.prevAll("h2:first").html() + "_" + text;
-
-
-            if ($el.is('h4'))
-                text = $el.prevAll("h1:first").html() + "_" + $el.prevAll("h2:first").html() + "_" + $el.prevAll("h3:first").html() + "_" + text;
-
-            if ($el.is('h5'))
-                text = $el.prevAll("h1:first").html() + "_" + $el.prevAll("h2:first").html() + "_" + $el.prevAll("h3:first").html() + "_" + $el.prevAll("h4:first").html() + '_' + text;
-
+            if ($el.is('h5')) {
+                var h1 = $el.prevAll("h1:first");
+                var h2 = $el.prevAll("h2:first");
+                var h3 = $el.prevAll("h3:first");
+                var h4 = $el.prevAll("h4:first");
+                var title = h1.length > 0 ? h1.html() : '';
+                title += h2.length > 0 ? ('_' + h2.html()) : '';
+                title += h3.length > 0 ? ('_' + h3.html()) : '';
+                title += h4.length > 0 ? ('_' + h4.html()) : '';
+                text = title + '_' + text;
+            }
             var id = slugify(text);
             $el.attr('id', id);
         });
+
+        if (typeof window != 'undefined' && window.docType == 'SDK') {
+            var h5 = $content.find("h5:contains('Table of Contents')");
+            h5.next().remove();
+            h5.remove();
+        }
     };
 
     /**
