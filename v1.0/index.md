@@ -49,7 +49,7 @@ api.
 Response format
 ------------
 
-The response from the api will always return a JSON object (even in the case of a failure). The success or failure status of the transaction will be returned in the form of a status object. Incase the operation does not return any data then the json response would contain just the status object itself.
+The response from the api will always return a JSON object (even in the case of a failure). The success or failure status of the transaction will be returned in the form of a status object. Incase the operation does not return any data then the JSON response would contain just the status object itself.
 The JSON structure of the status object is shown.
 
 ** Status object properties **
@@ -82,7 +82,7 @@ $$$Status object
 !!!javascript!
 ** Conventions **
 
-1. The javascript SDK is an async library and all data calls are async. Most calls have a signature like 
+1. The JavaScript SDK is an async library and all data calls are async. Most calls have a signature like 
       `object::method({ success: onSuccess, error: onError })`
     where `onSuccess` and `onError` are functions that'll get executed in case of the call being a success or a failure respectively.
 2. Every data call also returns a promise.
@@ -125,10 +125,10 @@ In order to pass the api key and environment information for the application use
 </dl>
 
 ``` android
-//	For android 
+//For android 
 AppacitiveContext.initialize("{Your api key}", Environment.live, this.getApplicationContext());
 
-// For java
+//For java
 AppacitiveContext.initialize("{Your api key}", Environment.live);
 ```
 ``` javascript
@@ -164,7 +164,7 @@ https://apis.appacitive.com/v1.0/object/device/find/all
 ```
 
 ``` python
-Add your API-Key and environemt details in the Django style settings.py file.
+Add your API-Key and environment details in the Django style settings.py file.
 ```
 Data
 =======
@@ -209,19 +209,19 @@ System generated properties are fields used for housekeeping and storing meta-in
 User defined properties are fields defined by you via the type designer. These are exposed as fields directly on the object.
 
 ``` android
-		AppacitiveObject score = new AppacitiveObject("score");
-        score.setStringProperty("difficulty", "normal");
-        score.setIntProperty("level", 10);
-        score.setDoubleProperty("score", 1400.50);
+AppacitiveObject score = new AppacitiveObject("score");
+score.setStringProperty("difficulty", "normal");
+score.setIntProperty("level", 10);
+score.setDoubleProperty("score", 1400.50);
 
-        score.setAttribute("is_first_time_user", "true");
-        score.setAttribute("team_color", "blue");
+score.setAttribute("is_first_time_user", "true");
+score.setAttribute("team_color", "blue");
 
-        score.addTag("amateur");
-        score.addTags(new ArrayList<String>() {{
-            add("unverified");
-            add("right_handed");
-        }});
+score.addTag("amateur");
+score.addTags(new ArrayList<String>() {{
+    add("unverified");
+    add("right_handed");
+}});
 ```
 ``` rest
 $$$sample object 
@@ -317,36 +317,36 @@ In case of an error, the `status` object contains details of the failure.
 
 
 ``` android
-        //  Create a new AppacitiveObject to store a post.
-        AppacitiveObject post = new AppacitiveObject("post");
+//Create a new AppacitiveObject to store a post.
+AppacitiveObject post = new AppacitiveObject("post");
 
-        // Set two string/text properties, 'title' & ''text.
-        post.setStringProperty("title", "Android Operating System");
-        post.setStringProperty("text", "Android is an operating system based on the Linux kernel,[12] and designed primarily for touchscreen mobile devices such as smartphones and tablet computers");
+//Set two string/text properties, 'title' & ''text.
+post.setStringProperty("title", "Android Operating System");
+post.setStringProperty("text", "Android is an operating system based on the Linux kernel,[12] and designed primarily for touchscreen mobile devices such as smartphones and tablet computers");
 
-        //  Add some arbitrary key-value pairs as attributes to the object.
-        post.setAttribute("proof_read", "true");
-        post.setAttribute("num_pages", "25");
+//Add some arbitrary key-value pairs as attributes to the object.
+post.setAttribute("proof_read", "true");
+post.setAttribute("num_pages", "25");
 
-        // Add a few tags to the object.
-        post.addTag("intro");
-        post.addTags(new ArrayList<String>() {{
-            add("android");
-            add("technology");
-        }});
+//Add a few tags to the object.
+post.addTag("intro");
+post.addTags(new ArrayList<String>() {{
+    add("android");
+    add("technology");
+}});
 
-        // Create the object on Appacitive.
-        post.createInBackground(new Callback<AppacitiveObject>() {
-            @Override
-            public void success(AppacitiveObject result) {
-                //  'result' holds the newly created 'post' object.
-            }
+//Create the object on Appacitive.
+post.createInBackground(new Callback<AppacitiveObject>() {
+    @Override
+    public void success(AppacitiveObject result) {
+        //  'result' holds the newly created 'post' object.
+    }
 
-            @Override
-            public void failure(AppacitiveObject result, Exception e) {
-                //  in case of error, e holds the error details.
-            }
-        });
+    @Override
+    public void failure(AppacitiveObject result, Exception e) {
+        //  in case of error, e holds the error details.
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -440,7 +440,7 @@ post.add_tags(['python', 'technology'])
 # create the object on appacitive
 post.create()
 
-# response json contains the status of the create call
+# response JSON contains the status of the create call
 # if the call fails for any reason, this method raises an AppacitiveError exception with the exception details
 # if successful, populates the 'post' object with system-defined properties like __id, __createdBy etc., user defined properties, attributes and tags.
 ```
@@ -517,21 +517,22 @@ In case of an error, the `status` object contains details of the failure.
 
 
 ``` android
-		List<String> fieldsToFetch = new ArrayList<String>();   
-        //  Empty or null fieldsToFetch list indicated fetch all fields.
-        AppacitiveObject.getInBackground("post", 33017891581461312L, fieldsToFetch, new Callback<AppacitiveObject>() {
-            @Override
-            public void success(AppacitiveObject result) {
-                //  'result' holds the 'post' object you requested.
-                Log.v("TAG", result.getPropertyAsString("title"));
-                Log.v("TAG", result.getPropertyAsString("text"));
-            }
+List<String> fieldsToFetch = new ArrayList<String>();   
 
-            @Override
-            public void failure(AppacitiveObject result, Exception e) {
-                Log.e("TAG", e.getMessage());
-            }
-        });
+//Empty or null fieldsToFetch list indicated fetch all fields.
+AppacitiveObject.getInBackground("post", 33017891581461312L, fieldsToFetch, new Callback<AppacitiveObject>() {
+    @Override
+    public void success(AppacitiveObject result) {
+        //  'result' holds the 'post' object you requested.
+        Log.v("TAG", result.getPropertyAsString("title"));
+        Log.v("TAG", result.getPropertyAsString("text"));
+    }
+
+    @Override
+    public void failure(AppacitiveObject result, Exception e) {
+        Log.e("TAG", e.getMessage());
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -683,26 +684,26 @@ In case of an error, the `status` object contains details of the failure.
 `NOTE` : Please note that providing the same id multiple times will not return duplicates.
 
 ``` android
-        //   Fetch two objects of type 'post' with ids 33017891581461312 and 33017891581461313 from appacitive in a single call.
-        List<Long> posts = new ArrayList<Long>() {{
-            add(33017891581461312L);
-            add(33017891581461313L);
-        }};
+//Fetch two objects of type 'post' with ids 33017891581461312 and 33017891581461313 from appacitive in a single call.
+List<Long> posts = new ArrayList<Long>() {{
+    add(33017891581461312L);
+    add(33017891581461313L);
+}};
 
-        List<String> fields = null;
+List<String> fields = null;
 
-        AppacitiveObject.multiGetInBackground("post", posts, fields, new Callback<List<AppacitiveObject>>() {
-            @Override
-            public void success(List<AppacitiveObject> result) {
-                for (AppacitiveObject post : result)
-                    Log.v("TAG", String.format("Fetched post with title %s and text %s.", post.getPropertyAsString("title"), post.getPropertyAsString("title")));
-            }
+AppacitiveObject.multiGetInBackground("post", posts, fields, new Callback<List<AppacitiveObject>>() {
+    @Override
+    public void success(List<AppacitiveObject> result) {
+        for (AppacitiveObject post : result)
+            Log.v("TAG", String.format("Fetched post with title %s and text %s.", post.getPropertyAsString("title"), post.getPropertyAsString("title")));
+    }
 
-            @Override
-            public void failure(List<AppacitiveObject> result, Exception e) {
-                Log.e("TAG", e.getMessage());
-            }
-        });
+    @Override
+    public void failure(List<AppacitiveObject> result, Exception e) {
+        Log.e("TAG", e.getMessage());
+    }
+});
 ```
 
 ``` rest
@@ -848,33 +849,33 @@ out using this and will always be returned. To select specific fields you need t
 
 
 ``` android 
-        //   Fetch only the properties 'title' and 'text' for the following two posts..
-        List<Long> posts = new ArrayList<Long>() {{
-            add(33017891581461312L);
-            add(33017891581461313L);
-        }};
+//Fetch only the properties 'title' and 'text' for the following two posts..
+List<Long> posts = new ArrayList<Long>() {{
+    add(33017891581461312L);
+    add(33017891581461313L);
+}};
 
-        List<String> fields = new ArrayList<String>() {{
-            add("title");
-            add("text");
-        }};
+List<String> fields = new ArrayList<String>() {{
+    add("title");
+    add("text");
+}};
 
-        AppacitiveObject.multiGetInBackground("post", posts, fields, new Callback<List<AppacitiveObject>>() {
-            @Override
-            public void success(List<AppacitiveObject> result) {
-                //  the post objects in result contain only the requested fields.
-                for (AppacitiveObject post : result) {
-                    String title = post.getPropertyAsString("title");
-                    String text = post.getPropertyAsString("text");
-                    Log.v("TAG", String.format("Fetched post with title %s and text %s.", title, text));
-                }
-            }
+AppacitiveObject.multiGetInBackground("post", posts, fields, new Callback<List<AppacitiveObject>>() {
+    @Override
+    public void success(List<AppacitiveObject> result) {
+        //  the post objects in result contain only the requested fields.
+        for (AppacitiveObject post : result) {
+            String title = post.getPropertyAsString("title");
+            String text = post.getPropertyAsString("text");
+            Log.v("TAG", String.format("Fetched post with title %s and text %s.", title, text));
+        }
+    }
 
-            @Override
-            public void failure(List<AppacitiveObject> result, Exception e) {
-                Log.e("TAG", e.getMessage());
-            }
-        });
+    @Override
+    public void failure(List<AppacitiveObject> result, Exception e) {
+        Log.e("TAG", e.getMessage());
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -1001,39 +1002,39 @@ Returns the updated object.
 In case of an error, the `status` object contains details of the failure.
 
 ``` android
-        // In case the object is not already retrieved from the system,
-        // simply create a new instance of an object with the id.
-        // This creates a "handle" to the object on the client
-        // without actually retrieving the data from the server.
-        // Simply update the fields that you want to update and invoke updateInBackground().
-        
-        // This will simply create a handle or reference to the existing object.
+// In case the object is not already retrieved from the system,
+// simply create a new instance of an object with the id.
+// This creates a "handle" to the object on the client
+// without actually retrieving the data from the server.
+// Simply update the fields that you want to update and invoke updateInBackground().
 
-        AppacitiveObject post = new AppacitiveObject("post", 33017891581461312L);
+// This will simply create a handle or reference to the existing object.
 
-        //  Update the user defined properties 'title' & 'text' for this post.
-        post.setStringProperty("title", "updated title");
-        post.setStringProperty("text", "This is updated text for the post.");
+AppacitiveObject post = new AppacitiveObject("post", 33017891581461312L);
 
-        //  Add a new key-value attribute
-        post.setAttribute("topic", "testing");
+// Update the user defined properties 'title' & 'text' for this post.
+post.setStringProperty("title", "updated title");
+post.setStringProperty("text", "This is updated text for the post.");
 
-        //  Add/remove tags
-        post.addTag("tagA");
-        post.addTag("tagB");
+// Add a new key-value attribute
+post.setAttribute("topic", "testing");
 
-        post.removeTag("tagC");
+// Add/remove tags
+post.addTag("tagA");
+post.addTag("tagB");
 
-        boolean updateWithRevision = false;
-        post.updateInBackground(updateWithRevision, new Callback<AppacitiveObject>() {
-            @Override
-            public void success(AppacitiveObject result) {
-            }
+post.removeTag("tagC");
 
-            @Override
-            public void failure(AppacitiveObject result, Exception e) {
-            }
-        });
+boolean updateWithRevision = false;
+post.updateInBackground(updateWithRevision, new Callback<AppacitiveObject>() {
+    @Override
+    public void success(AppacitiveObject result) {
+    }
+
+    @Override
+    public void failure(AppacitiveObject result, Exception e) {
+    }
+});
 ```		
 ``` rest
 $$$Method
@@ -1231,21 +1232,21 @@ Returns successful `status` object.
 In case of an error, the `status` object contains details of the failure.
 
 ``` android 
-        AppacitiveObject post = new AppacitiveObject("post", 33017891581461312L);
+AppacitiveObject post = new AppacitiveObject("post", 33017891581461312L);
 
-        //  Delete the post object with id 33017891581461312 from appacitive
+// Delete the post object with id 33017891581461312 from appacitive
 
-        boolean deleteWithConnections = false;
-        post.deleteInBackground(deleteWithConnections, new Callback<Void>() {
-            @Override
-            public void success(Void result) {
+boolean deleteWithConnections = false;
+post.deleteInBackground(deleteWithConnections, new Callback<Void>() {
+    @Override
+    public void success(Void result) {
 
-            }
+    }
 
-            @Override
-            public void failure(Void result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(Void result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -1334,21 +1335,21 @@ Returns successful `status` object.
 In case of an error, the `status` object contains details of the failure.
 
 ``` android
-        //  Delete the following players from appacitive in a single call.
-        List<Long> playerIds = new ArrayList<Long>() {{
-            add(14696753262625025L);
-            add(14696753262625026L);
-        }};
+// Delete the following players from appacitive in a single call.
+List<Long> playerIds = new ArrayList<Long>() {{
+    add(14696753262625025L);
+    add(14696753262625026L);
+}};
 
-        AppacitiveObject.bulkDeleteInBackground("player", playerIds, new Callback<Void>() {
-            @Override
-            public void success(Void result) {
-            }
+AppacitiveObject.bulkDeleteInBackground("player", playerIds, new Callback<Void>() {
+    @Override
+    public void success(Void result) {
+    }
 
-            @Override
-            public void failure(Void result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(Void result, Exception e) {
+    }
+});
 ```
 
 ``` rest
@@ -1422,7 +1423,7 @@ AppacitiveObject.multi_delete('player', object_ids)
 ```
 #### Delete with Connection
 
-There are scenarios where you might want to delete an object irrespective of existing connections. To do this in the delete operation, you need to explicitly indicate that you want to delete any existing connectons as well. This will cause the delete operation to delete any existing connections along with the specified object.
+There are scenarios where you might want to delete an object irrespective of existing connections. To do this in the delete operation, you need to explicitly indicate that you want to delete any existing connections as well. This will cause the delete operation to delete any existing connections along with the specified object.
 
 `NOTE`: This override is not available when deleting multiple objects in a single operation.
 
@@ -1441,17 +1442,17 @@ Returns successful `status` object.
 In case of an error, the `status` object contains details of the failure.
 
 ``` android
-        //  Delete the friend object with id 752624436678809 and also delete all connections with this object. ina single call
-        boolean deleteWithConnections = true;
-        AppacitiveObject.deleteInBackground("friend", 752624436678809L, deleteWithConnections, new Callback<Void>() {
-            @Override
-            public void success(Void result) {
-            }
+// Delete the friend object with id 752624436678809 and also delete all connections with this object. ina single call
+boolean deleteWithConnections = true;
+AppacitiveObject.deleteInBackground("friend", 752624436678809L, deleteWithConnections, new Callback<Void>() {
+    @Override
+    public void success(Void result) {
+    }
 
-            @Override
-            public void failure(Void result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(Void result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -1539,7 +1540,7 @@ The contents of the endpoints are detailed below.
   <dd><span>The id of object referred in the endpoint.</span></dd>
 </dl>
 
-`NOTE`: The endpoint names `__endpointa` and `__endpointb` are interchangable. Do NOT use them to refer to the endpoint.
+`NOTE`: The endpoint names `__endpointa` and `__endpointb` are interchangeable. Do NOT use them to refer to the endpoint.
 Do use the label of the endpoint to identify the correct endpoint.
 
 ** System generated properties ** 
@@ -1570,12 +1571,12 @@ Do use the label of the endpoint to identify the correct endpoint.
 User defined properties are fields defined by you via the model designer. These are exposed as fields directly on the connection object.
 
 ``` android
-        //  Assemble a connection of relation type 'employment' from an existing object of type 'employee' and id 8768521317231283123 to another existing object of type 'employer' with id 2543637146238712836
-        AppacitiveConnection employment = new AppacitiveConnection("emplpyment")
-                .fromExistingObject("employee", 21317231283123L)
-                .toExistingObject("employer", 716238712836L);
-        //  Set a property called 'joining_date' for that connection
-        employment.setDateProperty("joining_date", new Date(2014, 05, 20));
+// Assemble a connection of relation type 'employment' from an existing object of type 'employee' and id 8768521317231283123 to another existing object of type 'employer' with id 2543637146238712836
+AppacitiveConnection employment = new AppacitiveConnection("emplpyment")
+        .fromExistingObject("employee", 21317231283123L)
+        .toExistingObject("employer", 716238712836L);
+// Set a property called 'joining_date' for that connection
+employment.setDateProperty("joining_date", new Date(2014, 05, 20));
 ```
 ``` rest
 $$$sample object 
@@ -1649,20 +1650,20 @@ Returns the newly created connection object with all the system defined properti
 In case of an error, the `status` object contains details of the failure.
 
 ``` android
-        AppacitiveConnection review = new AppacitiveConnection("reviewed")
-                .fromExistingObject("reviewer", 8768521317231283123L)
-                .toExistingObject("hotel", 4543637146238712836L);
+AppacitiveConnection review = new AppacitiveConnection("reviewed")
+        .fromExistingObject("reviewer", 8768521317231283123L)
+        .toExistingObject("hotel", 4543637146238712836L);
 
-        review.setDateProperty("review_date", new Date());
-        review.createInBackground(new Callback<AppacitiveConnection>() {
-            @Override
-            public void success(AppacitiveConnection result) {
-            }
+review.setDateProperty("review_date", new Date());
+review.createInBackground(new Callback<AppacitiveConnection>() {
+    @Override
+    public void success(AppacitiveConnection result) {
+    }
 
-            @Override
-            public void failure(AppacitiveConnection result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(AppacitiveConnection result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -1809,30 +1810,30 @@ If a new object is provided in the request, then the operation will create both 
 as part of a single transaction.
 
 ``` android
-        //  Will create a new my_score connection between
-        //    - existing 'player' object with id 123445678 and
-        //    - new 'score' object which will also be created when the connection is created.
+// Will create a new my_score connection between
+//  - existing 'player' object with id 123445678 and
+//  - new 'score' object which will also be created when the connection is created.
 
-        //  The my_score relation defines two endpoints "player" and "score" for this information.
+// The my_score relation defines two endpoints "player" and "score" for this information.
 
-        //  Create an instance of object of type 'score'
-        final AppacitiveObject score = new AppacitiveObject("score");
-        score.setIntProperty("score", 150);
-        
-        //  Create a connection between existing 'player' object and new 'score' object.
-        new AppacitiveConnection("my_scores").fromExistingObject("player", 123445678L)
-                .toNewObject("score", score)
-                .createInBackground(new Callback<AppacitiveConnection>() {
-                    @Override
-                    public void success(AppacitiveConnection result) {
-                        // The id of the 'score' object should now be set since it has also been created on the server.
-                        long scoreId = score.getId();
-                    }
+// Create an instance of object of type 'score'
+final AppacitiveObject score = new AppacitiveObject("score");
+score.setIntProperty("score", 150);
 
-                    @Override
-                    public void failure(AppacitiveConnection result, Exception e) {
-                    }
-                });
+// Create a connection between existing 'player' object and new 'score' object.
+new AppacitiveConnection("my_scores").fromExistingObject("player", 123445678L)
+        .toNewObject("score", score)
+        .createInBackground(new Callback<AppacitiveConnection>() {
+            @Override
+            public void success(AppacitiveConnection result) {
+                // The id of the 'score' object should now be set since it has also been created on the server.
+                long scoreId = score.getId();
+            }
+
+            @Override
+            public void failure(AppacitiveConnection result, Exception e) {
+            }
+        });
 ```
 ``` rest
 $$$Method
@@ -1841,8 +1842,8 @@ PUT https://apis.appacitive.com/v1.0/connection/{relation type}
 ``` rest
 $$$Sample Request
 // Will create a new my_score connection between 
-//    * existing player object with id 123445678 and 
-//    * new score object which will also be created when the connection is created.
+//  * existing player object with id 123445678 and 
+//  * new score object which will also be created when the connection is created.
 // The my_score relation defines two endpoints "player" and "score" for this information.
 curl -X PUT \
 -H "Appacitive-Environment: {target environment (sandbox/live)}" \
@@ -1999,34 +2000,34 @@ or a new object in its two endpoints. Passing a new object in each of the endpoi
 both the endpoints as well as the connection between the two in a single operation.
 
 ``` android
-        //  Will create a new my_score connection between
-        //    - new player object and
-        //    - new score object, both of which will also be created when the connection is created.
-        //  The my_score relation defines two endpoints "player" and "score" for this information.
+// Will create a new my_score connection between
+//  - new player object and
+//  - new score object, both of which will also be created when the connection is created.
+// The my_score relation defines two endpoints "player" and "score" for this information.
 
-        //  Create an instance of object of type score
-        final AppacitiveObject score = new AppacitiveObject("score");
-        score.setIntProperty("points", 150);
+// Create an instance of object of type score
+final AppacitiveObject score = new AppacitiveObject("score");
+score.setIntProperty("points", 150);
 
-        //  Create an instance of object of type player
-        final AppacitiveObject player = new AppacitiveObject("player");
-        player.setStringProperty("name", "sirius");
+// Create an instance of object of type player
+final AppacitiveObject player = new AppacitiveObject("player");
+player.setStringProperty("name", "sirius");
 
-        //  Create these two objects on the server and also a connection between them of relation type 'my_scores'
-        new AppacitiveConnection("my_scores")
-                .fromNewObject("player", player)
-                .toNewObject("score", score)
-                .createInBackground(new Callback<AppacitiveConnection>() {
-                    @Override
-                    public void success(AppacitiveConnection result) {
-                        long scoreId = score.getId();
-                        long playerId = player.getId();
-                    }
+// Create these two objects on the server and also a connection between them of relation type 'my_scores'
+new AppacitiveConnection("my_scores")
+        .fromNewObject("player", player)
+        .toNewObject("score", score)
+        .createInBackground(new Callback<AppacitiveConnection>() {
+            @Override
+            public void success(AppacitiveConnection result) {
+                long scoreId = score.getId();
+                long playerId = player.getId();
+            }
 
-                    @Override
-                    public void failure(AppacitiveConnection result, Exception e) {
-                    }
-                });
+            @Override
+            public void failure(AppacitiveConnection result, Exception e) {
+            }
+        });
 ```
 ``` rest
 $$$Method
@@ -2239,18 +2240,18 @@ Returns the existing connection object matching the given id.
 In case of an error, the `status` object contains details of the failure.
 
 ``` android
-		//  Retrieve a connection by its id
-        List<String> fieldsToRetrieve = null;
-        AppacitiveConnection.getInBackground("review", 33017891581461312L, fieldsToRetrieve, new Callback<AppacitiveConnection>() {
-            @Override
-            public void success(AppacitiveConnection result) {
-                
-            }
+// Retrieve a connection by its id
+List<String> fieldsToRetrieve = null;
+AppacitiveConnection.getInBackground("review", 33017891581461312L, fieldsToRetrieve, new Callback<AppacitiveConnection>() {
+    @Override
+    public void success(AppacitiveConnection result) {
+        
+    }
 
-            @Override
-            public void failure(AppacitiveConnection result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(AppacitiveConnection result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -2367,22 +2368,22 @@ In case of an error, the `status` object contains details of the failure.
 `NOTE` : Please note that providing the same id multiple times will not return duplicates.
 
 ``` android
-        List<Long> connectionIds = new ArrayList<Long>() {{
-            add(33017891581461312L);
-            add(33017891581461313L);
-        }};
-        List<String> fieldsToFetch = null;
-        AppacitiveConnection.multiGetInBackground("reviewed", connectionIds, fieldsToFetch, new Callback<List<AppacitiveConnection>>() {
-            @Override
-            public void success(List<AppacitiveConnection> result) {
-                for (AppacitiveConnection review : result)
-                    Log.v("TAG", String.format("Fetched review with id %s.", review.getId()));
-            }
+List<Long> connectionIds = new ArrayList<Long>() {{
+    add(33017891581461312L);
+    add(33017891581461313L);
+}};
+List<String> fieldsToFetch = null;
+AppacitiveConnection.multiGetInBackground("reviewed", connectionIds, fieldsToFetch, new Callback<List<AppacitiveConnection>>() {
+    @Override
+    public void success(List<AppacitiveConnection> result) {
+        for (AppacitiveConnection review : result)
+            Log.v("TAG", String.format("Fetched review with id %s.", review.getId()));
+    }
 
-            @Override
-            public void failure(List<AppacitiveConnection> result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(List<AppacitiveConnection> result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -2547,19 +2548,19 @@ Returns a connection of the specified type if one exists between objectAid and o
 
 
 ``` android
-        List<String> fields = null;
-        AppacitiveConnection.findByObjectsAndRelationInBackground("friend", 22322L, 33422L, fields, new Callback<AppacitiveConnection>() {
-            @Override
-            public void success(AppacitiveConnection result) {
-                if (result != null) {
-                } else {                    
-                }
-            }
+List<String> fields = null;
+AppacitiveConnection.findByObjectsAndRelationInBackground("friend", 22322L, 33422L, fields, new Callback<AppacitiveConnection>() {
+    @Override
+    public void success(AppacitiveConnection result) {
+        if (result != null) {
+        } else {                    
+        }
+    }
 
-            @Override
-            public void failure(AppacitiveConnection result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(AppacitiveConnection result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -2572,7 +2573,7 @@ $$$Sample Request
 curl -X GET \
 -H "Appacitive-Environment: sandbox" \
 -H "Appacitive-Session: P7IM2L8/EIC6kpzkC3wzQYFoDtIZZXhpUDZ2wf13FWfVki7flNEepVks8SlnLtgUyyjaZGTUVInQqvHJ8kwnNnHEdsZAGDU9+XNV107ZC/PkFEAs1RIpN43J69vPNvsN80shAG7eM+9YbheFH5eWHw==" \
-https://apis.appacitive.com/v1.0/connection/friend/find/22322/33422?label=freind
+https://apis.appacitive.com/v1.0/connection/friend/find/22322/33422?label=friend
 
 ```
 ``` rest
@@ -2707,30 +2708,30 @@ Returns the updated connection object.
 In case of an error, the `status` object contains details of the failure.
 
 ``` android
-        //  Get the connection object and update the description
-        AppacitiveConnection.getInBackground("review", 1234345, null, new Callback<AppacitiveConnection>() {
+// Get the connection object and update the description
+AppacitiveConnection.getInBackground("review", 1234345, null, new Callback<AppacitiveConnection>() {
+    @Override
+    public void success(AppacitiveConnection connection) {
+        
+        //  Update the description of the 'review'
+        connection.setStringProperty("description", "best ribs in town. :)");
+        boolean updateWithRevision = false;
+        connection.updateInBackground(updateWithRevision, new Callback<AppacitiveConnection>() {
             @Override
-            public void success(AppacitiveConnection connection) {
-                
-                //  Update the description of the 'review'
-                connection.setStringProperty("description", "best ribs in town. :)");
-                boolean updateWithRevision = false;
-                connection.updateInBackground(updateWithRevision, new Callback<AppacitiveConnection>() {
-                    @Override
-                    public void success(AppacitiveConnection updatedObject) {
-                    }
-
-                    @Override
-                    public void failure(AppacitiveConnection result, Exception e) {
-                    }
-                });
+            public void success(AppacitiveConnection updatedObject) {
             }
 
             @Override
             public void failure(AppacitiveConnection result, Exception e) {
-                super.failure(result, e);
             }
         });
+    }
+
+    @Override
+    public void failure(AppacitiveConnection result, Exception e) {
+        super.failure(result, e);
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -2870,16 +2871,16 @@ Incase the given id does not exist or in the event of a failure, the response wi
 details of the failure.
 
 ``` android
-        //  Delete a 'review' connection with id 123345.
-        AppacitiveConnection.deleteInBackground("review", 123345L, new Callback<Void>() {
-            @Override
-            public void success(Void result) {
-            }
+// Delete a 'review' connection with id 123345.
+AppacitiveConnection.deleteInBackground("review", 123345L, new Callback<Void>() {
+    @Override
+    public void success(Void result) {
+    }
 
-            @Override
-            public void failure(Void result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(Void result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -2971,21 +2972,21 @@ Incase any of the given id do not exist or in the event of a failure, the respon
 details of the failure.
 
 ``` android
-        //  Delete review connections with ids 40438996554377032, 40440007982449139 & 40440007982449139.
-        List<Long> connectionIds = new ArrayList<Long>() {{
-            add(40438996554377032L);
-            add(40440007982449139L);
-            add(40440007982449139L);
-        }};
-        AppacitiveConnection.bulkDeleteInBackground("review", connectionIds, new Callback<Void>() {
-            @Override
-            public void success(Void result) {
-            }
+// Delete review connections with ids 40438996554377032, 40440007982449139 & 40440007982449139.
+List<Long> connectionIds = new ArrayList<Long>() {{
+    add(40438996554377032L);
+    add(40440007982449139L);
+    add(40440007982449139L);
+}};
+AppacitiveConnection.bulkDeleteInBackground("review", connectionIds, new Callback<Void>() {
+    @Override
+    public void success(Void result) {
+    }
 
-            @Override
-            public void failure(Void result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(Void result, Exception e) {
+    }
+});
 ```
 
 ``` rest
@@ -3098,21 +3099,21 @@ In the query for connected data, you need to specify the type of the connection 
 Returns the list of objects (along with connection information) connected to the given object via the given connection type.
 
 ``` android
-        //  Get all users who have visited San Francisco (city object with id 636523636)
-        AppacitiveQuery query = null;
-        List<String> fields = null;
-        AppacitiveObject.getConnectedObjectsInBackground("visitor", "city", 636523636L, query, fields, new Callback<ConnectedObjectsResponse>() {
-            @Override
-            public void success(ConnectedObjectsResponse result) {
-                for (ConnectedObject connectedObject : result.results) {
+// Get all users who have visited San Francisco (city object with id 636523636)
+AppacitiveQuery query = null;
+List<String> fields = null;
+AppacitiveObject.getConnectedObjectsInBackground("visitor", "city", 636523636L, query, fields, new Callback<ConnectedObjectsResponse>() {
+    @Override
+    public void success(ConnectedObjectsResponse result) {
+        for (ConnectedObject connectedObject : result.results) {
 
-                }
-            }
+        }
+    }
 
-            @Override
-            public void failure(ConnectedObjectsResponse result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(ConnectedObjectsResponse result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -3267,16 +3268,16 @@ Say you have two users and you want to see if they are friends (by virtue of a "
 Returns a list of all connections that exists between objectAId and objectBId of any relation type
 
 ``` android
-        List<String> fields = null;
-        AppacitiveConnection.findByObjectsInBackground(22322L, 33422L, fields, new Callback<PagedList<AppacitiveConnection>>() {
-            @Override
-            public void success(PagedList<AppacitiveConnection> result) {
-            }
+List<String> fields = null;
+AppacitiveConnection.findByObjectsInBackground(22322L, 33422L, fields, new Callback<PagedList<AppacitiveConnection>>() {
+    @Override
+    public void success(PagedList<AppacitiveConnection> result) {
+    }
 
-            @Override
-            public void failure(PagedList<AppacitiveConnection> result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(PagedList<AppacitiveConnection> result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -3328,7 +3329,7 @@ $$$Sample Response
         "objectid": "33422"
       },
       "__endpointb": {
-        "label": "freind",
+        "label": "friend",
         "type": "user",
         "objectid": "22322"
       }
@@ -3342,7 +3343,7 @@ $$$Sample Response
         "objectid": "22322"
       },
       "__endpointb": {
-        "label": "freind",
+        "label": "friend",
         "type": "user",
         "objectid": "33422"
       }
@@ -3428,7 +3429,7 @@ Say you have many `users` and `houses`( objects of type house) and you want to d
 
 <dl>
   <dt>objectAId</dt>
-  <dd>required<br/><span>Id of rrot object</span></dd>
+  <dd>required<br/><span>Id of root object</span></dd>
   <dt>objectBids</dt>
   <dd>required<br/><span>Ids of target objects</span></dd>
 </dl>
@@ -3440,29 +3441,29 @@ Returns a list of all connections that exist between objectAid and objectBids of
 **Note** that this is a `POST` HTTP call.
 
 ``` android
-        final long johnId = 22322;
-        final long janeId = 33422;
-        final long tarzanId = 44522;
-        final long house1Id = 55622;
-        final long house2Id = 66722;
+final long johnId = 22322;
+final long janeId = 33422;
+final long tarzanId = 44522;
+final long house1Id = 55622;
+final long house2Id = 66722;
 
-        long objectAId = johnId;
-        List<Long> objectBIds = new ArrayList<Long>() {{
-            add(janeId);
-            add(tarzanId);
-            add(house1Id);
-            add(house2Id);
-        }};
-        List<String> fields = null;
-        AppacitiveConnection.findInterconnectsInBackground(objectAId, objectBIds, fields, new Callback<PagedList<AppacitiveConnection>>() {
-            @Override
-            public void success(PagedList<AppacitiveConnection> result) {
-            }
+long objectAId = johnId;
+List<Long> objectBIds = new ArrayList<Long>() {{
+    add(janeId);
+    add(tarzanId);
+    add(house1Id);
+    add(house2Id);
+}};
+List<String> fields = null;
+AppacitiveConnection.findInterconnectsInBackground(objectAId, objectBIds, fields, new Callback<PagedList<AppacitiveConnection>>() {
+    @Override
+    public void success(PagedList<AppacitiveConnection> result) {
+    }
 
-            @Override
-            public void failure(PagedList<AppacitiveConnection> result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(PagedList<AppacitiveConnection> result, Exception e) {
+    }
+});
 ```
 
 ``` rest
@@ -3515,7 +3516,7 @@ $$$Sample Response
         "objectid": "22322"
       },
       "__endpointb": {
-        "label": "freind",
+        "label": "friend",
         "type": "user",
         "objectid": "33422"
       }
@@ -3529,7 +3530,7 @@ $$$Sample Response
         "objectid": "22322"
       },
       "__endpointb": {
-        "label": "freind",
+        "label": "friend",
         "type": "user",
         "objectid": "44522"
       }
@@ -3583,7 +3584,7 @@ Appacitive.Connection.getInterconnects({
     objectBIds : [idForJane, idForTarzan, idForHouse1, idForHouse2]
     fields: ["__id"]
 }).then(function(connections) {
-    // connections is an array of all connections netween objectAId  and objectBIds which is returned as argument to onsuccess
+    // connections is an array of all connections between objectAId  and objectBIds which is returned as argument to onsuccess
     connections.forEach(function(con) {
       if (conn.relation == 'marriage') {
         console.log("John and Jane are married");
@@ -3639,23 +3640,22 @@ Passing any value higher than this will limit the results to `200`. The platform
 record of the search results. The platform specific examples will indicate how this can be done.
 
 ``` android
-        //  Build the query
-        AppacitiveQuery appacitiveQuery = new AppacitiveQuery();
-        appacitiveQuery.query = new PropertyFilter("firstname").isEqualTo("John");
+// Build the query
+AppacitiveQuery appacitiveQuery = new AppacitiveQuery();
+appacitiveQuery.query = new PropertyFilter("firstname").isEqualTo("John");
 
-        //  Fire the query
-        List<String> fields = null;
-        AppacitiveObject.findInBackground("player", appacitiveQuery, fields, new Callback<PagedList<AppacitiveObject>>() {
-            @Override
-            public void success(PagedList<AppacitiveObject> result) {
-                Log.v("TAG", String.format("%s Johns found.", result.pagingInfo.totalRecords));
-            }
+// Fire the query
+List<String> fields = null;
+AppacitiveObject.findInBackground("player", appacitiveQuery, fields, new Callback<PagedList<AppacitiveObject>>() {
+    @Override
+    public void success(PagedList<AppacitiveObject> result) {
+        Log.v("TAG", String.format("%s Johns found.", result.pagingInfo.totalRecords));
+    }
 
-            @Override
-            public void failure(PagedList<AppacitiveObject> result, Exception e) {
-            }
-        });
-
+    @Override
+    public void failure(PagedList<AppacitiveObject> result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -3716,7 +3716,7 @@ var filter = Appacitive.Filter.Property("firstname").equalTo("John");
 
 var query = new Appacitive.Queries.FindAllQuery(
   type: 'player', //mandatory 
-  //or relation: 'freinds'
+  //or relation: 'friends'
   fields: [*],      //optional: returns all user fields only
   filter: filter,   //optional  
   pageNumber: 1 ,   //optional: default is 1
@@ -3885,19 +3885,19 @@ The table below shows a list of supported logical operators corresponding to the
 `NOTE`: The `between` operator is inclusive at both ends.
 
 ``` android
-        //  Samples
+// Samples
 
-        //  firstname like 'oh'
-        new PropertyFilter("firstname").like("oh");
+// firstname like 'oh'
+new PropertyFilter("firstname").like("oh");
 
-        //  firstname starts with 'Jo'
-        new PropertyFilter("firstname").startsWith("Jo");
+// firstname starts with 'Jo'
+new PropertyFilter("firstname").startsWith("Jo");
 
-        //  Between two dates
-        new PropertyFilter("birthdate").between(new Date(1980, 1, 1), new Date());
+// Between two dates
+new PropertyFilter("birthdate").between(new Date(1980, 1, 1), new Date());
 
-        //  Greater than an integer
-        new PropertyFilter("score").isGreaterThanEqualTo(1000);
+// Greater than an integer
+new PropertyFilter("score").isGreaterThanEqualTo(1000);
 ```
 ``` rest
 $$$ Query Samples
@@ -4060,21 +4060,21 @@ A radial search requires the following parameters.
 </dl>
 
 ``` android
-        // Search for hotels near Las Vegas in a radius of 10 miles
-        double[] centre = new double[]{36.0800, 115.1522};
-        AppacitiveQuery query = new AppacitiveQuery();
-        query.filter = new GeoFilter("location")
-                .withinCircle(centre, 10, DistanceMetric.mi);
-        List<String> fields = null;
-        AppacitiveObject.findInBackground("hotel", query, fields, new Callback<PagedList<AppacitiveObject>>() {
-            @Override
-            public void success(PagedList<AppacitiveObject> result) {
-            }
+// Search for hotels near Las Vegas in a radius of 10 miles
+double[] centre = new double[]{36.0800, 115.1522};
+AppacitiveQuery query = new AppacitiveQuery();
+query.filter = new GeoFilter("location")
+        .withinCircle(centre, 10, DistanceMetric.mi);
+List<String> fields = null;
+AppacitiveObject.findInBackground("hotel", query, fields, new Callback<PagedList<AppacitiveObject>>() {
+    @Override
+    public void success(PagedList<AppacitiveObject> result) {
+    }
 
-            @Override
-            public void failure(PagedList<AppacitiveObject> result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(PagedList<AppacitiveObject> result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -4186,32 +4186,32 @@ This is typically useful when you want a finer grained control on the shape of t
 </dl>
 
 ``` android
-        // Search for hotels which fall inside the following polygon
-        final double[] point1 = new double[]{36.1749687195, -115.1372222900};
-        final double[] point2 = new double[]{34.1749687195, -116.1372222900};
-        final double[] point3 = new double[]{35.1749687195, -114.1372222900};
-        final double[] point4 = new double[]{36.1749687195, -114.1372222900};
+// Search for hotels which fall inside the following polygon
+final double[] point1 = new double[]{36.1749687195, -115.1372222900};
+final double[] point2 = new double[]{34.1749687195, -116.1372222900};
+final double[] point3 = new double[]{35.1749687195, -114.1372222900};
+final double[] point4 = new double[]{36.1749687195, -114.1372222900};
 
-        List<double[]> polygon = new ArrayList<double[]>(){{
-            add(point1);
-            add(point2);
-            add(point3);
-            add(point4);
-        }};
+List<double[]> polygon = new ArrayList<double[]>(){{
+    add(point1);
+    add(point2);
+    add(point3);
+    add(point4);
+}};
 
-        AppacitiveQuery query = new AppacitiveQuery();
-        query.filter = new GeoFilter("location")
-                .withinPolygon(polygon);
-        List<String> fields = null;
-        AppacitiveObject.findInBackground("hotel", query, fields, new Callback<PagedList<AppacitiveObject>>() {
-            @Override
-            public void success(PagedList<AppacitiveObject> result) {
-            }
+AppacitiveQuery query = new AppacitiveQuery();
+query.filter = new GeoFilter("location")
+        .withinPolygon(polygon);
+List<String> fields = null;
+AppacitiveObject.findInBackground("hotel", query, fields, new Callback<PagedList<AppacitiveObject>>() {
+    @Override
+    public void success(PagedList<AppacitiveObject> result) {
+    }
 
-            @Override
-            public void failure(PagedList<AppacitiveObject> result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(PagedList<AppacitiveObject> result, Exception e) {
+    }
+});
 ``` 
 ``` rest
 $$$Method
@@ -4349,23 +4349,23 @@ For data of a given type, you can query for all records that are tagged with one
 Returns a list of all records of the given type that are tagged with atleast one of the given tag values.
 
 ``` android
-        //  Fetch all messages tagged with tags 'personal' OR 'private' OR both.
-        List<String> tagsToMatch = new ArrayList<String>() {{
-            add("personal");
-            add("private");
-        }};
-        AppacitiveQuery query = new AppacitiveQuery();
-        query.filter = new TagFilter().matchOneOrMore(tagsToMatch);
-        List<String> fields = null;
-        AppacitiveObject.findInBackground("message", query, fields, new Callback<PagedList<AppacitiveObject>>() {
-            @Override
-            public void success(PagedList<AppacitiveObject> result) {
-            }
+// Fetch all messages tagged with tags 'personal' OR 'private' OR both.
+List<String> tagsToMatch = new ArrayList<String>() {{
+    add("personal");
+    add("private");
+}};
+AppacitiveQuery query = new AppacitiveQuery();
+query.filter = new TagFilter().matchOneOrMore(tagsToMatch);
+List<String> fields = null;
+AppacitiveObject.findInBackground("message", query, fields, new Callback<PagedList<AppacitiveObject>>() {
+    @Override
+    public void success(PagedList<AppacitiveObject> result) {
+    }
 
-            @Override
-            public void failure(PagedList<AppacitiveObject> result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(PagedList<AppacitiveObject> result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -4483,23 +4483,23 @@ An alternative variation of the above tag based search allows you to query for a
 Returns a list of all records of the given type that are tagged with all of the given tag values.
 
 ``` android
-        //  Fetch all messages tagged with tags 'personal' AND 'private'.
-        List<String> tagsToMatch = new ArrayList<String>() {{
-            add("personal");
-            add("private");
-        }};
-        AppacitiveQuery query = new AppacitiveQuery();
-        query.filter = new TagFilter().matchAll(tagsToMatch);
-        List<String> fields = null;
-        AppacitiveObject.findInBackground("message", query, fields, new Callback<PagedList<AppacitiveObject>>() {
-            @Override
-            public void success(PagedList<AppacitiveObject> result) {
-            }
+// Fetch all messages tagged with tags 'personal' AND 'private'.
+List<String> tagsToMatch = new ArrayList<String>() {{
+    add("personal");
+    add("private");
+}};
+AppacitiveQuery query = new AppacitiveQuery();
+query.filter = new TagFilter().matchAll(tagsToMatch);
+List<String> fields = null;
+AppacitiveObject.findInBackground("message", query, fields, new Callback<PagedList<AppacitiveObject>>() {
+    @Override
+    public void success(PagedList<AppacitiveObject> result) {
+    }
 
-            @Override
-            public void failure(PagedList<AppacitiveObject> result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(PagedList<AppacitiveObject> result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -4615,29 +4615,29 @@ Returns a list of all records of the given type that match the given free text e
 
 | Modifier        | Syntax        | Sample
 |:---------------|:------------:|:------------|
-| Starts with     | {prefix}*        | `econo*` will searc for all text containing words starting with `econo`.
+| Starts with     | {prefix}*        | `econo*` will search for all text containing words starting with `econo`.
 | Ends with     | *{suffix}        | `*omic` will search for all text containing words ending with `omic`.
 | Single character substitution | {text}?{text}   | `h?re` will match all text containing terms like `here`, `hare` etc.
 | Must contain     | +{term}        | `+hello world` will search for all text that contains the term `hello` and may contain the term `world`.
 | Must not contain     | -{term}       | `hello -world` will search for all text may contain the term hello but does not contain the term `world`.
 
 ``` android
-        List<String> tokens = new ArrayList<String>() {{
-            add("french");
-            add("Palais");
-        }};
-        AppacitiveQuery query = new AppacitiveQuery();
-        query.freeTextTokens = tokens;
-        List<String> fields = null;
-        AppacitiveObject.findInBackground("photo", query, fields, new Callback<PagedList<AppacitiveObject>>() {
-            @Override
-            public void success(PagedList<AppacitiveObject> result) {
-            }
+List<String> tokens = new ArrayList<String>() {{
+    add("french");
+    add("Palais");
+}};
+AppacitiveQuery query = new AppacitiveQuery();
+query.freeTextTokens = tokens;
+List<String> fields = null;
+AppacitiveObject.findInBackground("photo", query, fields, new Callback<PagedList<AppacitiveObject>>() {
+    @Override
+    public void success(PagedList<AppacitiveObject> result) {
+    }
 
-            @Override
-            public void failure(PagedList<AppacitiveObject> result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(PagedList<AppacitiveObject> result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -4729,25 +4729,25 @@ All search queries on the platform return a paginated response. You can specify 
 You can also specify the property name based on which you would like the result set to be sorted, along with the direction (ascending or descending). Take a look at the platform specific samples to see how this information is passed from the client.
 
 ``` android
-        AppacitiveQuery query = new AppacitiveQuery();
-        
-		//	Paging info
-		query.pageNumber = 2;
-        query.pageSize = 25;
-		
-		//	Sorting info
-        query.orderBy = "photo_title";
-        query.isAscending = true;
-        List<String> fields = null;
-        AppacitiveObject.findInBackground("photo", query, fields, new Callback<PagedList<AppacitiveObject>>() {
-            @Override
-            public void success(PagedList<AppacitiveObject> result) {
-            }
+AppacitiveQuery query = new AppacitiveQuery();
 
-            @Override
-            public void failure(PagedList<AppacitiveObject> result, Exception e) {
-            }
-        });
+// Paging info
+query.pageNumber = 2;
+query.pageSize = 25;
+
+// Sorting info
+query.orderBy = "photo_title";
+query.isAscending = true;
+List<String> fields = null;
+AppacitiveObject.findInBackground("photo", query, fields, new Callback<PagedList<AppacitiveObject>>() {
+    @Override
+    public void success(PagedList<AppacitiveObject> result) {
+    }
+
+    @Override
+    public void failure(PagedList<AppacitiveObject> result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -4859,14 +4859,14 @@ Individual SDKs provide helper methods to help assist in building compound queri
 `NOTE`: All types of queries with the exception of free text queries can be combined into a compound query.
 
 ``` android
-        double[] centre = new double[]{36.1749687195, -115.1372222900};
+double[] centre = new double[]{36.1749687195, -115.1372222900};
 
-        AppacitiveQuery complexQuery = new AppacitiveQuery();
-        Filter firstnameFilter = new PropertyFilter("firstname").startsWith("Jo");
-        Filter lastnameFilter = new PropertyFilter("lastname").like("oe");
+AppacitiveQuery complexQuery = new AppacitiveQuery();
+Filter firstnameFilter = new PropertyFilter("firstname").startsWith("Jo");
+Filter lastnameFilter = new PropertyFilter("lastname").like("oe");
 
-        Filter geoFilter = new GeoFilter("location").withinCircle(centre, 10, DistanceMetric.mi);
-        complexQuery.filter = BooleanOperator.and(new Query[]{geoFilter, BooleanOperator.or(new Query[]{firstnameFilter, lastnameFilter})});
+Filter geoFilter = new GeoFilter("location").withinCircle(centre, 10, DistanceMetric.mi);
+complexQuery.filter = BooleanOperator.and(new Query[]{geoFilter, BooleanOperator.or(new Query[]{firstnameFilter, lastnameFilter})});
 ```
 ``` javascript
 //Use of `And` and `Or` operators
@@ -4991,21 +4991,21 @@ Note that graph queries are HTTP POST calls.
 </dl>
 
 ``` android
-        String filterQueryName = "sample_filter";
-        Map<String, String> placeHolderFillers = new HashMap<String, String>() {{
-            put("key1", "value1");
-            put("key2", "value2");
-        }};
+String filterQueryName = "sample_filter";
+Map<String, String> placeHolderFillers = new HashMap<String, String>() {{
+    put("key1", "value1");
+    put("key2", "value2");
+}};
 
-        AppacitiveGraphSearch.filterQueryInBackground(filterQueryName, placeHolderFillers,  new Callback<List<Long>>() {
-            @Override
-            public void success(List<Long> ids) {
-            }
+AppacitiveGraphSearch.filterQueryInBackground(filterQueryName, placeHolderFillers,  new Callback<List<Long>>() {
+    @Override
+    public void success(List<Long> ids) {
+    }
 
-            @Override
-            public void failure(List<Long> result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(List<Long> result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -5115,26 +5115,26 @@ The response to a projection query will depend on how you design your projection
 </dl>
 
 ``` android
-        String projectQueryName = "sample_project";
-        List<Long> rootIds = new ArrayList<Long>() {{
-            add(34912447775245454L);
-            add(34322447235528474L);
-            add(34943243891025029L);
-        }};
-        Map<String, String> placeHolderFillers = new HashMap<String, String>() {{
-            put("key1", "value1");
-            put("key2", "value2");
-        }};
+String projectQueryName = "sample_project";
+List<Long> rootIds = new ArrayList<Long>() {{
+    add(34912447775245454L);
+    add(34322447235528474L);
+    add(34943243891025029L);
+}};
+Map<String, String> placeHolderFillers = new HashMap<String, String>() {{
+    put("key1", "value1");
+    put("key2", "value2");
+}};
 
-        AppacitiveGraphSearch.projectQueryInBackground(projectQueryName, rootIds, placeHolderFillers, new Callback<List<AppacitiveGraphNode>>() {
-            @Override
-            public void success(List<AppacitiveGraphNode> nodes) {
-            }
+AppacitiveGraphSearch.projectQueryInBackground(projectQueryName, rootIds, placeHolderFillers, new Callback<List<AppacitiveGraphNode>>() {
+    @Override
+    public void success(List<AppacitiveGraphNode> nodes) {
+    }
 
-            @Override
-            public void failure(List<AppacitiveGraphNode> result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(List<AppacitiveGraphNode> result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -5223,7 +5223,7 @@ query.fetch().then(function(results) {
      of specified child elements in query
      eg: */ 
   console.log("This id '" + results[0].id() + "' has " 
-       + results[0].children["freinds"].length) + " freinds and owns "
+       + results[0].children["friends"].length) + " friends and owns "
        + results[0].children["owns"].length) + " houses");
 }, function(status) {
   console.log("Error running project query");
@@ -5346,21 +5346,21 @@ Returns the newly created user object with all the system defined properties set
 In case of an error, the `status` object contains details of the failure.
 
 ``` android
-        AppacitiveUser user = new AppacitiveUser();
-        user.setFirstName("John");
-        user.setUsername("john.doe");
-        user.setPassword("p@ssw0rd");
-        user.setEmail("john.doe@appacitive.com");
+AppacitiveUser user = new AppacitiveUser();
+user.setFirstName("John");
+user.setUsername("john.doe");
+user.setPassword("p@ssw0rd");
+user.setEmail("john.doe@appacitive.com");
 
-        user.signupInBackground(new Callback<AppacitiveUser>() {
-            @Override
-            public void success(AppacitiveUser user) {
-            }
+user.signupInBackground(new Callback<AppacitiveUser>() {
+    @Override
+    public void success(AppacitiveUser user) {
+    }
 
-            @Override
-            public void failure(AppacitiveUser user, Exception e) {
-            }
-        });
+    @Override
+    public void failure(AppacitiveUser user, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -5430,7 +5430,7 @@ var newUser = new Appacitive.User(userDetails);
 newUser.save().then(function(obj) {
     alert('Saved successfully, id: ' + newUser.get('__id'));
 }, function(status, obj) {
-    alert('An error occured while saving the user.');
+    alert('An error occurred while saving the user.');
 });
 ```
 ``` ios
@@ -5557,7 +5557,7 @@ var user = new Appacitive.User({
 
 //Registering via facebook is done like so
 Appacitive.Facebook.requestLogin().then(function(fbResponse) {
-  console.log('Facebook login successfull with access token: ' + Appacitive.Facebook.accessToken());
+  console.log('Facebook login successful with access token: ' + Appacitive.Facebook.accessToken());
   
   //link facebook account
   user.linkFacebook(global.Appacitive.Facebook.accessToken());
@@ -5812,7 +5812,7 @@ window.fbAsyncInit = function() {
 Appacitive.Facebook.requestLogin().then(function(fbResponse) {
   var token = Appacitive.Facebook.accessToken();
 
-  console.log('Facebook login successfull with access token: '
+  console.log('Facebook login successful with access token: '
      + token);
 
   // signup with Appacitive
@@ -6104,7 +6104,7 @@ Appacitive.session.removeUserAuthHeader();
 
 !!!javascript
 **Current User**
-Whenever you use any signup or login method, the user is stored in localStorage and can be retrieved using `Appacitive.Users.current`.So, everytime your app opens, you just need to check this value, to be sure whether the user is logged-in or logged-out.
+Whenever you use any signup or login method, the user is stored in localStorage and can be retrieved using `Appacitive.Users.current`. So every time your app opens, you just need to check this value, to be sure whether the user is logged-in or logged-out.
 !!!
 
 ```javascript
@@ -6162,19 +6162,19 @@ console.log(Appacitive.Users.current().get('__id'));
 A newly generated string session `token`, the `user` object itself and a `status` object are returned.
 
 ``` android
-        long expiry = 15 * 60;
-        int maxAttempts = Integer.MAX_VALUE;
-        AppacitiveUser.loginInBackground("username", "password", expiry, maxAttempts, new Callback<AppacitiveUser>() {
-            @Override
-            public void success(AppacitiveUser user) {
-                AppacitiveUser loggedInUser = AppacitiveContext.getLoggedInUser();
-                String userToken = AppacitiveContext.getLoggedInUserToken();
-            }
+long expiry = 15 * 60;
+int maxAttempts = Integer.MAX_VALUE;
+AppacitiveUser.loginInBackground("username", "password", expiry, maxAttempts, new Callback<AppacitiveUser>() {
+    @Override
+    public void success(AppacitiveUser user) {
+        AppacitiveUser loggedInUser = AppacitiveContext.getLoggedInUser();
+        String userToken = AppacitiveContext.getLoggedInUserToken();
+    }
 
-            @Override
-            public void failure(AppacitiveUser result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(AppacitiveUser result, Exception e) {
+    }
+});
 ```
 ``` csharp
 //Authenticating user by `username` and `password`
@@ -6557,7 +6557,7 @@ Once a user is created in Appacitive, a unique long `__id` is assigned to it and
 You can access the specific user for retrieving, updating, deleting etc. using one of three ways, by his `id`, by his `username` or by a session `token` generated for that user.
 You can specify what type of user accessing mechanism you are using by passing a query string parameter called `useridtype`. 
 The values for `useridtype` can be `id`, `username` and `token` for accessing the user using his unique system generated `__id`, a unique string `username` assigned by you or a generated token using his credentials respectively.
-In the absense of the parameter `useridtype`, the system assumes it to be `id`.
+In the absence of the parameter `useridtype`, the system assumes it to be `id`.
 
 This call takes an additional `Appacitive-User-Auth` header with its value set as a valid user token.
 The following three example illustrate retrieving the user in the three possible ways. 
@@ -6590,16 +6590,16 @@ The same pattern applies for other calls like deleting the user or updating the 
 The user object is returned if a user exists in the system for your app with the id you supplied.
 
 ``` android
-        List<String> fields = null;
-        AppacitiveUser.getByIdInBackground(1234525435344346L, fields, new Callback<AppacitiveUser>() {
-            @Override
-            public void success(AppacitiveUser user) {
-            }
+List<String> fields = null;
+AppacitiveUser.getByIdInBackground(1234525435344346L, fields, new Callback<AppacitiveUser>() {
+    @Override
+    public void success(AppacitiveUser user) {
+    }
 
-            @Override
-            public void failure(AppacitiveUser user, Exception e) {
-            }
-        });
+    @Override
+    public void failure(AppacitiveUser user, Exception e) {
+    }
+});
 ```
 ``` csharp
 //Get User by `id`
@@ -6712,16 +6712,16 @@ The value of `useridtype` is set to `username`.
 </dl>
 
 ``` android
-        List<String> fields = null;
-        AppacitiveUser.getByUsernameInBackground("john.doe", fields, new Callback<AppacitiveUser>() {
-            @Override
-            public void success(AppacitiveUser user) {
-            }
+List<String> fields = null;
+AppacitiveUser.getByUsernameInBackground("john.doe", fields, new Callback<AppacitiveUser>() {
+    @Override
+    public void success(AppacitiveUser user) {
+    }
 
-            @Override
-            public void failure(AppacitiveUser user, Exception e) {
-            }
-        });
+    @Override
+    public void failure(AppacitiveUser user, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -6836,16 +6836,16 @@ The `useridtype` query string parameter is set to `token`.
 </dl>
 
 ``` android
-        List<String> fields = null;
-        AppacitiveUser.getLoggedInUserInBackground(fields, new Callback<AppacitiveUser>() {
-            @Override
-            public void success(AppacitiveUser user) {
-            }
+List<String> fields = null;
+AppacitiveUser.getLoggedInUserInBackground(fields, new Callback<AppacitiveUser>() {
+    @Override
+    public void success(AppacitiveUser user) {
+    }
 
-            @Override
-            public void failure(AppacitiveUser user, Exception e) {
-            }
-        });
+    @Override
+    public void failure(AppacitiveUser user, Exception e) {
+    }
+});
 ```
 ``` csharp
 //  Get logged in User
@@ -6972,24 +6972,26 @@ Returns the updated user object with the `__revision` number incremented.
 In case of an error, the `status` object contains details of the failure.
 
 ``` android
-        AppacitiveUser.getByIdInBackground(65464576879867989L, null, new Callback<AppacitiveUser>() {
+AppacitiveUser.getByIdInBackground(65464576879867989L, null, new Callback<AppacitiveUser>() {
+    @Override
+    public void success(AppacitiveUser user) {
+        user.setEmail("mary.jane2@appacitive.com");
+        user.setLastName("Jane");
+        user.setStringProperty("city", "New York");
+        
+        user.updateInBackground(false, new Callback<AppacitiveUser>() {
             @Override
-            public void success(AppacitiveUser user) {
-                user.setEmail("mary.jane2@appacitive.com");
-                user.setLastName("Jane");
-                user.setStringProperty("city", "New York");
+            public void success(AppacitiveUser updatedUser) {
                 
-                user.updateInBackground(false, new Callback<AppacitiveUser>() {
-                    @Override
-                    public void success(AppacitiveUser updatedUser) {
-                        
-                    }
+            }
 
-                    @Override
-                    public void failure(AppacitiveUser updatedUser, Exception e) {
-                        
-                    }
-                });
+            @Override
+            public void failure(AppacitiveUser updatedUser, Exception e) {
+                
+            }
+        }
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -7186,16 +7188,16 @@ A status object describing the status of the delete user call.
 </dl>
 
 ``` android
-        boolean deleteConnections = false;
-        AppacitiveUser.deleteInBackground(42952490524897L, deleteConnections, new Callback<Void>() {
-            @Override
-            public void success(Void result) {
-            }
+boolean deleteConnections = false;
+AppacitiveUser.deleteInBackground(42952490524897L, deleteConnections, new Callback<Void>() {
+    @Override
+    public void success(Void result) {
+    }
 
-            @Override
-            public void failure(Void result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(Void result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -7274,16 +7276,16 @@ An additional query string parameter called `useridtype` is sent to specify the 
 </dl>
 
 ``` android
-        boolean deleteConnections = false;
-        AppacitiveUser.deleteInBackground("john.doe", deleteConnections, new Callback<Void>() {
-            @Override
-            public void success(Void result) {
-            }
+boolean deleteConnections = false;
+AppacitiveUser.deleteInBackground("john.doe", deleteConnections, new Callback<Void>() {
+    @Override
+    public void success(Void result) {
+    }
 
-            @Override
-            public void failure(Void result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(Void result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -7353,16 +7355,16 @@ A valid session token still needs to be passed in the `Appacitive-User-Auth` hea
 </dl>
 
 ``` android
-        boolean deleteConnections = false;
-        AppacitiveUser.deleteLoggedInUserInBackground(deleteConnections, new Callback<Void>() {
-            @Override
-            public void success(Void result) {
-            }
+boolean deleteConnections = false;
+AppacitiveUser.deleteLoggedInUserInBackground(deleteConnections, new Callback<Void>() {
+    @Override
+    public void success(Void result) {
+    }
 
-            @Override
-            public void failure(Void result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(Void result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -7450,18 +7452,18 @@ You can store the users last known location in the `geography` property called `
 </dl>
 
 ``` android
-        double[] checkinCoordinates = new double[]{36.0800, 115.1522};
-        AppacitiveUser user = new AppacitiveUser(2456785426874425L);
-        user.checkinInBackground(checkinCoordinates, new Callback<Void>() {
-            @Override
-            public void success(Void result) {
-                double[] currentLocation = AppacitiveContext.getCurrentLocation();
-            }
+double[] checkinCoordinates = new double[]{36.0800, 115.1522};
+AppacitiveUser user = new AppacitiveUser(2456785426874425L);
+user.checkinInBackground(checkinCoordinates, new Callback<Void>() {
+    @Override
+    public void success(Void result) {
+        double[] currentLocation = AppacitiveContext.getCurrentLocation();
+    }
 
-            @Override
-            public void failure(Void result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(Void result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -7563,7 +7565,7 @@ ApplicationContext.set_user_token(token)
 ```
 #### Validate session token
 
-Once you create a session `token` for a user using one of the aunthenticating mechanisms, you may want to validate whether the token is a valid token or not in subsequent api calls.
+Once you create a session `token` for a user using one of the authenticating mechanisms, you may want to validate whether the token is a valid token or not in subsequent api calls.
 
 ** Parameters **
 
@@ -7586,24 +7588,24 @@ Once you create a session `token` for a user using one of the aunthenticating me
 </dl>
 
 ``` android
-        AppacitiveUser.loginInBackground("username", "password", -1, -1, new Callback<AppacitiveUser>() {
+AppacitiveUser.loginInBackground("username", "password", -1, -1, new Callback<AppacitiveUser>() {
+    @Override
+    public void success(AppacitiveUser user) {
+        AppacitiveUser.validateCurrentlyLoggedInUserSessionInBackground(new Callback<Void>() {
             @Override
-            public void success(AppacitiveUser user) {
-                AppacitiveUser.validateCurrentlyLoggedInUserSessionInBackground(new Callback<Void>() {
-                    @Override
-                    public void success(Void result) {
-                    }
-
-                    @Override
-                    public void failure(Void result, Exception e) {
-                    }
-                });
+            public void success(Void result) {
             }
 
             @Override
-            public void failure(AppacitiveUser user, Exception e) {
+            public void failure(Void result, Exception e) {
             }
         });
+    }
+
+    @Override
+    public void failure(AppacitiveUser user, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -7696,24 +7698,24 @@ You may want to invalidate a previously generated session token for a user at so
 </dl>
 
 ``` android
-        AppacitiveUser.loginInBackground("username", "password", -1, -1, new Callback<AppacitiveUser>() {
+AppacitiveUser.loginInBackground("username", "password", -1, -1, new Callback<AppacitiveUser>() {
+    @Override
+    public void success(AppacitiveUser user) {
+        AppacitiveUser.invalidateCurrentlyLoggedInUserSessionInBackground(new Callback<Void>() {
             @Override
-            public void success(AppacitiveUser user) {
-                AppacitiveUser.invalidateCurrentlyLoggedInUserSessionInBackground(new Callback<Void>() {
-                    @Override
-                    public void success(Void result) {
-                    }
-
-                    @Override
-                    public void failure(Void result, Exception e) {
-                    }
-                });
+            public void success(Void result) {
             }
 
             @Override
-            public void failure(AppacitiveUser user, Exception e) {
+            public void failure(Void result, Exception e) {
             }
         });
+    }
+
+    @Override
+    public void failure(AppacitiveUser user, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -7808,24 +7810,24 @@ If a user of your app simply wants to change his/her password, it requires a sim
 </dl>
 
 ``` android
-        AppacitiveUser.getByUsernameInBackground("john.doe", null, new Callback<AppacitiveUser>() {
+AppacitiveUser.getByUsernameInBackground("john.doe", null, new Callback<AppacitiveUser>() {
+    @Override
+    public void success(AppacitiveUser user) {
+        user.updatePasswordInBackground("oldPassword", "newPassword", new Callback<Void>() {
             @Override
-            public void success(AppacitiveUser user) {
-                user.updatePasswordInBackground("oldPassword", "newPassword", new Callback<Void>() {
-                    @Override
-                    public void success(Void result) {
-                    }
-
-                    @Override
-                    public void failure(Void result, Exception e) {
-                    }
-                });
+            public void success(Void result) {
             }
 
             @Override
-            public void failure(AppacitiveUser user, Exception e) {
+            public void failure(Void result, Exception e) {
             }
         });
+    }
+
+    @Override
+    public void failure(AppacitiveUser user, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -7916,15 +7918,15 @@ read the blog post <a href="http://blogs.appacitive.com/2013/10/password-managem
 </dl>
 
 ``` android
-        AppacitiveUser.sendResetPasswordEmailInBackground("john.doe", "Email Subject", new Callback<Void>() {
-            @Override
-            public void success(Void result) {
-            }
+AppacitiveUser.sendResetPasswordEmailInBackground("john.doe", "Email Subject", new Callback<Void>() {
+    @Override
+    public void success(Void result) {
+    }
 
-            @Override
-            public void failure(Void result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(Void result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -8069,26 +8071,26 @@ You can use this API to send simple (non templated) emails.
 </dl>
  
 ``` android
-        AppacitiveEmail emailWithRawBody = new AppacitiveEmail("Subject goes here.")
-                .withBody(new RawEmailBody("Body goes here", false))
-                .withSmtp(new SmtpSettings("sathley@appacitive.com", "********", "smtp.gmail.com", 465, true));
-        emailWithRawBody.to = new ArrayList<String>() {{
-            add("sathley@appacitive.com");
-        }};
-        emailWithRawBody.cc = new ArrayList<String>() {{
-            add("support@appacitive.com");
-        }};
+AppacitiveEmail emailWithRawBody = new AppacitiveEmail("Subject goes here.")
+        .withBody(new RawEmailBody("Body goes here", false))
+        .withSmtp(new SmtpSettings("someone@example.com", "********", "smtp.gmail.com", 465, true));
+emailWithRawBody.to = new ArrayList<String>() {{
+    add("someone@example.com.com");
+}};
+emailWithRawBody.cc = new ArrayList<String>() {{
+    add("jane@example.com");
+}};
 
-        emailWithRawBody.fromAddress = "connect@appacitive.com";
-        emailWithRawBody.sendInBackground(new Callback<AppacitiveEmail>() {
-            @Override
-            public void success(AppacitiveEmail email) {
-            }
+emailWithRawBody.fromAddress = "from@example.com";
+emailWithRawBody.sendInBackground(new Callback<AppacitiveEmail>() {
+    @Override
+    public void success(AppacitiveEmail email) {
+    }
 
-            @Override
-            public void failure(AppacitiveEmail email, Exception e) {
-            }
-        });
+    @Override
+    public void failure(AppacitiveEmail email, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -8154,7 +8156,7 @@ sendEmailWithSuccessHandler:successHandler:failureHandler
 ```
 ``` ios
 $$$SAMPLE
-//Using a preconfigured SMTP setting
+//Using a pre configured SMTP setting
 APEmail *email = [[APEmail alloc] initWithRecipients:@[@"xyz@mail.com", @"pqr@mail.com"] 
 subject:@"Hello" body@"Hello from Appacitive"];
 
@@ -8217,7 +8219,7 @@ var to = new [] {"email1", "email2"..}
 var cc = new [] {"email1", "email2"..}
 var bcc = new [] {"email1", "email2"..}
 
-//Using a preconfigured SMTP setting
+//Using a pre configured SMTP setting
 await NewEmail
       .Create("Put the subject here")
       .To(to, cc, bcc)
@@ -8237,13 +8239,13 @@ await NewEmail
 
 ```
 ``` python
-AppacitiveEmail.send_raw_email(['sathley@appacitive.com'], 'hello from py sdk', 'Wazza!', smtp={
-        "username": "sathley@appacitive.com",
+AppacitiveEmail.send_raw_email(['someone@example.com.com'], 'hello from py sdk', 'Wazza!', smtp={
+        "username": "someone@example.com.com",
 		"password": "########",
 		"host": "smtp.gmail.com",
 		"port": 465,
 		"enablessl": True
-    }, from_email='sathley@appacitive.com')
+    }, from_email='someone@example.com.com')
 ```
 Sending a templated email
 ------------
@@ -8256,7 +8258,7 @@ To know about creating email templates, read the blog post <a href="http://blogs
 
 <dl>
 	<dt>smtp</dt>
-	<dd>required (if not preconfigured)<br/><span>This is the SMPT settings.
+	<dd>required (if not pre configured)<br/><span>This is the SMPT settings.
 	<dt>to</dt>
 	<dd>required<br/><span>List of email ids to send email to
 	<dt>cc</dt>
@@ -8285,26 +8287,26 @@ To know about creating email templates, read the blog post <a href="http://blogs
 </dl>
 
 ``` android
-        Map<String, String> templateFillers = new HashMap<String, String>() {{
-            put("username", "john");
-            put("date", new Date().toString());
-        }};
-        AppacitiveEmail emailWithTemplatedBody = new AppacitiveEmail("Subject goes here.")
-                .withBody(new TemplatedEmailBody("sample_template", templateFillers, true));
-        emailWithTemplatedBody.to = new ArrayList<String>() {{
-            add("sathley@appacitive.com");
-        }};
+Map<String, String> templateFillers = new HashMap<String, String>() {{
+    put("username", "john");
+    put("date", new Date().toString());
+}};
+AppacitiveEmail emailWithTemplatedBody = new AppacitiveEmail("Subject goes here.")
+        .withBody(new TemplatedEmailBody("sample_template", templateFillers, true));
+emailWithTemplatedBody.to = new ArrayList<String>() {{
+    add("someone@example.com.com");
+}};
 
-        emailWithTemplatedBody.fromAddress = "connect@appacitive.com";
-        emailWithTemplatedBody.sendInBackground(new Callback<AppacitiveEmail>() {
-            @Override
-            public void success(AppacitiveEmail email) {
-            }
+emailWithTemplatedBody.fromAddress = "from@example.com";
+emailWithTemplatedBody.sendInBackground(new Callback<AppacitiveEmail>() {
+    @Override
+    public void success(AppacitiveEmail email) {
+    }
 
-            @Override
-            public void failure(AppacitiveEmail email, Exception e) {
-            }
-        });
+    @Override
+    public void failure(AppacitiveEmail email, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -8488,11 +8490,11 @@ Appacitive.Email.sendTemplatedEmail(email).then(function (email) {
 });
 ```
 ``` python
-AppacitiveEmail.send_templated_email(to=['sathley@appacitive.com'],subject='Subject', template_name='template_name', template_fillers={}, cc=[], bcc=[])
+AppacitiveEmail.send_templated_email(to=['someone@example.com.com'],subject='Subject', template_name='template_name', template_fillers={}, cc=[], bcc=[])
 ```
 Push
 =======
-Push is a great way to send timely and relevant targetted messages to users of your app and enhance their overall experience and keep them informed of the latest developements on your app.
+Push is a great way to send timely and relevant targeted messages to users of your app and enhance their overall experience and keep them informed of the latest developments on your app.
 Appacitive allows you to send push notifications to your users in a variety of ways and targets android, ios and windows phone.
 
 For detailed info around how platform specific push notifications work, you can check out their specific docs.
@@ -8507,14 +8509,14 @@ Devices
 -------
 
 Appacitive provides you with a rich set of device management apis. A pre-created type called `device` is contained in every new application.
-You should create a new object of this type everytime your app is installed on a new device. A device object has a device-type which could be `ios`, `android`, `wp7`, `wp75` or `wp8`.
+You should create a new object of this type every-time your app is installed on a new device. A device object has a device-type which could be `ios`, `android`, `wp7`, `wp75` or `wp8`.
 Also, every device object has a unique device token. Additionally a device object could contain other properties like the ones mentioned in the next section or created by you. With this you are ready to control the push and device management aspect of your app with ease.
 
 
 ### Registering a device
 
-You need to provide Appacitive with info about the device on which you might want to send push notfications later. This info minimally includes the device type (ios, android etc.) and device token.
-More pre-defined properties are available in the device type for your benefit. You can also add any additional property(s) you might need in your applicaion, just like creating properties in any other type.
+You need to provide Appacitive with info about the device on which you might want to send push notifications later. This info minimally includes the device type (ios, android etc.) and device token.
+More pre-defined properties are available in the device type for your benefit. You can also add any additional property(s) you might need in your application, just like creating properties in any other type.
 
 
 ** Parameters **
@@ -8879,7 +8881,7 @@ and update only needs the information that has actually changed.
   <dt>id</dt>
   <dd>required<br/><span>The system generated id of the object</span></dd>
   <dt>object updates</dt>
-  <dd>required<br/><span>Theobject with the fields to be updated.</span></dd>
+  <dd>required<br/><span>The object with the fields to be updated.</span></dd>
   <dt>revision</dt>
   <dd>optional<br/><span>The revision of the object. Incase the revision does not match on the server, the call will fail.</span></dd>
 </dl>
@@ -9065,7 +9067,7 @@ $$$Sample Request
 
 #### Delete device with Connection
 
-There are scenarios where you might want to delete a device object irrespective of existing connections. To do this in the delete operation, you need to explicitly indicate that you want to delete any existing connectons as well. This will cause the delete operation to delete any existing connections along with the specified device object.
+There are scenarios where you might want to delete a device object irrespective of existing connections. To do this in the delete operation, you need to explicitly indicate that you want to delete any existing connections as well. This will cause the delete operation to delete any existing connections along with the specified device object.
 
 `NOTE`: This override is not available when deleting multiple objects in a single operation.
 
@@ -9194,7 +9196,7 @@ You can see the anatomy of the Push message that you will need to send to the Ap
   <dt>data</dt>
   <dd>required<br/><span>This contains the message, badges,custom data etc for the notification
   <dt>expireafter</dt>
-  <dd>optional<br/><span>Specified the time to live for message in case it is not recieved by the device
+  <dd>optional<br/><span>Specified the time to live for message in case it is not received by the device
   <dt>platformoptions</dt>
   <dd>optional<br/><span>Sending extra data which is specific to the device platform
 </dl>
@@ -9239,7 +9241,7 @@ You can see the anatomy of the Push message that you will need to send to the Ap
 Sending a Push message
 ------------
 Once you have configured your Push settings in the Portal, you can send a Push by making a simple API call.
-There are mutiple ways you can send a Push. It could be a broadcast, or to a channel or based on a query.
+There are multiple ways you can send a Push. It could be a broadcast, or to a channel or based on a query.
 
 ###Broadcasting a Push
 
@@ -9380,7 +9382,7 @@ push_id = AppacitivePushNotification.broadcast(data={}, platform_options={}, exp
 ###Sending a Query based Push
 
 You can send a push depending on certain filters.
-Like say you want to send a Push to just the iOS devices. You can specifiy that using a query based Push.
+Like say you want to send a Push to just the iOS devices. You can specify that using a query based Push.
 
 ``` rest
 $$$Method
@@ -9838,7 +9840,7 @@ Following are the options that we support.
 
 ###iOS options
 
-As of now the extra option that iOS supports is the ability to specificy a sound file which the device will play when it recevies the notification.
+As of now the extra option that iOS supports is the ability to specify a sound file which the device will play when it receives the notification.
 This sound file should be shipped with the App.
 
 ``` rest
@@ -10529,7 +10531,7 @@ await PushNotification
 Files
 =======
 
-Appacitive allows you to upload, download and ditribute media files like images, videos etc. on the appacitive platform so you can build rich applications and deliver media using an extensive CDN. 
+Appacitive allows you to upload, download and distribute media files like images, videos etc. on the appacitive platform so you can build rich applications and deliver media using an extensive CDN. 
 The appacitive files api works by providing you `pre-signed` urls to a third-party cloud storage service (<a href="http://aws.amazon.com/s3/">Amazon S3</a>), where the files can be uploaded to or downloaded from.
 You can upload and download files of any size and most filetypes are supported. 
 
@@ -10558,7 +10560,7 @@ The `contenttype` query string parameter you send here should match the `content
 A unique string `id` is associated with every file you store on the appacitive platform. This string `id` is either the optional `filename` query string parameter you pass while generating the upload url or appacitive assigns it a unique system generated value.
 You can use this unique string file `id` to access, update or delete that file. Uploading multiple files using the same `filename` will lead to overwriting the file.
 
-In the request, the optional query string paramertes you can provide are.
+In the request, the optional query string parameters you can provide are.
 
 ** Query string parameters **
 
@@ -10581,17 +10583,17 @@ In the request, the optional query string paramertes you can provide are.
 </dl>
 
 ``` android
-        AppacitiveFile.getUploadUrlInBackground("image/png", "my_selfie.png", 60, new Callback<FileUploadUrlResponse>() {
-            @Override
-            public void success(FileUploadUrlResponse result) {
-                String url = result.url;
-                String fileId = result.fileId;
-            }
+AppacitiveFile.getUploadUrlInBackground("image/png", "my_selfie.png", 60, new Callback<FileUploadUrlResponse>() {
+    @Override
+    public void success(FileUploadUrlResponse result) {
+        String url = result.url;
+        String fileId = result.fileId;
+    }
 
-            @Override
-            public void failure(FileUploadUrlResponse result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(FileUploadUrlResponse result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
@@ -10674,8 +10676,8 @@ var file = new Appacitive.File({
 
 When the above request is successful, the HTTP response is a `200` OK and the response body is a json object containing the third party cloud storage providers upload `url` and the file `id`, which is the parameter `filename`'s value provided by you or a unique system generated identifier for the file.
 Now upload the file by making a PUT request to the `url` in the response above. The necessary authorization information is already embedded in the URI. For more details, refer to <a href="http://aws.amazon.com/documentation/s3/">Amazon S3 documentation</a>. 
-This url is valid for 5 minutes if `expires` was not specified while retreiving the url and only allows you to perform a PUT on the url. 
-You need to provied the same value for the `Content-Type` http header, which you provided while retreiving the url and if not provided, use 'application/octet-stream' or 'binary/octet-stream'. 
+This url is valid for 5 minutes if `expires` was not specified while retrieving the url and only allows you to perform a PUT on the url. 
+You need to provide the same value for the `Content-Type` http header, which you provided while retrieving the url and if not provided, use 'application/octet-stream' or 'binary/octet-stream'. 
 You send the media file in the payload object of the PUT call.
 
 ``` csharp
@@ -10737,21 +10739,21 @@ To download a file from Appacitive for your app, you need to get a `pre-signed` 
 
 <dl>
   <dt>filename</dt>
-  <dd>required<br/><span>The filename used when generating the uploadurl.
+  <dd>required<br/><span>The filename used when generating the upload url.
   <dt>expires</dt>
-  <dd>optional<br/><span>Time in minutes for which the url will be valid, default value 5 mins. 
+  <dd>optional<br/><span>Time in minutes for which the url will be valid, default value 5 minutes. 
 </dl>
  
 ``` android
-        AppacitiveFile.getDownloadUrlInBackground("my_selfie.png", 60, new Callback<String>() {
-            @Override
-            public void success(String downloadUrl) {
-            }
+AppacitiveFile.getDownloadUrlInBackground("my_selfie.png", 60, new Callback<String>() {
+    @Override
+    public void success(String downloadUrl) {
+    }
 
-            @Override
-            public void failure(String result, Exception e) {
-            }
-        });
+    @Override
+    public void failure(String result, Exception e) {
+    }
+});
 ```
 ``` rest
 $$$Method
