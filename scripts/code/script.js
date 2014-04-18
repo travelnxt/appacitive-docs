@@ -157,7 +157,7 @@ isDev = false;
                     }, 100);
                 }
                 else {
-                    var lang = window.location.hash.replace('#', '');
+                    var lang = mapping[window.location.hash.replace('#', '')];
                     if (!lang) $("[href='" + window.location.hash + "']").trigger("click");
                     else $('.toolbar a[data-lang="' + lang + '"]').trigger('click');
                 }
