@@ -9203,37 +9203,37 @@ You can see the anatomy of the Push message that you will need to send to the Ap
 
 ```rest
 {
-        "broadcast": true,
-        "deviceids": [
-           "{{deviceId}}",
-           "{{deviceId}}",
-           "{{deviceId}}"
-        ],
-        "query": "{{your query goes here}}",
-        "channels": [
-           "{{nameOfChannel}}",
-           "{{nameOfChannel}}",
-           "{{nameOfChannel}}"
-        ],
-        "data": {
-           "alert": "{{your message}}",
-           "badge": "1",
-           "customdata1": "customvalue1",
-           "customdata2": "customvalue2",
-        },
-        "expireafter": "100000",
-        "platformoptions": {
-           "ios": {
-              "sound": "test"
-           },
-           "android": {
-              "title": "test title"
-           },
-           "wp": {
-              "notificationtype":"tile"
-           }
-        }
-     }
+    "broadcast": true,
+    "deviceids": [
+       "{{deviceId}}",
+       "{{deviceId}}",
+       "{{deviceId}}"
+    ],
+    "query": "{{your query goes here}}",
+    "channels": [
+       "{{nameOfChannel}}",
+       "{{nameOfChannel}}",
+       "{{nameOfChannel}}"
+    ],
+    "data": {
+       "alert": "{{your message}}",
+       "badge": "1",
+       "customdata1": "customvalue1",
+       "customdata2": "customvalue2",
+    },
+    "expireafter": "100000",
+    "platformoptions": {
+       "ios": {
+          "sound": "test"
+       },
+       "android": {
+          "title": "test title"
+       },
+       "wp": {
+          "notificationtype":"tile"
+       }
+    }
+}
 ```
 
 
