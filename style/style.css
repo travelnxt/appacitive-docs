@@ -307,7 +307,7 @@ body.no-literate .content pre > code { -webkit-overflow-scrolling: touch; }
 }
 
 @media (min-width: 1620px) {
-    body { font-size: 17px; }
+    body { font-size: 15px; }
         body:not(.no-literate) .content > .content-wrapper,
         body:not(.no-literate) .content > p, body:not(.no-literate) .content > div > p,
         body:not(.no-literate) .content > ul, body:not(.no-literate) .content > div > ul,
@@ -323,7 +323,7 @@ body.no-literate .content pre > code { -webkit-overflow-scrolling: touch; }
 }
 
 @media (min-width: 1880px) {
-    body { font-size: 19px; }
+    body { font-size: 15px; }
         body:not(.no-literate) .content > .content-wrapper,
         body:not(.no-literate) .content > p, body:not(.no-literate) .content > div > p,
         body:not(.no-literate) .content > ul, body:not(.no-literate) .content > div > ul,
@@ -339,7 +339,7 @@ body.no-literate .content pre > code { -webkit-overflow-scrolling: touch; }
 }
 
 @media (min-width: 2520px) {
-    body { font-size: 25px; }
+    body { font-size: 15px; }
         body:not(.no-literate) .content > .content-wrapper,
         body:not(.no-literate) .content > p, body:not(.no-literate) .content > div > p,
         body:not(.no-literate) .content > ul, body:not(.no-literate) .content > div > ul,
