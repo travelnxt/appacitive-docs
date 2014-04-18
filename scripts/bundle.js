@@ -2360,18 +2360,18 @@ isDev = false;
         //jump to hash
         if (window.location.hash != "") {
             setTimeout(function () {
+                var mapping = {
+                    curl: 'rest',
+                    javascript: 'javascript',
+                    dotnet: 'csharp',
+                    python: 'python',
+                    ios: 'ios',
+                    android: 'android'
+                };
                 var split = window.location.hash.split('/');
                 if (split.length > 1) {
                     //set the language first and then jump to hash
                     split = window.location.hash.split('/');
-                    var mapping = {
-                        curl: 'rest',
-                        javascript: 'javascript',
-                        dotnet: 'csharp',
-                        python: 'python',
-                        ios: 'ios',
-                        android: 'android'
-                    };
                     var lang = mapping[split[0].replace('#', '')];
                     var $element = $('.toolbar a[data-lang="' + lang + '"]');
                     $element.trigger('click');
@@ -2379,7 +2379,11 @@ isDev = false;
                         $("[href='#" + split[1] + "']").trigger("click");
                     }, 100);
                 }
-                else $("[href='" + window.location.hash + "']").trigger("click");
+                else {
+                    var lang = window.location.hash.replace('#', '');
+                    if (!lang) $("[href='" + window.location.hash + "']").trigger("click");
+                    else $('.toolbar a[data-lang="' + lang + '"]').trigger('click');
+                }
             }, 1000);
         }
 
