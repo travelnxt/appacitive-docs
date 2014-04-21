@@ -2339,7 +2339,7 @@ isDev = false;
 
         var storeCookie = function (cName, value) {
             if (!value) return;
-            document.cookie = cName + "=" + value + ";";
+            document.cookie = cName + "=" + value + ";path=/";
         };
         var readCookie = function (name) {
             var nameEQ = name + "=";
