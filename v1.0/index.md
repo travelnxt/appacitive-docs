@@ -160,7 +160,11 @@ https://apis.appacitive.com/v1.0/object/device/find/all
 
 
 ``` ios
-[Appacitive initWithAPIKey:@"{Your API Key}"];
+[Appacitive registerAPIKey:@"INSERT_YOUR_APIKEY_HERE" useLiveEnvironment:NO];
+
+
+//Optionally you can also use the following method. It will use the default environment setting i.e. sandbox environment.
+[Appacitive registerAPIKey:@"INSERT_YOUR_APIKEY_HERE"];
 ```
 
 ``` python
