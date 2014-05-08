@@ -49,20 +49,20 @@ api.
 Response format
 ------------
 
-The response from the api will always return a JSON object (even in the case of a failure). The success or failure status of the transaction will be returned in the form of a status object. Incase the operation does not return any data then the JSON response would contain just the status object itself.
+The response from the api will always return a JSON object (even in the case of a failure). The success or failure status of the transaction will be returned in the form of a status object. In case the operation does not return any data then the JSON response would contain just the status object itself.
 The JSON structure of the status object is shown.
 
 ** Status object properties **
 
 <dl>
   <dt>code</dt>
-  <dd><span>``2xx`` (``200`` or ``201``) incase of success. Incase a resource is created as a side effect of the operation, then the status code returned is ``201``. In case of failure, a non 2xx error code would returned.</span></dd>
+  <dd><span>``2xx`` (``200`` or ``201``) in case of success. In case a resource is created as a side effect of the operation, then the status code returned is ``201``. In case of failure, a non 2xx error code would returned.</span></dd>
   <dt>message</dt>
-  <dd><span>Error message incase of an api call failure.</span></dd>
+  <dd><span>A human readable error message in case of an api call failure.</span></dd>
   <dt>referenceid</dt>
-  <dd><span>Unique reference id for the transaction for debugging. This reference id can be provided in issues and escalations.</span></dd>
+  <dd><span>Unique reference id for the transaction used for debugging purposes. This reference id can be provided during issues and escalations.</span></dd>
   <dt>additionalmessages</dt>
-  <dd><span>Additional messages incase of a failure.</span></dd>
+  <dd><span>Additional messages in case of a failure.</span></dd>
 </dl>
 
 **Note**: The http status code for the response will always be returned as ``200``.
@@ -107,12 +107,12 @@ promise.then(function(obj) {}, function(err, obj){} );
 Errors
 ------------
 
-The api always returns a ``2xx`` code in the status object incase the api call was successful. A non ``2xx`` status code is used to indicate a failure. Certain conventions are followed for indicative purposes to hint the cause of the failure. A ``4xx`` error code is used to indicate validation and client errors. Validation failures would also include specifics in the additional messages.
+The api always returns a ``2xx`` code in the status object in case the api call was successful. A non ``2xx`` status code is used to indicate a failure. Certain conventions are followed for indicative purposes to hint the cause of the failure. A ``4xx`` error code is used to indicate validation and client errors. Validation failures would also include specifics in the additional messages.
 
 Authentication
 ------------
 
-To authenticate your api request you need to specify your application's API key and environment in every request. The environment header is used to route the request to your sandbox or live environment as requested. Your api key can be found in the api key section of the management portal for your app. For the Appacitive apis, all contextual and authentication information is always passed via http headers.
+To authenticate your api request you need to specify your application's API key and environment in every request. The *environment* header is used to route the request to your *sandbox* or *live* environment as requested. Your api key can be found in the api key section of the management portal for your app. For the Appacitive apis, all contextual and authentication information is always passed via http headers.
 
 In order to pass the api key and environment information for the application use the following headers. 
 
@@ -125,12 +125,13 @@ In order to pass the api key and environment information for the application use
 </dl>
 
 ``` android
-//For android 
-AppacitiveContext.initialize("{Your api key}", Environment.live, this.getApplicationContext());
+//	for android 
+AppacitiveContext.initialize("{{Your api key}}", Environment.live, this.getApplicationContext());
 
-//For java
-AppacitiveContext.initialize("{Your api key}", Environment.live);
+//	for java
+AppacitiveContext.initialize("{{Your api key}}", Environment.live);
 ```
+
 ``` javascript
 Appacitive.initialize({ 
     apikey: '{Your api key}' /* required */, 
@@ -170,9 +171,10 @@ https://apis.appacitive.com/v1.0/object/device/find/all
 ``` python
 Add your API-Key and environment details in the Django style settings.py file.
 ```
+
 Data
 =======
-In the next few sections we briefly describe some of the basic terms used in Appacitive like objects, connections, users, files etc.
+In the next few sections, we briefly describe some of the basic terminology used in Appacitive like objects, connections, users, files etc.
 
 Objects
 -------
@@ -184,7 +186,7 @@ The object api allows you to store, retrieve and manage all the data that you st
 
 ** System generated properties ** 
 
-System generated properties are fields used for housekeeping and storing meta-information about the object. All system generated properties start with '__' , avoid changing their values.
+System generated properties are fields used for housekeeping and storing meta-information about the object. All *system generated properties* start with '__' (double underscore). Avoid changing their values.
 
 <dl>
   <dt>\__id</dt>
@@ -321,25 +323,25 @@ In case of an error, the `status` object contains details of the failure.
 
 
 ``` android
-//Create a new AppacitiveObject to store a post.
+//	Create a new AppacitiveObject to store a post.
 AppacitiveObject post = new AppacitiveObject("post");
 
-//Set two string/text properties, 'title' & ''text.
+//	Set two string/text properties, 'title' & ''text.
 post.setStringProperty("title", "Android Operating System");
-post.setStringProperty("text", "Android is an operating system based on the Linux kernel,[12] and designed primarily for touchscreen mobile devices such as smartphones and tablet computers");
+post.setStringProperty("text", "Android is an operating system based on the Linux kernel, and designed primarily for touchscreen mobile devices such as smartphones and tablet computers.");
 
-//Add some arbitrary key-value pairs as attributes to the object.
+//	Add some arbitrary key-value pairs as attributes to the object.
 post.setAttribute("proof_read", "true");
 post.setAttribute("num_pages", "25");
 
-//Add a few tags to the object.
+//	Add a few tags to the object.
 post.addTag("intro");
 post.addTags(new ArrayList<String>() {{
     add("android");
     add("technology");
 }});
 
-//Create the object on Appacitive.
+//	Create the object on Appacitive.
 post.createInBackground(new Callback<AppacitiveObject>() {
     @Override
     public void success(AppacitiveObject result) {
@@ -491,9 +493,10 @@ $$$Sample Response
 ```
 
 ### Retrieve an existing object
+
 The Appacitive platform supports retrieving single or multiple objects. All object retrievals on the platform
-are done purely on the basis of the object id and type. You can also fine tune the exact list of fields that 
-you want to be returned. This will allow for fine tuning the size of the message incase you are on a 
+are done purely on the basis of the object's *id* and *type*. You can also fine tune the exact list of fields that 
+you want to be returned. This will allow for reducing the size of the message payload in case you are on a 
 low bandwidth connection.
 
 The different scenarios for object retrieval are detailed in the sections below.
@@ -501,7 +504,7 @@ The different scenarios for object retrieval are detailed in the sections below.
 #### Retrieve a single object
 
 Returns an existing object from the system. To retrieve an existing object, you will need to provide its 
-type and its system defined id.
+type and its system-defined id.
 
 ** Parameters ** 
 
@@ -511,7 +514,7 @@ type and its system defined id.
   <dt>id</dt>
   <dd>required<br/><span>The system generated id for the object</span></dd>
   <dt>fields</dt>
-  <dd>optional<br/><span>List of properties to be returned.</span></dd>
+  <dd>optional<br/><span>List of properties (custom and system-generated) to be returned</span></dd>
 </dl>
 
 ** Response **
@@ -523,7 +526,7 @@ In case of an error, the `status` object contains details of the failure.
 ``` android
 List<String> fieldsToFetch = new ArrayList<String>();   
 
-//Empty or null fieldsToFetch list indicated fetch all fields.
+//	Empty or null fieldsToFetch list indicated fetch all fields.
 AppacitiveObject.getInBackground("post", 33017891581461312L, fieldsToFetch, new Callback<AppacitiveObject>() {
     @Override
     public void success(AppacitiveObject result) {
@@ -665,19 +668,19 @@ post.fetch().then(function(obj) {
 
 #### Retrieve multiple objects 
 
-Returns a list of multiple existing objects from the system. To get a list of objects you 
-must provide the type of the object and a list of ids to retrieve. Given that only one type is allowed,
-the list of ids must correspond to objects of the same type.
+Returns a list existing objects from the server. To get a list of objects you 
+must provide the *type* of the object and a *list of ids* to retrieve. Given that only one type is allowed,
+the list of ids must correspond to objects of the *same type*.
 
 ** Parameters ** 
 
 <dl>
   <dt>type</dt>
-  <dd>required<br/><span>The type of the object to be retrieved.</span></dd>
+  <dd>required<br/><span>The type of the objects to be retrieved.</span></dd>
   <dt>id list</dt>
-  <dd>required<br/><span>Comma separated list of object ids to retrieve.</span></dd>
+  <dd>required<br/><span>Comma-separated list of object ids to retrieve.</span></dd>
   <dt>fields</dt>
-  <dd>optional<br/><span>List of properties to be returned.</span></dd>
+  <dd>optional<br/><span>List of properties (custom or system-defined) to be returned.</span></dd>
 </dl>
 
 ** Response **
@@ -688,18 +691,18 @@ In case of an error, the `status` object contains details of the failure.
 `NOTE` : Please note that providing the same id multiple times will not return duplicates.
 
 ``` android
-//Fetch two objects of type 'post' with ids 33017891581461312 and 33017891581461313 from appacitive in a single call.
-List<Long> posts = new ArrayList<Long>() {{
+//	Fetch two objects of type 'post' with ids 33017891581461312 and 33017891581461313 from appacitive in a single call.
+List<Long> postIds = new ArrayList<Long>() {{
     add(33017891581461312L);
     add(33017891581461313L);
 }};
 
 List<String> fields = null;
 
-AppacitiveObject.multiGetInBackground("post", posts, fields, new Callback<List<AppacitiveObject>>() {
+AppacitiveObject.multiGetInBackground("post", postIds, fields, new Callback<List<AppacitiveObject>>() {
     @Override
-    public void success(List<AppacitiveObject> result) {
-        for (AppacitiveObject post : result)
+    public void success(List<AppacitiveObject> posts) {
+        for (AppacitiveObject post : posts)
             Log.v("TAG", String.format("Fetched post with title %s and text %s.", post.getPropertyAsString("title"), post.getPropertyAsString("title")));
     }
 
@@ -847,27 +850,28 @@ Appacitive.Object.multiGet({
 
 #### Retrieving only specific fields for an object
 
-The fields parameter allows you to pick and choose the exact properties that you want the system to return in the response.
-This applies to both user and system defined properties. The ``__id``,``__type`` or ``__relationtype`` fields cannot be filtered 
+The *fields* parameter allows you to pick and choose the exact properties that you want the system to return in the response.
+This applies to both custom and system-defined properties. The ``__id``,``__type`` or ``__relationtype`` fields cannot be filtered 
 out using this and will always be returned. To select specific fields you need to pass a list of the fields that you want the system to return.
 
 
 ``` android 
-//Fetch only the properties 'title' and 'text' for the following two posts..
-List<Long> posts = new ArrayList<Long>() {{
+//	Fetch two posts
+List<Long> postIds = new ArrayList<Long>() {{
     add(33017891581461312L);
     add(33017891581461313L);
 }};
 
+//	Fetch only two properties, 'title' and 'text' for the above two posts.
 List<String> fields = new ArrayList<String>() {{
     add("title");
     add("text");
 }};
 
-AppacitiveObject.multiGetInBackground("post", posts, fields, new Callback<List<AppacitiveObject>>() {
+AppacitiveObject.multiGetInBackground("post", postIds, fields, new Callback<List<AppacitiveObject>>() {
     @Override
-    public void success(List<AppacitiveObject> result) {
-        //  the post objects in result contain only the requested fields.
+    public void success(List<AppacitiveObject> results) {
+        //  the post objects in results contain only the requested fields.
         for (AppacitiveObject post : result) {
             String title = post.getPropertyAsString("title");
             String text = post.getPropertyAsString("text");
@@ -983,7 +987,7 @@ Appacitive.Object.get({
 
 ### Update an object
 
-To update an existing object, you need to provide the type and id of the object
+To update an existing object, you need to provide the *type* and *id* of the object
 along with the list of updates that are to be made. As the Appacitive platform supports partial updates,
 and update only needs the information that has actually changed.
 
