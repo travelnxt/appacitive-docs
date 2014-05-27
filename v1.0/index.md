@@ -5187,16 +5187,17 @@ $$$Sample Response
 }
 ```
 ``` ios
-APGraphNode *node = [[APGraphNode alloc] init];
 
-[node applyProjectionGraphQuery:@"deals_for_user" usingPlaceHolders:nil 
+[APGraphNode applyProjectionGraphQuery:@"deals_for_user" usingPlaceHolders:nil 
 forObjectsIds:[NSArray arrayWithObjects:@"43248934317064873", nil] 
-successHandler:^(APGraphNode *node) {
-		NSLog(@"GraphNode:%@ \n",graphNode.description);
+successHandler:^(NSArray *nodes) {
+    for(APGraphNode *node in nodes)
+		  NSLog(@"GraphNode:%@ \n",node.description);
 } failureHandler:^(APError *error) {
 		NSLog(@"Error occurred: %@", [error description]);
 }];
 ```
+
 ```csharp
 var projectQueryName = "sample_project";
 var rootIds = new List<string>() { "34912447775245454", "34322447235528474", "34943243891025029" };
@@ -6276,11 +6277,12 @@ $$$Sample Response
 ``` ios
 $$$METHOD
 //APUser class method
-authenticateUserWithUserName:password:successHandler:failureHandler:
+authenticateUserWithUserName:sessionExpiresAfter:limitAPICallsTo:password:successHandler:failureHandler:
 ```
 ``` ios
 $$$SAMPLE
-[APUser authenticateUserWithUserName:@"john.doe" password:@"secret"
+[APUser authenticateUserWithUserName:@"john.doe" password:@"secret" 
+sessionExpiresAfter:nil limitAPICallsTo: nil 
 	successHandler:^(APUser *user){
 			NSLog(@"Authenticated!");
 	} failureHandler:^(APError *error) {
@@ -6415,14 +6417,15 @@ $$$Sample Response
 ``` ios
 $$$METHOD
 //APUser class method
-authenticateUserWithTwitter:oauthSecret:consumerKey:consumerSecret:successHandler:failureHandler:
+authenticateUserWithTwitter:oauthSecret:consumerKey:consumerSecret:signUp:sessionExpiresAfter:limitAPICallsTo:successHandler:failureHandler:
 ```
 ``` ios
 $$$SAMPLE
 [APUser authenticateUserWithTwitter:@"86197729-p6a3vPdCfgkjn461Fn792b8P7vvsCcHbMS2oe"
 	oauthSecret:@"qTIkQt5puknk2j34njknVsXuF8q6VXA3pBfjTWiUUHgI"
 	consumerKey:@"eygsdfsdfexHIJwvhK2w"
-	consumerSecret:@"VYz5yyF9LMbvi2mgf43p85CwsX0QLuEvEJrzvrsMU"
+	consumerSecret:@"VYz5yyF9LMbvi2mgf43p85CwsX0QLuEvEJrzvrsMU" 
+  signUp:NO sessionExpiresAfter:nil limitAPICallsTo:nil
 	successHandler:^(APUser *user){
 			NSLog(@"Authenticated!");
 	} failureHandler:^(APError *error) {
@@ -6520,12 +6523,13 @@ $$$Sample Response
 ``` ios
 $$$METHOD
 //APUser class method
-authenticateUserWithTwitter:oauthSecret:successHandler:failureHandler:
+authenticateUserWithTwitter:oauthSecret:signUp:sessionExpiresAfter:limitAPICallsTo:successHandler:failureHandler:
 ```
 ``` ios
 $$$SAMPLE
 [APUser authenticateUserWithTwitter:@"86197729-p6a3vPdCfgkjn461Fn792b8P7vvsCcHbMS2oe"
-	oauthSecret:@"qTIkQt5puknk2j34njknVsXuF8q6VXA3pBfjTWiUUHgI"
+	oauthSecret:@"qTIkQt5puknk2j34njknVsXuF8q6VXA3pBfjTWiUUHgI" 
+  signUp:NO sessionExpiresAfter:nil limitAPICallsTo:nil 
 	successHandler:^(APUser *user){
 			NSLog(@"Authenticated!");
 	} failureHandler:^(APError *error) {
@@ -8626,17 +8630,18 @@ device.save).then(function(obj) {
 ``` ios
 $$$METHOD
 //APDevice instance method
-registerDeviceWithSuccessHandler:failureHandler
+registerCurrentDeviceWithPushDeviceToken:enablePushNotifications:successHandler:failureHandler:
 ```
 ``` ios
 $$$SAMPLE
-APDevice *mydevice = [[APDevice alloc] initWithDeviceToken:@"9999999999" deviceType:@"ios"];
-	[mydevice registerDeviceWithSuccessHandler:^() {
+[APDevice registerCurrentDeviceWithPushDeviceToken:@"asd867s8dfh877dsfg7df" 
+enablePushNotifications:YES successHandler:^() {
 			NSLog(@"Device registered!");
 	} failureHandler:^(APError *error) {
 			NSLog(@"Error occurred: %@", [error description]);
 	}];
-```     
+```
+
 ```csharp
 
 Device device = new Device(DeviceType.iOS)
@@ -8979,7 +8984,7 @@ updateObjectWithSuccessHandler:failureHandler
 $$$SAMPLE
 APDevice *mydevice = [[APDevice alloc] initWithDeviceToken:@"9999999999" deviceType:@"ios"];
 [mydevice registerDeviceWithSuccessHandler:^() {
-		[mydevice addAttributeWithKey:@"color" value:@"slate block"];
+		[mydevice addAttributeWithKey:@"color" value:@"slate black"];
 		[mydevice updateObjectWithSuccessHandler:^(){
 				NSLog(@"Device Updated"]);
 		} failureHandler:^(APError *error) {
