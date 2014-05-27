@@ -8982,8 +8982,8 @@ updateObjectWithSuccessHandler:failureHandler
 ```
 ``` ios
 $$$SAMPLE
-APDevice *mydevice = [[APDevice alloc] initWithDeviceToken:@"9999999999" deviceType:@"ios"];
-[mydevice registerDeviceWithSuccessHandler:^() {
+APDevice *mydevice = [[APDevice alloc] init];
+[myDevice fetchWithSuccessHandler:^() {
 		[mydevice addAttributeWithKey:@"color" value:@"slate black"];
 		[mydevice updateObjectWithSuccessHandler:^(){
 				NSLog(@"Device Updated"]);
