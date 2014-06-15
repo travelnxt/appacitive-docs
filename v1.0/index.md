@@ -8627,6 +8627,23 @@ device.save).then(function(obj) {
   alert('error while registering!');
 });
 ```
+
+``` android
+        AppacitiveDevice device = new AppacitiveDevice();
+        device.setDeviceType("android");
+        device.setDeviceToken("c6ae0529f4752a6a0d127900f9e7c");
+        device.registerInBackground(new Callback<AppacitiveDevice>() {
+            @Override
+            public void success(AppacitiveDevice device) {
+                Log.d("Appacitive", String.valueOf(device.getId()));
+            }
+
+            @Override
+            public void failure(AppacitiveDevice result, Exception e) {
+                Log.d("Appacitive", e.getMessage());
+            }
+        });
+```
 ``` ios
 $$$METHOD
 //APDevice instance method
@@ -9358,6 +9375,30 @@ Appacitive.Push.send(options).then(function(notification) {
     alert('Sending Push Notification failed.');
 });
 ```
+``` android
+        AndroidOptions options = new AndroidOptions("test title");
+        Map<String, String> customData = new HashMap<String, String>(){{
+            put("key1", "value1");
+            put("key2", "value2");
+        }};
+
+        AppacitivePushNotification.Broadcast("broadcast message")
+                .withBadge("+1")
+                .withExpiry(100000)
+                .withPlatformOptions(options)
+                .withData(customData)
+                .sendInBackground(new Callback<String>() {
+                    @Override
+                    public void success(String notificationId) {
+                        Log.d("Appacitive", notificationId);
+                    }
+
+                    @Override
+                    public void failure(String notificationId, Exception e) {
+                        Log.d("Appacitive", e.getMessage());
+                    }
+                });
+```
 ``` csharp
 $$$Sample Request
 
@@ -9443,6 +9484,20 @@ $$$Sample Response
     "additionalmessages": []
   }
 }
+```
+```android
+        AppacitivePushNotification.ToQueryResult("broadcast message", new PropertyFilter("devicetype").isEqualTo("android"))
+                .sendInBackground(new Callback<String>() {
+                    @Override
+                    public void success(String notificationId) {
+                        Log.d("Appacitive", notificationId);
+                    }
+
+                    @Override
+                    public void failure(String notificationId, Exception e) {
+                        Log.d("Appacitive", e.getMessage());
+                    }
+                });
 ```
 ``` ios
 $$$METHOD
@@ -9654,6 +9709,24 @@ Appacitive.Push.send(options).then(function(notification) {
     alert('Sending Push Notification failed.');
 });
 ```
+``` android
+        List<String> channels = new ArrayList<String>(){{
+            add("channel1");
+            add("channel2");
+        }};
+        AppacitivePushNotification.ToChannels("broadcast message", channels)
+                .sendInBackground(new Callback<String>() {
+                    @Override
+                    public void success(String notificationId) {
+                        Log.d("Appacitive", notificationId);
+                    }
+
+                    @Override
+                    public void failure(String notificationId, Exception e) {
+                        Log.d("Appacitive", e.getMessage());
+                    }
+                });
+```
 ``` ios
 $$$METHOD
 //APPushNotification class method
@@ -9798,6 +9871,24 @@ Appacitive.Push.send(options).then(function(notification) {
     alert('Sending Push Notification failed.');
 });
 ```
+```android
+        List<String> deviceIds = new ArrayList<String>(){{
+            add("482795784390753489");
+            add("574398543825734287");
+        }};
+        AppacitivePushNotification.ToDeviceIds("broadcast message", deviceIds)
+                .sendInBackground(new Callback<String>() {
+                    @Override
+                    public void success(String notificationId) {
+                        Log.d("Appacitive", notificationId);
+                    }
+
+                    @Override
+                    public void failure(String notificationId, Exception e) {
+                        Log.d("Appacitive", e.getMessage());
+                    }
+                });
+```
 ``` ios
 $$$METHOD
 //APPushNotification class method
@@ -9880,6 +9971,21 @@ var options =
     }
 }
 ```
+```android
+        AppacitivePushNotification.Broadcast("Hi iOS!")
+                .withPlatformOptions(new IosOptions("sound file"))
+                .sendInBackground(new Callback<String>() {
+                    @Override
+                    public void success(String notificationId) {
+                        Log.d("Appacitive", notificationId);
+                    }
+
+                    @Override
+                    public void failure(String result, Exception e) {
+                        Log.d("Appacitive", e.getMessage());
+                    }
+                });
+```
 ``` ios
 $$$METHOD
 //APPushNotification class method
@@ -9939,6 +10045,21 @@ var options =
     }
 }
 ```
+```android
+        AppacitivePushNotification.Broadcast("Hi Android!")
+                .withPlatformOptions(new AndroidOptions("title"))
+                .sendInBackground(new Callback<String>() {
+                    @Override
+                    public void success(String notificationId) {
+                        Log.d("Appacitive", notificationId);
+                    }
+
+                    @Override
+                    public void failure(String result, Exception e) {
+                        Log.d("Appacitive", e.getMessage());
+                    }
+                });
+```
 ``` ios
 $$$METHOD
 //APPushNotification class method
@@ -9978,6 +10099,7 @@ Windows Phone supports three types of Push Notifications.
 3)Tile
 
 We shall discuss them below, one by one.
+
 ####Toast
 A toast displays at the top of the screen to notify users of an event, such as a news or weather alert. 
 For more details on what each param exactly means you can check <a href='http://msdn.microsoft.com/en-us/library/windowsphone/develop/jj662938(v=vs.105).aspx'>Toasts for Windows Phone.</a><br>
@@ -10010,6 +10132,21 @@ var options = {
             }
      }
 }
+```
+```android
+        AppacitivePushNotification.Broadcast("Hi Windows!")
+                .withPlatformOptions(new WindowsPhoneOptions(new ToastNotification("text1", "text2", "path")))
+                .sendInBackground(new Callback<String>() {
+                    @Override
+                    public void success(String notificationId) {
+                        Log.d("Appacitive", notificationId);
+                    }
+
+                    @Override
+                    public void failure(String result, Exception e) {
+                        Log.d("Appacitive", e.getMessage());
+                    }
+                });
 ```
 ``` ios
 $$$METHOD
@@ -10072,6 +10209,16 @@ var options = {
             }
      }
 }
+```
+```android
+        AppacitivePushNotification.Broadcast("Hi Windows!")
+                .withPlatformOptions(new WindowsPhoneOptions(new RawNotification("raw text")))
+                .sendInBackground(new Callback<String>() {
+                    @Override
+                    public void success(String notificationId) {
+                        Log.d("Appacitive", notificationId);
+                    }
+                });
 ```
 ``` ios
 $$$METHOD
@@ -10190,6 +10337,29 @@ var options=
         }
      }
 }
+```
+```android
+        FlipTile tile = new FlipTile();
+        tile.backBackgroundImage = "bbimage";
+        tile.backContent = "back content";
+        tile.backTitle = "back title";
+        tile.frontBackgroundImage = "fbimage";
+        tile.frontCount = "front count";
+        tile.frontTitle = "front title";
+        tile.smallBackgroundImage = "sbimage";
+        tile.tileId = "id";
+        tile.wideBackBackgroundImage = "wbbimg";
+        tile.wideBackContent = "wide back content";
+        tile.wideBackgroundImage = "wbimg";
+
+        AppacitivePushNotification.Broadcast("Hi Windows!")
+                .withPlatformOptions(new WindowsPhoneOptions(TileNotification.createNewFlipTile(tile)))
+                .sendInBackground(new Callback<String>() {
+                    @Override
+                    public void success(String notificationId) {
+                        Log.d("Appacitive", notificationId);
+                    }
+                });
 ```
 ``` ios
 $$$METHOD
@@ -10315,7 +10485,39 @@ var options =
 
 }
 ```
+```android
+        FlipTile flipTile = new FlipTile();
+        flipTile.backBackgroundImage = "bbimage";
+        flipTile.backContent = "back content";
+        flipTile.backTitle = "back title";
+        flipTile.frontBackgroundImage = "fbimage";
+        flipTile.frontCount = "front count";
+        flipTile.frontTitle = "front title";
+        flipTile.smallBackgroundImage = "sbimage";
+        flipTile.tileId = "id";
+        flipTile.wideBackBackgroundImage = "wbbimg";
+        flipTile.wideBackContent = "wide back content";
+        flipTile.wideBackgroundImage = "wbimg";
 
+        CyclicTile cyclicTile = new CyclicTile();
+        cyclicTile.frontTitle = "front title";
+        cyclicTile.tileId = "id";
+        List<String> images = new ArrayList<String>() {{
+            add("img1");
+            add("img2");
+            add("img3");
+        }};
+        cyclicTile.images = new FixedSizeImageList(images);
+
+        AppacitivePushNotification.Broadcast("Hi Windows!")
+                .withPlatformOptions(new WindowsPhoneOptions(TileNotification.createNewCyclicTile(cyclicTile, flipTile)))
+                .sendInBackground(new Callback<String>() {
+                    @Override
+                    public void success(String notificationId) {
+                        Log.d("Appacitive", notificationId);
+                    }
+                });
+```
 ``` ios
 $$$METHOD
 //APPushNotification class method
@@ -10463,6 +10665,35 @@ var options=
         }
      }
 }
+```
+```android
+FlipTile flipTile = new FlipTile();
+        flipTile.backBackgroundImage = "bbimage";
+        flipTile.backContent = "back content";
+        flipTile.backTitle = "back title";
+        flipTile.frontBackgroundImage = "fbimage";
+        flipTile.frontCount = "front count";
+        flipTile.frontTitle = "front title";
+        flipTile.smallBackgroundImage = "sbimage";
+        flipTile.tileId = "id";
+        flipTile.wideBackBackgroundImage = "wbbimg";
+        flipTile.wideBackContent = "wide back content";
+        flipTile.wideBackgroundImage = "wbimg";
+
+        IconicTile iconicTile = new IconicTile();
+        iconicTile.backgroundColor = "bg color";
+        iconicTile.frontTitle = "front title";
+        iconicTile.wideContent1 = "wc1";
+        iconicTile.wideContent2 = "wc2";
+
+        AppacitivePushNotification.Broadcast("Hi Windows!")
+                .withPlatformOptions(new WindowsPhoneOptions(TileNotification.createNewIconicTile(iconicTile, flipTile)))
+                .sendInBackground(new Callback<String>() {
+                    @Override
+                    public void success(String notificationId) {
+                        Log.d("Appacitive", notificationId);
+                    }
+                });
 ```
 ``` ios
 $$$METHOD
