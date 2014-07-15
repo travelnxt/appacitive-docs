@@ -5231,6 +5231,138 @@ query.fetch().then(function(results) {
 
 ```
 
+Access Control
+======
+Appacitive provides extensive support for securing access to your data. It is advised
+that you use these features to prevent unauthorized access to your data.
+
+Key based access
+------------
+For each application on the appacitive platform, you are provided two types of keys - a ``master`` key and a ``client`` key. Both of these keys can be used interchangably on the platform. The only difference between these key types is that client keys will honor
+all access control rules defined on the platform whereas master keys will ignore all access control rules. 
+For your apps, we strongly advise using the client api keys with relevant access control rules in place. The only scenario where you would use the master api key 
+is if your data is public or you want to manage access by yourself.
+
+Beyond the keys that are automatically generated during application setup, you can create additional keys as well.
+
+User Groups
+------------
+User group allow you to create groups of users for the purpose of access control within your app. All access control rules applied to the group are applicable to its members during the tenure of their membership of the group.
+
+To prevent unauthorized access, user groups also allow you to define permissions that 
+moderate access to the group itself. You can allow specific groups and users to manage
+access and membership to the group itself. E.g., you might want that only administrative users can add other users to the Administrator's group.
+
+### Creating a new user group
+You can create and administer usergroups for your app from the Appacitive management portal. Creation of user groups via the REST api or client SDKs is not supported.
+
+### Managing members
+You can add and remove members from a specific user group. To add or remove one or mre users from a user group, simply provide the name of the user group along with the list of ids for the users to add or remove.
+
+** Parameters ** 
+
+<dl>
+  <dt>group name or id</dt>
+  <dd>required<br/><span>The name or id of the user group.</span></dd>  
+  <dt>added user</dt>
+  <dd>optional<br/><span>List of user ids to be added.</span></dd>  
+  <dt>removed users</dt>
+  <dd>optional<br/><span>List of user ids to be removed.</span></dd>  
+</dl>
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.</span>
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.</span>
+  <dt>Appacitive-User-Auth</dt>
+  <dd>required<br/><span>User token for the logged in user.</span>
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+** Response **
+
+
+``` android
+<TO BE ADDED>
+```
+``` rest
+$$$Method
+POST https://apis.appacitive.com/v1.0/usergroup/{group name or groupd id}/members
+```
+``` rest
+$$$Sample Request
+// Adding user ids "123" and "456"
+// and removing user ids "789" and "901"
+// to the group "moderators".
+curl -X PUT \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d '{ "add" : ["123", "456"], "remove" : ["789", "901"] }' \
+https://apis.appacitive.com/v1.0/usergroup/moderators/members
+```
+``` rest
+$$$Sample Response
+{
+  "user": {
+    "__id": "34889981737698423",
+    "__type": "user",
+    "__createdby": "System",
+    "__lastmodifiedby": "System",
+    "__typeid": "34888670847828365",
+    "__revision": "1",
+    "__tags": [
+      "male"
+    ],
+    "__utcdatecreated": "2013-08-21T02:41:19.5142397Z",
+    "__utclastupdateddate": "2013-08-21T02:41:19.5142397Z",
+    "username": "john.doe",
+    "email": "john.doe@appacitive.com",
+    "firstname": "John",
+    "isenabled": "true",
+    "phone": null,
+    "__attributes": {}
+  },
+  "status": {
+    "code": "201",
+    "message": "Successful",
+    "faulttype": null,
+    "version": null,
+    "referenceid": "1f5ba0c8-b523-485a-9e04-ac924c6e442a",
+    "additionalmessages": []
+  }
+}
+```
+
+``` javascript
+$$$Method
+<TO BE ADDED>
+```
+``` javascript
+$$$Sample Request
+
+<TO BE ADDED>
+```
+``` ios
+$$$METHOD
+<TO BE ADDED>
+```
+``` ios
+$$$SAMPLE
+
+<TO BE ADDED>
+```
+``` csharp
+<TO BE ADDED>
+```
+``` python
+<TO BE ADDED>
+```
+
 User management
 ======
 
@@ -5241,7 +5373,6 @@ Users
 
 This inbuilt type `user` behaves just like any other type created by you with added features like authentication, location tracking, password management, session management and third-party social integration using OAuth 1.0 or OAuth 2.0.
 
-`Note` : While working with user API(s) you need to pass an additional HTTP header called `Appacitive-User-Auth` with its value set to a valid user `session token` generated for that user.
 
 <span class="h3">The user object</span>
 
