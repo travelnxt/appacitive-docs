@@ -116,7 +116,7 @@ isDev = false;
 
         var storeCookie = function (cName, value) {
             if (!value) return;
-            document.cookie = cName + "=" + value + ";";
+            document.cookie = cName + "=" + value + ";path=/";
         };
         var readCookie = function (name) {
             var nameEQ = name + "=";
@@ -137,9 +137,30 @@ isDev = false;
         //jump to hash
         if (window.location.hash != "") {
             setTimeout(function () {
+                var mapping = {
+                    curl: 'rest',
+                    javascript: 'javascript',
+                    dotnet: 'csharp',
+                    python: 'python',
+                    ios: 'ios',
+                    android: 'android'
+                };
                 var split = window.location.hash.split('/');
-                if (split.length > 1) $("[href='#" + window.location.hash.split('/')[1] + "']").trigger("click");
-                else $("[href='" + window.location.hash + "']").trigger("click");
+                if (split.length > 1) {
+                    //set the language first and then jump to hash
+                    split = window.location.hash.split('/');
+                    var lang = mapping[split[0].replace('#', '')];
+                    var $element = $('.toolbar a[data-lang="' + lang + '"]');
+                    $element.trigger('click');
+                    setTimeout(function () {
+                        $("[href='#" + split[1] + "']").trigger("click");
+                    }, 100);
+                }
+                else {
+                    var lang = mapping[window.location.hash.replace('#', '')];
+                    if (!lang) $("[href='" + window.location.hash + "']").trigger("click");
+                    else $('.toolbar a[data-lang="' + lang + '"]').trigger('click');
+                }
             }, 1000);
         }
 
