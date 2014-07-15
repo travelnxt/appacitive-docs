@@ -140,14 +140,8 @@ Appacitive.initialize({
 });
 ```
 ``` csharp
-//For Windows Phone 7 base app
-App.Initialize(WindowsPhone7.WP7.Instance, 
+AppContext.Initialize("{Your app id}""}, 
                    "{Your api key}", 
-                    Environment.Live);
-
-//For Windows app
-App.Initialize(Net45.WindowsHost.Instance, 
-                   "S{Your api key}", 
                     Environment.Live);
 ```
 
@@ -6336,7 +6330,7 @@ var creds = new UsernamePasswordCredentials("username", "password")
    MaxAttempts = int.MaxValue
 };
 
-var userSession = await App.LoginAsync(credentials);
+var userSession = await AppContext.LoginAsync(credentials);
 var user = userSession.LoggedInUser;  //Logged in user
 ```
 ``` python
