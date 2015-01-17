@@ -5234,6 +5234,229 @@ query.fetch().then(function(results) {
 
 ```
 
+Multi caller
+------------
+
+The multi caller api lets you combine multiple operations into a single batch and execute them inside a single transaction. This is useful when you need to create, update and delete a lot of objects and connections in a single operation.
+
+### Using the multi caller api
+
+The multi called api lets you batch the create, update and delete requests for objects and connections. As each new object is given a unique name, you can create new connections as well referencing those object names. 
+
+** Parameters **
+
+<dl>
+  <dt>batch</dt>
+  <dd>required<br/><span>The batch request for the multi caller api.
+</dl>
+
+** HTTP headers **
+
+<dl>
+  <dt>Appacitive-Apikey</dt>
+  <dd>required<br/><span>The api key for your app.
+  <dt>Appacitive-Environment</dt>
+  <dd>required<br/><span>Environment to be targeted. Valid values are `live` and `sandbox`.
+  <dt>Content-Type</dt>
+  <dd>required<br/><span>This should be set to `application/json`.
+</dl>
+
+``` android
+N.A.
+```
+``` rest
+$$$Method
+POST https://apis.appacitive.com/v1.0/multi
+```
+``` rest
+$$$Sample Request
+//  Execute a saved projection query
+curl -X POST \
+-H "Appacitive-Apikey: {Your api key}" \
+-H "Appacitive-Environment: {target environment (sandbox/live)}" \
+-H "Content-Type: application/json" \
+-d
+{
+  // Nodes contains all the objects that you want to create or
+  "nodes": [
+    // Will create this new event object.
+    // It is refered in this transaction by the name "my_birthday"
+    {
+      "name": "my_birthday",
+      "object": {
+        "__type": "event",
+        "title": "MY birthday",
+        "description": "My birthday party.",
+        "date": "2015-1-20"
+      }
+    },
+    // Will update this existing object since you are passing the object id
+    // indicating that this is an existing object.
+    {
+      "name": "my_past_event",
+      "object": {
+        "__type": "event",
+        "__id" : "81409198712378124"
+        "is_archived": "true"
+      },
+      // Version of the object (optional)
+      "version" : "1"
+    }
+  ],
+
+  // Contains all the connection objects that you want to create or update
+  "edges": [
+    // Will create this new connection
+    {
+      "name": "invite1",
+      "connection": {
+        "__relationtype": "invitation",
+        "__endpointa": {
+          "label": "event",
+          // Note here that this endpoint refers the object specified above with its name.
+          "name" : "my_birthday"
+        },
+        "__endpointb": {
+          "label": "user",
+          "objectid" : "81409133625082264"
+        }
+      }
+    },
+    // Will create this new connection
+    {
+      "name": "invite2",
+      "connection": {
+        "__relationtype": "invitation",
+        "__endpointa": {
+          "label": "event",
+          "name" : "birthday"
+        },
+        "__endpointb": {
+          "label": "user",
+          "objectid" : "81409132757909905"
+        }
+      }
+    }
+  ],
+
+  // Contains a list of all object ids that you want to delete.
+  "nodedeletions": [
+    {
+      "type": "event",
+      "id": "81409132757909905",
+      "deleteconnections": true
+    }
+  ],
+
+  // Contains a list of all connection ids that you want to delete.
+  "edgedeletions": [
+    {
+      "type": "invitation",
+      "id": "81409134410465695"
+    }
+  ]
+}
+https://apis.appacitive.com/v1.0/multi
+```
+
+``` rest
+$$$Sample Response
+{
+  // The list of created and updated objects with the names that were provided
+  "nodes": [
+    {
+      "name": "my_birthday",
+      "object": {..}
+    },
+    {
+      "name": "my_past_event",
+      "object": {..}
+    }
+  ],
+  // The list of delete nodes
+  "nodedeletions": [
+    {
+      "type": "object",
+      "id": 81409132757909905,
+      "deleteconnections": true
+    }
+  ],
+  // List of deleted edges
+  "edgedeletions": [
+    {
+      "relationtype": "sibling",
+      "id": 81409134410465695
+    }
+  ],
+  // The list of created and updated connections with the names that were provided
+  "edges": [
+    {
+      "name": "invite1",
+      "connection": {..}
+    },
+    {
+      "name": "invite2",
+      "connection": {..}
+    }
+  ],
+  "status": {
+    "code": "200",
+    "referenceid": "233a2761-577b-42c8-88c2-893c86e073b3",
+    "version": "1.0"
+  }
+}
+```
+``` ios
+N.A.
+```
+
+```csharp
+// Simple batch
+APBatch batch = new APBatch();
+var newObjReference = batch.AddObjectToCreate(obj);
+var updatedObjReference = batch.AddObjectToUpdate(object_id, updated_object);
+var newConnReference = batch.AddConnectionToCreate(new_connection);
+var updatedConnReference = batch.AddConnectionToUpdate(conn_id, updated_connection);
+batch.AddConnectionToDelete("type", connection_id);
+await batch.ExecuteAsync();
+// Get objects affected by the batch operation
+var createdObject = batch.CreatedObjects[newObjReference];
+var createdConnection = batch.CreatedConnections[newConnReference];
+
+
+
+// Batch api with object reference
+// Create a new event and connect with existing users
+var johnUserId = "112334234";
+var janeUserId = "345345123";
+var myEvent = new APObject("event");
+var batch = new APBatch();
+var eventReference = batch.AddObjectToCreate(myEvent);
+
+var inviteForJohn = APConnection.New("invitation")
+                .FromExistingObject("user", johnUserId)
+                .ToBatchObjectReference("event", eventReference);
+var inviteForJane = APConnection.New("invitation")
+                .FromExistingObject("user", janeUserId)
+                .ToBatchObjectReference("event", eventReference);
+batch.AddConnectionToCreate(inviteForJohn);
+batch.AddConnectionToCreate(inviteForJane);
+await batch.ExecuteAsync();
+
+```
+```python
+N.A.
+```
+```javascript
+$$$Method
+N.A.
+```
+```javascript
+$$$Sample Request
+N.A.
+
+```
+
 Access Control
 ======
 Appacitive provides extensive support for securing access to your data. It is advised
