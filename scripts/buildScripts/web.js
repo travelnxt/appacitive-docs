@@ -4,7 +4,6 @@ var cheerio = require('cheerio');
 var path = require('path')
 var Flatdoc = require('./flatdoc.js');
 var spawn = require('child_process').spawn;
-var glob = require("glob");
 
 function replaceAll(find, replace, str) {
     return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
@@ -48,7 +47,7 @@ setTimeout(function() {
                 var root = $('[role~="flatdoc"]');
                 $('[role~="flatdoc-title"]', root).html(el['title']);
                 $('[role~="flatdoc-content"]', root).html(el['content']);
-                $('[role~="flatdoc-menu"]', root).html(el['menu']);	
+                $('[role~="flatdoc-menu"]', root).html(el['menu']); 
                 $('script[id~="scriptFlatdocReady"]').html('$(function(){ $(document).trigger("flatdoc:ready") });');
 
                 var html = $.html();
@@ -60,42 +59,6 @@ setTimeout(function() {
 
                     console.log(htmlFile + " saved");
 
-                    var split = spawn('split',["-b", "100k", file["markdownFile"], file.version + "/indexChunk"]);
-	    			
-                    split.on('close', function (code) {
-                        if (code == 0) {
-                            glob(file.version + "/indexChunk*", function(e, files) {
-				      		
-                                var fileNames = "[";
-
-                                if (fileNames.length == 0) {
-                                    throw new Error("No files found after split for " + file["markdownFile"]);
-                                }
-
-                                files.forEach(function(f){
-                                    f = f.replace(file.version + '/' ,'');
-                                    fileNames += "'" + f + "', ";
-                                });
-                                fileNames = fileNames.substring(0, fileNames.length - 2);
-                                fileNames += "]";
-
-                                var body = cheerio.load(htmlData);	
-                                body('script[id~="scriptFlatdocReady"]').html("Flatdoc.run({ fetcher: Flatdoc.file(" + fileNames + ") });");
-
-                                html = body.html();
-                                html = replaceAll('__RevisionNoGoesHere__', guid(), html);
-
-                                require('fs').writeFile(path.resolve(file["mobileHtmlFile"]), html, function(err) {
-                                    if (err) throw err;
-
-                                    console.log(file["mobileHtmlFile"] + " saved");
-                                });
-                            });
-                        } else {
-                            throw new Error("Couldn't split " + file["markdownFile"]);
-                        }
-                    });
-
                 });
             };
 
@@ -103,7 +66,7 @@ setTimeout(function() {
                 Flatdoc.run({
                     fetcher: Flatdoc.file(path.resolve(file["markdownFile"])),
                     cb: cb
-                });	
+                }); 
             } else {
                 Flatdoc.run({
                     fetcher: Flatdoc.github(file["repo"]),
