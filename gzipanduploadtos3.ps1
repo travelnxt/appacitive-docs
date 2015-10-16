@@ -1,7 +1,7 @@
 param([string]$s3cmdpath="D:\utils\s3cmd\s3cmd",[string]$s3bucket="helptest.appacitive.com",[string]$indexdoc="index.html")
 
 # Gzip compress files with extension .html, .js, .xml, .css
-$files = Get-ChildItem -Recurse . -Attributes !Directory
+$files = Get-ChildItem -Recurse . -Attributes !Directory | ?{ $_.fullname -notmatch "\\node_modules\\?" }
 $otherfiles = New-Object Object
 $otherfiles = @()
 $compressextensions = (".html",".js",".xml",".css",".md")
